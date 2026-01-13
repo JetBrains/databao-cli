@@ -1,0 +1,37 @@
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# PyInstaller
+*.manifest
+*.spec
+
+# dotenv
+.env
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Pytest
+.pytest_cache/
+
+# IDE
+.idea/
+
+# Distribution / packaging
+.Python
+downloads/
+dist/
+build/
+*.egg-info/
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store
