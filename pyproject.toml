@@ -1,0 +1,28 @@
+[project]
+name = "databao"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Maryia Lapatsina",email = "maryia.lapatsina@jetbrains.com"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "click (>=8.2.1,<9.0.0)"
+]
+
+[project.scripts]
+databao = "databao.__main__:cli"
+
+[tool.poetry]
+packages = [{include = "databao", from = "src"}]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "pytest (>=9.0.2,<10.0.0)",
+    "flake8 (>=7.3.0,<8.0.0)"
+]
