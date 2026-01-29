@@ -10,6 +10,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "click>=8.2.1,<9.0.0",
+    "databao-context-engine>=0.1.4.dev1",
 ]
 
 [project.scripts]
