@@ -63,8 +63,9 @@ uv run pytest
 
 ### Linting
 
-Run flake8 to check code style:
+Run ruff to check and format code:
 
 ```bash
-uv run flake8 src tests
+uv run ruff check src tests
+uv run ruff format src tests
 ```
