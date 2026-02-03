@@ -64,12 +64,12 @@ def status(ctx: Context) -> None:
 )
 @click.pass_context
 def ask(
-        ctx: click.Context,
-        question: str | None,
-        one_shot: bool,
-        model: str | None,
-        temperature: float,
-        show_thinking: bool,
+    ctx: click.Context,
+    question: str | None,
+    one_shot: bool,
+    model: str | None,
+    temperature: float,
+    show_thinking: bool,
 ) -> None:
     """Chat with the Databao agent.
 
