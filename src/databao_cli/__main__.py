@@ -10,7 +10,7 @@ from databao_cli.commands.status import status_impl
 
 @click.group()
 @click.option(
-    "-d",
+    "-p",
     "--project-dir",
     type=click.Path(file_okay=False, path_type=Path),
     help="Location of your Databao Context Engine project",
