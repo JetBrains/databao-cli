@@ -44,7 +44,7 @@ def init(ctx: Context) -> None:
     project_layout: ProjectLayout
     try:
         project_layout = init_impl(project_dir)
-    except ProjectDirDoesnotExistError as e:
+    except ProjectDirDoesnotExistError:
         if click.confirm(
             f"The directory {project_dir.resolve()} does not exist. Do you want to create it?",
             default=True,
