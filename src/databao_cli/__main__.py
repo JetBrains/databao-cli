@@ -4,8 +4,8 @@ import click
 from click import Context
 
 from databao_cli.commands.app import app_impl
-from databao_cli.commands.status import echo_status
 from databao_cli.commands.ask import ask_impl
+from databao_cli.commands.status import echo_status
 
 
 @click.group()

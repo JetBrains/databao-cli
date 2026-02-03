@@ -6,8 +6,9 @@ from pathlib import Path
 
 import click
 import pandas as pd
-from databao import Agent
 from prettytable import PrettyTable
+
+from databao import Agent
 from databao.core.thread import Thread
 
 # Default maximum number of rows to display in dataframe output
