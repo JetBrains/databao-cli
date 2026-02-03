@@ -8,8 +8,4 @@ def test_databao_status():
     result = runner.invoke(cli, ["status"])
 
     assert result.exit_code == 0, result.output
-    assert (
-        "Databao context engine plugins: "
-        "['jetbrains/duckdb', 'jetbrains/parquet', 'jetbrains/unstructured_files', 'jetbrains/unstructured_files']"
-        "" in result.output
-    )
+    assert "Databao context engine plugins: ['jetbrains/duckdb', 'jetbrains/parquet'" in result.output
