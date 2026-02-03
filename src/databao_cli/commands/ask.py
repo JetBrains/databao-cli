@@ -3,25 +3,29 @@
 import io
 import sys
 from pathlib import Path
-from typing import Any
 
 import click
 import pandas as pd
+from databao import Agent
 from prettytable import PrettyTable
+from databao.core.thread import Thread
+
+# Default maximum number of rows to display in dataframe output
+DEFAULT_MAX_DISPLAY_ROWS = 10
 
 
 class CLIStreamingWriter(io.StringIO):
     """A writer that streams output to CLI in real-time.
 
-    Extends StringIO to capture all output while also echoing to stdout
-    immediately when show_thinking is enabled.
+    Extends StringIO to capture all output while simultaneously echoing
+    every write to stdout immediately for real-time display.
     """
 
     def __init__(self) -> None:
         super().__init__()
 
     def write(self, text: str) -> int:
-        """Write text to buffer and optionally echo to stdout."""
+        """Write text to buffer and echo to stdout."""
         result = super().write(text)
         click.echo(text, nl=False)
         return result
@@ -32,7 +36,7 @@ class CLIStreamingWriter(io.StringIO):
         self.truncate(0)
 
 
-def dataframe_to_prettytable(df: pd.DataFrame, max_rows: int = 10) -> str:
+def dataframe_to_prettytable(df: pd.DataFrame, max_rows: int = DEFAULT_MAX_DISPLAY_ROWS) -> str:
     """Convert a pandas DataFrame to a prettytable string."""
     table = PrettyTable()
     table.field_names = list(df.columns)
@@ -41,7 +45,7 @@ def dataframe_to_prettytable(df: pd.DataFrame, max_rows: int = 10) -> str:
     return str(table)
 
 
-def initialize_agent_from_dce(project_path: Path, model: str | None, temperature: float) -> Any:
+def initialize_agent_from_dce(project_path: Path, model: str | None, temperature: float) -> Agent:
     """Initialize the Databao agent using DCE project at the given path."""
     import databao
     from databao.configs.llm import LLMConfig, LLMConfigDirectory
@@ -108,7 +112,7 @@ def initialize_agent_from_dce(project_path: Path, model: str | None, temperature
     return agent
 
 
-def display_result(thread: Any) -> None:
+def display_result(thread: Thread) -> None:
     """Display the execution result from thread to CLI."""
     # Display text response
     text = thread.text()
@@ -123,7 +127,7 @@ def display_result(thread: Any) -> None:
     # Display dataframe if present
     df = thread.df()
     if df is not None:
-        rows_shown = min(10, len(df))
+        rows_shown = min(DEFAULT_MAX_DISPLAY_ROWS, len(df))
         click.echo(f"\n[DataFrame: {rows_shown} / {len(df)} rows]")
         click.echo(dataframe_to_prettytable(df))
 
@@ -138,7 +142,7 @@ def _print_help() -> None:
     click.echo("  \\q      - Exit\n")
 
 
-def run_interactive_mode(agent: Any, show_thinking: bool) -> None:
+def run_interactive_mode(agent: Agent, show_thinking: bool) -> None:
     """Run the interactive REPL mode."""
     click.echo("\nDatabao REPL")
     click.echo("\nType \\help for available commands.\n")
@@ -209,7 +213,7 @@ def run_interactive_mode(agent: Any, show_thinking: bool) -> None:
             click.echo(f"\nError: {e}\n", err=True)
 
 
-def run_one_shot_mode(agent: Any, question: str, show_thinking: bool) -> None:
+def run_one_shot_mode(agent: Agent, question: str, show_thinking: bool) -> None:
     """Run a single question and exit."""
 
     if show_thinking:
@@ -258,6 +262,6 @@ def ask_impl(
 
     # Run appropriate mode
     if one_shot:
-        run_one_shot_mode(agent, question, show_thinking)  # type: ignore[arg-type]
+        run_one_shot_mode(agent, question, show_thinking)
     else:
         run_interactive_mode(agent, show_thinking)
