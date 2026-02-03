@@ -1,0 +1,19 @@
+"""databao app command - Launch the Databao Streamlit web interface."""
+
+import subprocess
+import sys
+
+import click
+from databao.ui.cli import bootstrap_streamlit_app
+
+
+def app_impl(ctx: click.Context) -> None:
+    click.echo("Starting Databao UI...")
+
+    try:
+        bootstrap_streamlit_app(ctx.obj["project_dir"], ctx.args)
+    except subprocess.CalledProcessError as e:
+        click.echo(f"Error running Streamlit: {e}", err=True)
+        sys.exit(1)
+    except KeyboardInterrupt:
+        click.echo("\nShutting down Databao...")

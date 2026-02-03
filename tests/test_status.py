@@ -1,6 +1,6 @@
 from click.testing import CliRunner
 
-from databao.__main__ import cli
+from databao_cli.__main__ import cli
 
 
 def test_databao_status():

@@ -35,3 +35,8 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+.cursor/debug.log
+.cursor/plans/
+
+*.code-workspace

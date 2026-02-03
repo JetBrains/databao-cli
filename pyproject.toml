@@ -11,17 +11,22 @@ requires-python = ">=3.12"
 dependencies = [
     "click>=8.2.1,<9.0.0",
     "databao-context-engine>=0.1.4.dev1",
+    "prettytable>=3.10.0",
+    "databao[ui] @ git+https://github.com/JetBrains/databao-agent.git@ykhudyakov/ui",
 ]
 
 [project.scripts]
-databao = "databao.__main__:cli"
+databao = "databao_cli.__main__:cli"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.hatch.metadata]
+allow-direct-references = true
+
 [tool.hatch.build.targets.wheel]
-packages = ["src/databao"]
+packages = ["src/databao_cli"]
 
 [dependency-groups]
 dev = [
