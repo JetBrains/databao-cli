@@ -6,7 +6,7 @@ import click
 from databao_context_engine import DceInfo, get_databao_context_engine_info
 
 
-def echo_status(project_dir: Path) -> None:
+def status_impl(project_dir: Path) -> None:
     click.echo(_generate_info_string(get_databao_context_engine_info(project_dir=project_dir)))
 
 

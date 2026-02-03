@@ -5,7 +5,7 @@ from click import Context
 
 from databao_cli.commands.app import app_impl
 from databao_cli.commands.ask import ask_impl
-from databao_cli.commands.status import echo_status
+from databao_cli.commands.status import status_impl
 
 
 @click.group()
@@ -31,7 +31,7 @@ def cli(ctx: Context, project_dir: Path | None):
 @click.pass_context
 def status(ctx: Context) -> None:
     """Display project status and system-wide information."""
-    echo_status(ctx.obj["project_dir"])
+    status_impl(ctx.obj["project_dir"])
 
 
 @cli.command()
