@@ -41,6 +41,7 @@ def status(ctx: Context) -> None:
 @cli.command()
 @click.pass_context
 def init(ctx: Context) -> None:
+    """Create a new Databao project."""
     project_dir = ctx.obj["project_dir"]
     project_layout: ProjectLayout
     try:
