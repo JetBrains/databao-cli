@@ -1,12 +1,11 @@
 import os
-from contextlib import contextmanager
 from pathlib import Path
-from typing import Iterator
 
 import yaml
-from click.testing import CliRunner, Result
+from click.testing import CliRunner
 
 from databao_cli.__main__ import cli
+from tests.utils.project import desribe_result, run_init
 
 
 def test_databao_init_successfully(tmp_path: Path):
@@ -103,32 +102,3 @@ def assert_created_project_is_valid(project_dir: Path | str, additional_expected
 
     assert len(expected_directories) == 0, expected_directories
     assert len(expected_files) == 0, expected_files
-
-
-@contextmanager
-def run_init(run_dir: Path, args: list[str] = None, answers: list[str] = None) -> Iterator[Result]:
-    if args is None:
-        args = ["init"]
-    runner = CliRunner()
-    if answers is None:
-        answers = ["N"]
-    inputs = os.linesep.join(answers)
-    with within_dir(run_dir):
-        yield runner.invoke(cli=cli, args=args, input=inputs, catch_exceptions=False)
-
-
-def desribe_result(result: Result) -> str:
-    return f"""
-    stdout: {result.stdout}
-    stderr: {result.stderr}
-"""
-
-
-@contextmanager
-def within_dir(dir: Path) -> Iterator[Path]:
-    cwd = os.getcwd()
-    os.chdir(dir)
-    try:
-        yield dir
-    finally:
-        os.chdir(cwd)

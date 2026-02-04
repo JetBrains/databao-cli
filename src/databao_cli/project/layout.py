@@ -28,3 +28,12 @@ class ProjectLayout:
         Root domain is the domain which is used by default unless domain parameter is specified
         """
         return self.domains_dir / "root"
+
+
+def find_project(initial_dir: Path) -> ProjectLayout | None:
+    dirs_to_check = [initial_dir] + list(initial_dir.parents)
+    for project_dir_candidate in dirs_to_check:
+        databao_project_dir = get_databao_project_dir(project_dir_candidate)
+        if databao_project_dir.exists():
+            return ProjectLayout(project_dir_candidate)
+    return None

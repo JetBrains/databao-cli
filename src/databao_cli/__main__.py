@@ -6,6 +6,7 @@ from databao_context_engine.cli.datasources import add_datasource_config_cli
 
 from databao_cli.commands.app import app_impl
 from databao_cli.commands.ask import ask_impl
+from databao_cli.commands.build import build_impl
 from databao_cli.commands.init import InitDatabaoProjectError, ProjectDirDoesnotExistError, init_impl
 from databao_cli.commands.status import status_impl
 from databao_cli.project.layout import ProjectLayout
@@ -72,6 +73,26 @@ def init(ctx: Context) -> None:
 
     root_domain_dir = project_layout.root_domain_dir
     add_datasource_config_cli(root_domain_dir)
+
+
+@cli.command()
+@click.option(
+    "-d",
+    "--domain",
+    type=click.STRING,
+    default="root",
+    help="Databao domain name",
+)
+@click.pass_context
+def build(ctx: Context, domain: str) -> None:
+    """Build context for all domain's datasources.
+
+    The output of the build command will be saved in the domain's output directory.
+
+    Internally, this indexes the context to be used by the MCP server and the "retrieve" command.
+    """
+    results = build_impl(ctx.obj["project_dir"], domain)
+    click.echo(f"Build complete. Processed {len(results)} datasources.")
 
 
 @cli.command()

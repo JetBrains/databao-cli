@@ -2,7 +2,7 @@ from pathlib import Path
 
 from databao_context_engine import InitProjectError, init_dce_project
 
-from databao_cli.project.layout import ProjectLayout, get_databao_project_dir
+from databao_cli.project.layout import ProjectLayout, find_project
 
 
 class InitDatabaoProjectError(ValueError):
@@ -65,10 +65,8 @@ class _ProjectCreator:
         if not self.project_dir.is_dir():
             raise ProjectDirNotDirError(f"The project directory is not a directory: {self.project_dir.resolve()}")
 
-        dirs_to_check = [self.project_dir] + list(self.project_dir.parents)
-        for project_dir_candidate in dirs_to_check:
-            databao_project_dir = get_databao_project_dir(project_dir_candidate)
-            if databao_project_dir.exists():
-                raise DatabaoProjectDirAlreadyExistsError(
-                    f"Can't initialize Databao project. It already exists - {databao_project_dir.resolve()}"
-                )
+        existing_project = find_project(self.project_dir)
+        if existing_project is not None:
+            raise DatabaoProjectDirAlreadyExistsError(
+                f"Can't initialize Databao project. It already exists - {existing_project.databao_dir.resolve()}"
+            )
