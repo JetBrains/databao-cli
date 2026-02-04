@@ -2,12 +2,11 @@ import os
 import sys
 from pathlib import Path
 
-import click
 from databao_context_engine import DceInfo, get_databao_context_engine_info
 
 
-def status_impl(project_dir: Path) -> None:
-    click.echo(_generate_info_string(get_databao_context_engine_info(project_dir=project_dir)))
+def status_impl(project_dir: Path) -> str:
+    return _generate_info_string(get_databao_context_engine_info(project_dir=project_dir))
 
 
 def _generate_info_string(command_info: DceInfo) -> str:

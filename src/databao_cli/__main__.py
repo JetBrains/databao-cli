@@ -31,7 +31,8 @@ def cli(ctx: Context, project_dir: Path | None):
 @click.pass_context
 def status(ctx: Context) -> None:
     """Display project status and system-wide information."""
-    status_impl(ctx.obj["project_dir"])
+    status_message = status_impl(ctx.obj["project_dir"])
+    click.echo(status_message)
 
 
 @cli.command()
