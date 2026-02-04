@@ -13,7 +13,7 @@ from databao_cli.commands.status import status_impl
     "-p",
     "--project-dir",
     type=click.Path(file_okay=False, path_type=Path),
-    help="Location of your Databao Context Engine project",
+    help="Location of your Databao project",
 )
 @click.pass_context
 def cli(ctx: Context, project_dir: Path | None):
