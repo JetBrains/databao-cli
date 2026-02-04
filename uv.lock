@@ -549,7 +549,7 @@ dev = [
 requires-dist = [
     { name = "click", specifier = ">=8.2.1,<9.0.0" },
     { name = "databao", extras = ["ui"], git = "https://github.com/JetBrains/databao-agent.git?rev=ykhudyakov%2Fui" },
-    { name = "databao-context-engine", extras = ["snowflake"], specifier = ">=0.1.5" },
+    { name = "databao-context-engine", extras = ["snowflake"], specifier = ">=0.1.6" },
     { name = "prettytable", specifier = ">=3.10.0" },
 ]
 
@@ -562,7 +562,7 @@ dev = [
 
 [[package]]
 name = "databao-context-engine"
-version = "0.1.5"
+version = "0.1.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -573,9 +573,9 @@ dependencies = [
     { name = "pyyaml" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b1/ea/c4731acf5aad54b2d51f8137251c344675b3ae778c278172f4365dbd679a/databao_context_engine-0.1.5.tar.gz", hash = "sha256:db8622f15695e484b4354d64c50de1f9f5361337729606510ac0c04dc2bfc7e0", size = 72636, upload-time = "2026-02-03T19:18:31.91Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d5/f4/dee3ea6e6c6a35f3b4f54ae6bcb56972a26fa932580f1bf8e97b3513570d/databao_context_engine-0.1.6.tar.gz", hash = "sha256:d14237f7888dd9d9655b639860aa46d45127f780da633e9e646d9cfb39366136", size = 74589, upload-time = "2026-02-04T08:41:42.321Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ce/ae/bb1557b53dbf26b693b819af74742dfe03127132d6296cfb3f995cfe3b1e/databao_context_engine-0.1.5-py3-none-any.whl", hash = "sha256:fa6ee27ca873bcb6f3514e05a5fdeb4fafa28db81b4e9e565eb039221780afea", size = 128853, upload-time = "2026-02-03T19:18:30.523Z" },
+    { url = "https://files.pythonhosted.org/packages/e0/ad/b906180fcf9721a3fc463df7c81bfa02c5a98f37410ac226a3578361a7d9/databao_context_engine-0.1.6-py3-none-any.whl", hash = "sha256:38137ff52c2ce05be9803ef44f5eb781c40b111bdec0f19549f9f9278063e4b2", size = 132991, upload-time = "2026-02-04T08:41:41.25Z" },
 ]
 
 [package.optional-dependencies]

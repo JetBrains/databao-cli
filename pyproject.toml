@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "click>=8.2.1,<9.0.0",
-    "databao-context-engine[snowflake]>=0.1.5",
+    "databao-context-engine[snowflake]>=0.1.6",
     "prettytable>=3.10.0",
     "databao[ui] @ git+https://github.com/JetBrains/databao-agent.git@ykhudyakov/ui",
 ]
