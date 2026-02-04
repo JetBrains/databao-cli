@@ -54,6 +54,8 @@ def test_init_project_with_snowflake(tmp_path: Path):
         "my_private_key",
         # dont check connection to this datasource
         "N",
+        # dont add more datasources
+        "N",
     ]
     with run_init(tmp_path, answers=answers) as result:
         assert result.exit_code == 0, desribe_result(result)

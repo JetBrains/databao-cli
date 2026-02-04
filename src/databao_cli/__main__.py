@@ -74,6 +74,9 @@ def init(ctx: Context) -> None:
     root_domain_dir = project_layout.root_domain_dir
     add_datasource_config_cli(root_domain_dir)
 
+    while click.confirm("\nDo you want to add more datasources?"):
+        add_datasource_config_cli(root_domain_dir)
+
 
 @cli.command()
 @click.option(
