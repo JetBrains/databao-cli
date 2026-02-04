@@ -2,10 +2,13 @@ from pathlib import Path
 
 import click
 from click import Context
+from databao_context_engine.cli.datasources import add_datasource_config_cli
 
 from databao_cli.commands.app import app_impl
 from databao_cli.commands.ask import ask_impl
+from databao_cli.commands.init import InitDatabaoProjectError, ProjectDirDoesnotExistError, init_impl
 from databao_cli.commands.status import status_impl
+from databao_cli.project.layout import ProjectLayout
 
 
 @click.group()
@@ -33,6 +36,41 @@ def status(ctx: Context) -> None:
     """Display project status and system-wide information."""
     status_message = status_impl(ctx.obj["project_dir"])
     click.echo(status_message)
+
+
+@cli.command()
+@click.pass_context
+def init(ctx: Context) -> None:
+    project_dir = ctx.obj["project_dir"]
+    project_layout: ProjectLayout
+    try:
+        project_layout = init_impl(project_dir)
+    except ProjectDirDoesnotExistError:
+        if click.confirm(
+            f"The directory {project_dir.resolve()} does not exist. Do you want to create it?",
+            default=True,
+        ):
+            project_dir.mkdir(parents=True, exist_ok=False)
+            project_layout = init_impl(project_dir)
+        else:
+            return
+    except InitDatabaoProjectError as e:
+        click.echo(e.message, err=True)
+        exit(1)
+
+    click.echo(f"Project initialized successfully at {project_dir.resolve()}")
+
+    # todo install ollama
+    # try:
+    #     install_ollama_if_needed()
+    # except RuntimeError as e:
+    #     click.echo(str(e), err=True)
+
+    if not click.confirm("\nDo you want to configure a domain now?"):
+        return
+
+    root_domain_dir = project_layout.root_domain_dir
+    add_datasource_config_cli(root_domain_dir)
 
 
 @cli.command()
