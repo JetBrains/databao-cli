@@ -13,12 +13,31 @@ uv tool install .
 ```
 
 ### 2. Create new Databao project
+Go to demo directory
 ```bash
-cd /tmp/
-mkdir databao-project && cd databao-project
+cd demo
 ```
-
-### 3. Inint project
+Initialize Databao project
 ```bash
 databao init
+# Add duckdb source @ shopify002/shopify.duckdb
+# Add dbt project @ shopify002/target
+
+databao build
+```
+
+### 3. Run UI
+Make sure ```OPENAI_API_KEY``` environment variable is set and run
+```bash
+databao app
+```
+Example queries:
+```
+What is our 90-day repeat purchase rate
+
+What share of orders use a discount code (Discount attach rate)
+
+What is our abandoned checkout recovery rate within 7 days
+
+How long does it take to fulfill an order?
 ```
