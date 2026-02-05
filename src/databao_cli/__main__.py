@@ -9,6 +9,7 @@ from databao_cli.commands.ask import ask_impl
 from databao_cli.commands.build import build_impl
 from databao_cli.commands.init import InitDatabaoProjectError, ProjectDirDoesnotExistError, init_impl
 from databao_cli.commands.status import status_impl
+from databao_cli.logging import configure_logging
 from databao_cli.project.layout import ProjectLayout
 
 
@@ -26,6 +27,8 @@ def cli(ctx: Context, project_dir: Path | None):
         project_path = Path.cwd()
     else:
         project_path = project_dir.expanduser().resolve()
+
+    configure_logging()
 
     ctx.ensure_object(dict)
     ctx.obj["project_dir"] = project_path
