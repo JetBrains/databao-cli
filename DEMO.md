@@ -39,6 +39,8 @@ Click Chats > + New Chat and start prompting questions.
 
 Example queries:
 ```
+What is our refund rate by month?
+
 What is our 90-day repeat purchase rate
 
 What share of orders use a discount code (Discount attach rate)
