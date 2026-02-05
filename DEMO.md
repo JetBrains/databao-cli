@@ -31,6 +31,12 @@ Make sure ```OPENAI_API_KEY``` environment variable is set and run
 ```bash
 databao app
 ```
+
+### 4. In the UI
+Select Agent Settings > Executor type: Dbt Executor.
+
+Click Chats > + New Chat and start prompting questions.
+
 Example queries:
 ```
 What is our 90-day repeat purchase rate
