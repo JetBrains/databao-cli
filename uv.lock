@@ -533,8 +533,8 @@ wheels = [
 
 [[package]]
 name = "databao"
-version = "0.1.4.dev59+9f811d2"
-source = { git = "https://github.com/JetBrains/databao-agent.git?rev=andrei.gasparian%2Fpicnic-demo-1#9f811d2b5112a1d2dcb667afbc1f8230c428a661" }
+version = "0.1.4.dev60+63056db"
+source = { git = "https://github.com/JetBrains/databao-agent.git?rev=andrei.gasparian%2Fpicnic-demo-1#63056db344ce0f83b3813f3ec83acf3fff36d7df" }
 dependencies = [
     { name = "databao-context-engine" },
     { name = "dbt-core" },
