@@ -4,7 +4,7 @@ import subprocess
 import sys
 
 import click
-from databao.ui.cli import bootstrap_streamlit_app
+from databao_cli.ui.cli import bootstrap_streamlit_app
 
 
 def app_impl(ctx: click.Context) -> None:
