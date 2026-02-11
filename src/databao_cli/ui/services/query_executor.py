@@ -11,6 +11,8 @@ from typing import TYPE_CHECKING, Any
 
 from streamlit.runtime.scriptrunner import add_script_run_ctx, get_script_run_ctx
 
+from databao_cli.ui.components.results import _extract_visualization_data
+
 if TYPE_CHECKING:
     from databao.core.thread import Thread
 
@@ -28,6 +30,7 @@ class QueryResult:
     thinking: str  # Captured thinking/reasoning text
     result: Any  # ExecutionResult from thread._data_result
     has_visualization: bool
+    visualization_data: dict[str, Any] | None = None  # Extracted visualization data (spec, spec_df, etc.)
     error: str | None = None  # Error message if execution failed
 
 
@@ -60,6 +63,8 @@ class QueryThread(threading.Thread):
             if self.databao_thread._visualization_result is not None:
                 has_visualization = True
 
+            visualization_data = _extract_visualization_data(self.databao_thread) if has_visualization else None
+
             thinking_text = self.writer.getvalue() if self.writer else ""
 
             self.result = QueryResult(
@@ -67,6 +72,7 @@ class QueryThread(threading.Thread):
                 thinking=thinking_text,
                 result=result,
                 has_visualization=has_visualization,
+                visualization_data=visualization_data,
                 error=None,
             )
         except Exception as e:

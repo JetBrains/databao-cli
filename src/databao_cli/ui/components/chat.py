@@ -239,6 +239,7 @@ def handle_query_completion(chat: "ChatSession") -> bool:
             thinking=result.thinking,
             result=result.result,
             has_visualization=result.has_visualization,
+            visualization_data=result.visualization_data,
         )
 
     # Add message to chat
