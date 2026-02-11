@@ -5,19 +5,19 @@ import yaml
 from click.testing import CliRunner
 
 from databao_cli.__main__ import cli
-from tests.utils.project import desribe_result, run_init
+from tests.utils.project import describe_result, run_init
 
 
 def test_databao_init_successfully(tmp_path: Path):
     with run_init(tmp_path) as result:
-        assert result.exit_code == 0, desribe_result(result)
+        assert result.exit_code == 0, describe_result(result)
         assert_created_project_is_valid(tmp_path)
 
 
 def test_databao_project_already_exists(tmp_path: Path):
     (Path(tmp_path) / "databao").mkdir()
     with run_init(tmp_path) as result:
-        assert result.exit_code == 1, desribe_result(result)
+        assert result.exit_code == 1, describe_result(result)
         assert "Can't initialize Databao project. It already exists" in result.stderr, result.stderr
 
 
@@ -27,14 +27,14 @@ def test_databao_project_already_exists_in_parent_dir(tmp_path: Path):
     (Path(tmp_path) / "databao").mkdir()
 
     with run_init(tmp_path) as result:
-        assert result.exit_code == 1, desribe_result(result)
+        assert result.exit_code == 1, describe_result(result)
         assert "Can't initialize Databao project. It already exists" in result.stderr, result.stderr
 
 
 def test_init_with_project_dir_argument(tmp_path: Path):
     inputs = os.linesep.join(["N"])
     result = CliRunner().invoke(cli=cli, args=["-p", str(tmp_path), "init"], input=inputs, catch_exceptions=False)
-    assert result.exit_code == 0, desribe_result(result)
+    assert result.exit_code == 0, describe_result(result)
     assert_created_project_is_valid(tmp_path)
 
 
@@ -58,7 +58,7 @@ def test_init_project_with_snowflake(tmp_path: Path):
         "N",
     ]
     with run_init(tmp_path, answers=answers) as result:
-        assert result.exit_code == 0, desribe_result(result)
+        assert result.exit_code == 0, describe_result(result)
         created_snowflake_config = "databao/domains/root/src/my_test_snow.yaml"
         assert_created_project_is_valid(tmp_path, additional_expected_files=[created_snowflake_config])
         assert yaml.safe_load((tmp_path / created_snowflake_config).read_text()) == {

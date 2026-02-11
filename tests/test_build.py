@@ -3,7 +3,7 @@ from _pytest.tmpdir import TempPathFactory
 from databao_context_engine import DatabaoContextProjectManager, DatasourceType
 
 from databao_cli.project.layout import ProjectLayout
-from tests.utils.project import desribe_result, run_build
+from tests.utils.project import describe_result, run_build
 
 
 def test_databao_build_duckdb_datasource(project_layout: ProjectLayout, tmp_path_factory: TempPathFactory) -> None:
@@ -18,5 +18,5 @@ def test_databao_build_duckdb_datasource(project_layout: ProjectLayout, tmp_path
         config_content={"connection": {"database_path": str(test_db)}},
     )
     with run_build(project_layout.project_dir) as result:
-        assert result.exit_code == 0, desribe_result(result)
+        assert result.exit_code == 0, describe_result(result)
         assert "Build complete. Processed 1 datasources." in result.output, result.output

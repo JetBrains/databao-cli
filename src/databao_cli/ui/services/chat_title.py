@@ -12,6 +12,7 @@ from pydantic import BaseModel, Field
 
 if TYPE_CHECKING:
     from databao.core.agent import Agent
+
     from databao_cli.ui.models.chat_session import ChatSession
 
 logger = logging.getLogger(__name__)
@@ -42,7 +43,7 @@ Do NOT include:
 
 Just output a short, descriptive phrase like:
 - "Sales Revenue Analysis"
-- "Customer Order Trends"  
+- "Customer Order Trends"
 - "Product Inventory Summary"
 """
 
@@ -77,14 +78,14 @@ def _generate_chat_title(agent: "Agent", first_message: str, created_at: datetim
             title = result.title.strip()
             # Clean up any trailing punctuation
             title = title.rstrip("?!.")
-            logger.info("Generated chat title: %s", title)
+            logger.info(f"Generated chat title: {title}")
             return title
 
         logger.warning("LLM returned invalid title result")
         return _fallback_title(created_at)
 
     except Exception as e:
-        logger.warning("Failed to generate chat title: %s", e)
+        logger.warning(f"Failed to generate chat title: {e}")
         return _fallback_title(created_at)
 
 
@@ -109,7 +110,7 @@ def _generate_title_task(
         title = _generate_chat_title(agent, first_message, created_at)
         return chat_id, title
     except Exception as e:
-        logger.warning("Background title generation failed for chat %s: %s", chat_id, e)
+        logger.warning(f"Background title generation failed for chat {chat_id}: {e}")
         return chat_id, _fallback_title(created_at)
 
 
@@ -142,7 +143,7 @@ def trigger_title_generation(agent: "Agent", chat: "ChatSession") -> bool:
     # Update chat status
     chat.title_status = "generating"
 
-    logger.info("Started background title generation for chat %s", chat.id)
+    logger.info(f"Started background title generation for chat {chat.id}")
     return True
 
 
@@ -173,10 +174,10 @@ def check_title_completion(chat: "ChatSession") -> bool:
     try:
         result = future.result(timeout=1.0)
     except FuturesTimeoutError:
-        logger.warning("Timeout getting title future result for chat %s", chat.id)
+        logger.warning(f"Timeout getting title future result for chat {chat.id}")
         result = None
     except Exception as e:
-        logger.warning("Failed to get title result for chat %s: %s", chat.id, e)
+        logger.warning(f"Failed to get title result for chat {chat.id}: {e}")
         result = None
 
     # Clean up
@@ -192,5 +193,5 @@ def check_title_completion(chat: "ChatSession") -> bool:
 
     chat.title_status = "ready"
 
-    logger.info("Title generation completed for chat %s: %s", chat.id, chat.title)
+    logger.info(f"Title generation completed for chat {chat.id}: {chat.title}")
     return True

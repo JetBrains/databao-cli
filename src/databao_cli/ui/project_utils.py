@@ -11,7 +11,10 @@ class DCEProjectStatus(Enum):
 
 
 def dce_status(project: ProjectLayout) -> DCEProjectStatus:
-    output_dir = project.root_domain_project.output_dir
+    root_domain = project.root_domain_project
+    if root_domain is None:
+        return DCEProjectStatus.NO_BUILD
+    output_dir = root_domain.output_dir
     if output_dir.exists() and output_dir.is_dir():
         return DCEProjectStatus.VALID
     else:

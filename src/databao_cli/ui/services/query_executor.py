@@ -13,6 +13,7 @@ from streamlit.runtime.scriptrunner import add_script_run_ctx, get_script_run_ct
 
 if TYPE_CHECKING:
     from databao.core.thread import Thread
+
     from databao_cli.ui.models.chat_session import ChatSession
     from databao_cli.ui.streaming import StreamingWriter
 
@@ -97,7 +98,7 @@ def start_query_execution(chat: "ChatSession", thread: "Thread", query: str) -> 
         True if execution was started, False if already running.
     """
     if chat.query_status == "running":
-        logger.warning("Query already running for chat %s", chat.id)
+        logger.warning(f"Query already running for chat {chat.id}")
         return False
 
     # Clear the writer buffer before starting a new query
@@ -117,11 +118,11 @@ def start_query_execution(chat: "ChatSession", thread: "Thread", query: str) -> 
     # Start the thread
     query_thread.start()
 
-    # Update chat state - store thread reference instead of future
-    chat.query_thread = query_thread  # type: ignore[attr-defined]
+    # Update chat state
+    chat.query_thread = query_thread
     chat.query_status = "running"
 
-    logger.info("Started background query execution for chat %s: %s", chat.id, query[:50])
+    logger.info(f"Started background query execution for chat {chat.id}: {query[:50]}")
     return True
 
 
@@ -129,6 +130,8 @@ def check_query_completion(chat: "ChatSession") -> QueryResult | None:
     """Check if a chat's background query has completed.
 
     If completed, updates chat state and returns the result.
+    Thread safety: we only read query_thread.result after confirming the thread
+    is no longer alive (is_alive() returns False), so there are no concurrent writes.
 
     Args:
         chat: The ChatSession to check.
@@ -139,7 +142,7 @@ def check_query_completion(chat: "ChatSession") -> QueryResult | None:
     if chat.query_status != "running":
         return None
 
-    query_thread: QueryThread | None = getattr(chat, "query_thread", None)
+    query_thread: QueryThread | None = chat.query_thread
     if query_thread is None:
         # No thread but status is running - inconsistent state, reset
         chat.query_status = "idle"
@@ -148,7 +151,8 @@ def check_query_completion(chat: "ChatSession") -> QueryResult | None:
     if query_thread.is_alive():
         return None
 
-    # Thread has finished - get the result
+    # Thread has finished -- safe to read result without locks
+    # (thread is dead, so no concurrent writes)
     result = query_thread.result
     if result is None:
         result = QueryResult(
@@ -160,14 +164,10 @@ def check_query_completion(chat: "ChatSession") -> QueryResult | None:
         )
 
     # Clean up chat state
-    chat.query_thread = None  # type: ignore[attr-defined]
+    chat.query_thread = None
     chat.query_status = "completed" if result.error is None else "error"
 
-    logger.info(
-        "Query completed for chat %s: success=%s",
-        chat.id,
-        result.error is None,
-    )
+    logger.info(f"Query completed for chat {chat.id}: success={result.error is None}")
     return result
 
 
@@ -181,27 +181,3 @@ def is_query_running(chat: "ChatSession") -> bool:
         True if a query is in progress.
     """
     return chat.query_status == "running"
-
-
-def cancel_query(chat: "ChatSession") -> bool:
-    """Attempt to cancel a running query.
-
-    Note: This only prevents the result from being processed.
-    The underlying thread.ask() call cannot be truly cancelled.
-
-    Args:
-        chat: The ChatSession with the query to cancel.
-
-    Returns:
-        True if a query was cancelled, False if no query was running.
-    """
-    if chat.query_status != "running":
-        return False
-
-    # We can't actually stop the thread execution, but we can
-    # mark it as cancelled so the result is ignored
-    chat.query_status = "idle"
-    chat.query_thread = None  # type: ignore[attr-defined]
-
-    logger.info("Cancelled query for chat %s", chat.id)
-    return True

@@ -36,7 +36,7 @@ class StreamingWriter(io.StringIO):
         """Write text to the buffer and notify callback."""
         result = super().write(text)
         if self._on_write and text:
-            self._on_write(self.getvalue())
+            self._on_write(text)
         return result
 
     def clear(self) -> None:

@@ -1,11 +1,15 @@
 """General Settings page - Storage and app-wide configuration."""
 
+import logging
+
 import streamlit as st
 
 from databao_cli.ui.app import _clear_all_chat_threads
 from databao_cli.ui.services.chat_persistence import delete_all_chats
 from databao_cli.ui.services.settings_persistence import delete_settings
 from databao_cli.ui.services.storage import get_cache_dir, get_chats_dir, get_storage_base_path
+
+logger = logging.getLogger(__name__)
 
 
 @st.dialog("Clear All Chats")
@@ -88,7 +92,7 @@ def render_general_settings_page() -> None:
             num_chats = len(chats)
             st.metric("Saved Chats", num_chats)
         except Exception:
-            pass
+            logger.debug("Failed to display storage statistics", exc_info=True)
 
     st.markdown("---")
 

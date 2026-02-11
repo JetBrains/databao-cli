@@ -1,5 +1,6 @@
 """Result display component with foldable sections and action buttons."""
 
+import logging
 from typing import TYPE_CHECKING, Any
 
 import streamlit as st
@@ -9,7 +10,10 @@ from databao_cli.ui.services.chat_persistence import save_current_chat
 if TYPE_CHECKING:
     from databao.core.executor import ExecutionResult
     from databao.core.thread import Thread
+
     from databao_cli.ui.models.chat_session import ChatSession
+
+logger = logging.getLogger(__name__)
 
 
 def _extract_visualization_data(thread: "Thread") -> dict[str, Any] | None:
@@ -119,7 +123,7 @@ def render_visualization_section(
                     st.vega_lite_chart(spec_df, spec, width="stretch")
                     return
                 except Exception:
-                    pass  # Fall through to other methods
+                    logger.debug("Failed to render Vega-Lite chart from spec, trying other methods", exc_info=True)
 
         # Second: Try Altair chart directly
         if "altair" in plot_type.lower() or "Chart" in plot_type:
@@ -127,7 +131,7 @@ def render_visualization_section(
                 st.altair_chart(plot, width="stretch")
                 return
             except Exception:
-                pass  # Fall through to other methods
+                logger.debug("Failed to render Altair chart, trying other methods", exc_info=True)
 
         # Third: Try HTML embedding for other interactive objects
         html_content = None
@@ -143,21 +147,21 @@ def render_visualization_section(
                 if format_dict and "text/html" in format_dict:
                     html_content = format_dict["text/html"]
             except Exception:
-                pass
+                logger.debug("Failed to extract HTML from _repr_mimebundle_", exc_info=True)
 
         # Try _repr_html_
         if html_content is None and hasattr(plot, "_repr_html_"):
             try:
                 html_content = plot._repr_html_()
             except Exception:
-                pass
+                logger.debug("Failed to get HTML from _repr_html_", exc_info=True)
 
         # Try vis_result._get_plot_html()
         if html_content is None and hasattr(vis_result, "_get_plot_html"):
             try:
                 html_content = vis_result._get_plot_html()
             except Exception:
-                pass
+                logger.debug("Failed to get HTML from _get_plot_html()", exc_info=True)
 
         # Render HTML if we got it
         if html_content:
@@ -170,7 +174,7 @@ def render_visualization_section(
                 st.image(plot)
                 return
             except Exception:
-                pass
+                logger.debug("Failed to render plot as image", exc_info=True)
 
         st.warning(f"Could not render visualization: {plot_type}")
 

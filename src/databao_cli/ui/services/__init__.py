@@ -14,7 +14,6 @@ from databao_cli.ui.services.chat_title import (
 )
 from databao_cli.ui.services.query_executor import (
     QueryResult,
-    cancel_query,
     check_query_completion,
     is_query_running,
     start_query_execution,
@@ -34,31 +33,25 @@ from databao_cli.ui.services.storage import (
 )
 
 __all__ = [
-    # Chat title
-    "trigger_title_generation",
-    "check_title_completion",
-    # Query execution
     "QueryResult",
-    "start_query_execution",
     "check_query_completion",
+    "check_title_completion",
+    "delete_all_chats",
+    "delete_chat",
+    "delete_settings",
+    "get_cache_dir",
+    "get_chat_dir",
+    "get_chats_dir",
+    "get_or_create_settings",
+    "get_settings_path",
+    "get_storage_base_path",
     "is_query_running",
-    "cancel_query",
-    # Chat persistence
+    "load_all_chats",
+    "load_chat",
+    "load_settings",
     "save_chat",
     "save_current_chat",
-    "load_chat",
-    "load_all_chats",
-    "delete_chat",
-    "delete_all_chats",
-    # Settings persistence
     "save_settings",
-    "load_settings",
-    "delete_settings",
-    "get_or_create_settings",
-    # Storage
-    "get_storage_base_path",
-    "get_settings_path",
-    "get_chats_dir",
-    "get_chat_dir",
-    "get_cache_dir",
+    "start_query_execution",
+    "trigger_title_generation",
 ]

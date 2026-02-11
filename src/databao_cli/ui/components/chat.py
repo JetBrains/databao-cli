@@ -1,12 +1,11 @@
 """Chat interface component with streaming support."""
 
-from dataclasses import dataclass, field
-from datetime import datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import streamlit as st
 
 from databao_cli.ui.components.results import render_execution_result
+from databao_cli.ui.models.chat_session import ChatMessage
 from databao_cli.ui.services import (
     check_query_completion,
     is_query_running,
@@ -21,21 +20,6 @@ from databao_cli.ui.suggestions import (
 
 if TYPE_CHECKING:
     from databao_cli.ui.models.chat_session import ChatSession
-
-
-@dataclass
-class ChatMessage:
-    """Represents a chat message."""
-
-    role: str  # "user" or "assistant"
-    content: str
-    thinking: str | None = None
-    result: Any | None = None  # ExecutionResult
-    has_visualization: bool = False
-    visualization_data: dict[str, Any] | None = None  # Serializable visualization data
-    message_id: str = ""
-    metadata: dict[str, Any] = field(default_factory=dict)
-    timestamp: datetime = field(default_factory=datetime.now)
 
 
 def render_user_message(message: ChatMessage) -> None:
@@ -277,13 +261,13 @@ def render_thinking_section(chat: "ChatSession") -> None:
 @st.fragment(run_every=0.1)
 def _thinking_stream_fragment(chat: "ChatSession") -> None:
     """Fragment that streams thinking updates at 100ms intervals.
-    
+
     This is the Streamlit-recommended pattern for streaming updates from
     background tasks. The fragment polls the writer's buffer rapidly.
     """
     # Get current thinking text from writer
     current_text = chat.writer.getvalue() if chat.writer else ""
-    
+
     # Display current state
     if current_text:
         st.markdown(current_text)

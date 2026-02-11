@@ -4,9 +4,9 @@ import logging
 from typing import cast
 
 import streamlit as st
-
 from databao.core.agent import Agent
 from databao.core.thread import Thread
+
 from databao_cli.project.layout import ProjectLayout
 from databao_cli.ui.app import _clear_all_chat_threads
 from databao_cli.ui.components.chat import render_chat_interface
@@ -228,9 +228,8 @@ def _render_no_project_state() -> None:
 
         **Set up a new project:**
         ```bash
-        nemory init
-        nemory datasource add
-        nemory build
+        databao init
+        databao build
         ```
 
         Or configure the project path in Settings.
@@ -257,7 +256,7 @@ def _render_no_build_state(project: ProjectLayout) -> None:
 
         Run the following command:
         ```bash
-        nemory build
+        databao build
         ```
 
         Then reload this page.

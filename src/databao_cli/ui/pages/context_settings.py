@@ -1,11 +1,11 @@
 """Context Settings page - DCE project configuration."""
 
 import streamlit as st
-
 from databao import Agent
+
 from databao_cli.project.layout import ProjectLayout
 from databao_cli.ui.app import _clear_all_chat_threads
-from databao_cli.ui.components.sidebar import get_db_icon
+from databao_cli.ui.components.icons import get_db_type_and_icon
 from databao_cli.ui.components.status import AppStatus, set_status
 from databao_cli.ui.project_utils import DCEProjectStatus, dce_status
 
@@ -47,7 +47,7 @@ def render_context_settings_page() -> None:
         if project is None:
             st.caption("Configure a project to see available sources.")
         elif dce_status(project) == DCEProjectStatus.NO_BUILD:
-            st.warning("Project needs to be built first. Run `nemory build`.")
+            st.warning("Project needs to be built first. Run `databao build`.")
         else:
             st.caption("Sources will appear after initialization.")
     else:
@@ -57,7 +57,7 @@ def render_context_settings_page() -> None:
 def _render_project_info(project: ProjectLayout) -> bool:
     """
     Render project information.
-    
+
     Returns:
         True if the project was reloaded, False otherwise.
     """
@@ -68,7 +68,7 @@ def _render_project_info(project: ProjectLayout) -> bool:
     if dce_status(project) == DCEProjectStatus.VALID:
         st.success("Project is ready", icon="✅")
     elif dce_status(project) == DCEProjectStatus.NO_BUILD:
-        st.warning("Build required - run `nemory build`", icon="⚠️")
+        st.warning("Build required - run `databao build`", icon="⚠️")
     else:
         st.error("Project not found", icon="❌")
 
@@ -90,29 +90,7 @@ def _render_sources(agent: Agent) -> None:
     if dbs:
         st.markdown("**Databases:**")
         for name, source in dbs.items():
-            conn = source.db_connection
-            from databao.databases import DBConnectionConfig
-
-            if isinstance(conn, DBConnectionConfig):
-                # DBConnectionConfig - get type from config
-                db_type_str = conn.type.full_type
-                icon = get_db_icon(db_type_str)
-                db_type = db_type_str.capitalize()
-            elif hasattr(conn, "dialect"):
-                # SQLAlchemy Engine/Connection
-                try:
-                    dialect = conn.dialect.name
-                    icon = get_db_icon(dialect)
-                    db_type = dialect.capitalize()
-                except Exception:
-                    icon = get_db_icon("default")
-                    db_type = "Database"
-            elif "duckdb" in type(conn).__name__.lower():
-                icon = get_db_icon("duckdb")
-                db_type = "DuckDB"
-            else:
-                icon = get_db_icon("default")
-                db_type = "Database"
+            db_type, icon = get_db_type_and_icon(source.db_connection)
 
             with st.container():
                 col1, col2 = st.columns([3, 1])

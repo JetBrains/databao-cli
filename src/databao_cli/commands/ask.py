@@ -1,6 +1,5 @@
 """databao ask command - Interactive CLI chat with the Databao agent."""
 
-import io
 import sys
 from pathlib import Path
 
@@ -10,30 +9,15 @@ from databao import Agent
 from databao.core.thread import Thread
 from prettytable import PrettyTable
 
+from databao_cli.ui.streaming import StreamingWriter
+
 # Default maximum number of rows to display in dataframe output
 DEFAULT_MAX_DISPLAY_ROWS = 10
 
 
-class CLIStreamingWriter(io.StringIO):
-    """A writer that streams output to CLI in real-time.
-
-    Extends StringIO to capture all output while simultaneously echoing
-    every write to stdout immediately for real-time display.
-    """
-
-    def __init__(self) -> None:
-        super().__init__()
-
-    def write(self, text: str) -> int:
-        """Write text to buffer and echo to stdout."""
-        result = super().write(text)
-        click.echo(text, nl=False)
-        return result
-
-    def clear(self) -> None:
-        """Clear the buffer."""
-        self.seek(0)
-        self.truncate(0)
+def _create_cli_writer() -> StreamingWriter:
+    """Create a StreamingWriter that echoes output to the CLI in real-time."""
+    return StreamingWriter(on_write=lambda text: click.echo(text, nl=False))
 
 
 def dataframe_to_prettytable(df: pd.DataFrame, max_rows: int = DEFAULT_MAX_DISPLAY_ROWS) -> str:
@@ -148,7 +132,7 @@ def run_interactive_mode(agent: Agent, show_thinking: bool) -> None:
     click.echo("\nType \\help for available commands.\n")
 
     if show_thinking:
-        writer = CLIStreamingWriter()
+        writer = _create_cli_writer()
     else:
         writer = None
 
@@ -217,7 +201,7 @@ def run_one_shot_mode(agent: Agent, question: str, show_thinking: bool) -> None:
     """Run a single question and exit."""
 
     if show_thinking:
-        writer = CLIStreamingWriter()
+        writer = _create_cli_writer()
     else:
         writer = None
 

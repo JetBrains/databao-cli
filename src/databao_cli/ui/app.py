@@ -6,11 +6,10 @@ from pathlib import Path
 from typing import cast
 
 import streamlit as st
-import yaml
 from databao import Context
-
 from databao.caches.disk_cache import DiskCache, DiskCacheConfig
 from databao.core.agent import Agent
+
 from databao_cli.project.layout import ProjectLayout
 from databao_cli.ui.components.status import AppStatus, set_status, status_context
 from databao_cli.ui.models.chat_session import ChatSession
@@ -19,16 +18,6 @@ from databao_cli.ui.services.storage import get_cache_dir
 
 logger = logging.getLogger(__name__)
 
-# Page config - use Databao logo as favicon
-_ASSETS_DIR = Path(__file__).parent / "assets"
-_FAVICON = _ASSETS_DIR / "bao.png"
-
-st.set_page_config(
-    page_title="Databao",
-    page_icon=str(_FAVICON) if _FAVICON.exists() else "🎋",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
 
 def _load_persisted_state() -> None:
     """Load settings and chats from disk on startup."""
@@ -116,17 +105,17 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
             set_status(AppStatus.ERROR, "No datasource connections found in DCE project.")
             return None
 
-        from databao.api import agent
+        from databao.api import agent as create_agent
 
-        agent = agent(
+        _agent = create_agent(
             context=context,
             executor_type=executor_type,
             cache=cache,
         )
 
-        st.session_state.agent = agent
+        st.session_state.agent = _agent
 
-        return agent
+        return _agent
 
     except Exception as e:
         logger.exception("Failed to initialize agent")
@@ -386,12 +375,23 @@ def _render_global_sidebar() -> None:
 def main() -> None:
     """Main application entry point."""
 
+    # Page config - use Databao logo as favicon
+    assets_dir = Path(__file__).parent / "assets"
+    favicon = assets_dir / "bao.png"
+
+    st.set_page_config(
+        page_title="Databao",
+        page_icon=str(favicon) if favicon.exists() else "🎋",
+        layout="wide",
+        initial_sidebar_state="expanded",
+    )
+
     parser = argparse.ArgumentParser()
     parser.add_argument("-p", "--project-dir", type=str, required=True, help="Location of your Databao project")
     try:
         args = parser.parse_args()
     except SystemExit:
-        st.warning("Please provide a valid project directory using -d/--project-dir CLI argument")
+        st.warning("Please provide a valid project directory using -p/--project-dir CLI argument")
         st.stop()
 
     project_dir = args.project_dir

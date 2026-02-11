@@ -112,14 +112,14 @@ def generate_suggested_questions(agent: "Agent") -> tuple[list[str], bool]:
 
         if result and result.questions and len(result.questions) == 3:
             # Return questions as-is - UI will handle truncation for display
-            logger.info("Successfully generated %d suggested questions via LLM", len(result.questions))
+            logger.info(f"Successfully generated {len(result.questions)} suggested questions via LLM")
             return list(result.questions), True
 
         logger.warning("LLM returned invalid result, using fallback questions")
         return FALLBACK_QUESTIONS.copy(), False
 
     except Exception as e:
-        logger.warning("Failed to generate suggested questions: %s. Using fallback.", e)
+        logger.warning(f"Failed to generate suggested questions: {e}. Using fallback.")
         return FALLBACK_QUESTIONS.copy(), False
 
 
@@ -135,7 +135,7 @@ def _generate_suggestions_task(agent: "Agent") -> SuggestionsResult:
     try:
         return generate_suggested_questions(agent)
     except Exception as e:
-        logger.warning("Background suggestions generation failed: %s", e)
+        logger.warning(f"Background suggestions generation failed: {e}")
         return FALLBACK_QUESTIONS.copy(), False
 
 
@@ -202,7 +202,7 @@ def check_suggestions_completion() -> bool:
         logger.warning("Timeout getting completed future result")
         result = None
     except Exception as e:
-        logger.warning("Failed to get suggestions result: %s", e)
+        logger.warning(f"Failed to get suggestions result: {e}")
         result = None
 
     # Clean up future
@@ -222,7 +222,7 @@ def check_suggestions_completion() -> bool:
     st.session_state.suggestions_are_llm_generated = is_llm_generated
     st.session_state.suggestions_status = "ready"
 
-    logger.info("Suggestions generation completed with %d questions", len(questions))
+    logger.info(f"Suggestions generation completed with {len(questions)} questions")
     return True
 
 

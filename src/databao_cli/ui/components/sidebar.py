@@ -4,7 +4,9 @@ import streamlit as st
 
 from databao_cli.project.layout import ProjectLayout
 from databao_cli.ui.app import _clear_all_chat_threads
+from databao_cli.ui.components.icons import get_db_type_and_icon
 from databao_cli.ui.components.status import AppStatus, render_status_fragment, set_status
+from databao_cli.ui.pages.agent_settings import EXECUTOR_TYPES
 from databao_cli.ui.project_utils import DCEProjectStatus, dce_status
 from databao_cli.ui.suggestions import reset_suggestions_state
 
@@ -39,27 +41,6 @@ def _confirm_delete_chat(chat_id: str, chat_title: str) -> None:
             st.session_state._navigate_to_chat = None
             st.rerun()
 
-# Icons for different database types
-DB_ICONS = {
-    "duckdb": "🦆",
-    "postgres": "🐘",
-    "postgresql": "🐘",
-    "mysql": "🐬",
-    "sqlite": "📦",
-    "default": "🗄️",
-}
-
-# Available executor types
-EXECUTOR_TYPES = {
-    "lighthouse": "LighthouseExecutor (recommended)",
-    "react_duckdb": "ReactDuckDBExecutor (experimental)",
-}
-
-
-def get_db_icon(db_type: str) -> str:
-    """Get icon for database type."""
-    return DB_ICONS.get(db_type.lower(), DB_ICONS["default"])
-
 
 def render_project_info(project: ProjectLayout | None) -> None:
     """Render project information section with Reload button."""
@@ -86,8 +67,6 @@ def render_project_info(project: ProjectLayout | None) -> None:
         st.success("✓ Ready", icon="✅")
     elif dce_status(project) == DCEProjectStatus.NO_BUILD:
         st.warning("Build required", icon="⚠️")
-    else:
-        st.error("Not found", icon="❌")
 
     # Reload button at bottom of Project section
     if st.button("🔄 Reload", width="stretch", help="Reload DCE project"):
@@ -120,31 +99,7 @@ def render_sources_info() -> None:
 
     # List databases
     for name, source in dbs.items():
-        # Try to determine DB type from connection
-        conn = source.db_connection
-        from databao.databases import DBConnectionConfig
-
-        if isinstance(conn, DBConnectionConfig):
-            # DBConnectionConfig - get type from config
-            db_type_str = conn.type.full_type
-            icon = get_db_icon(db_type_str)
-            db_type = db_type_str.capitalize()
-        elif hasattr(conn, "dialect"):
-            # SQLAlchemy Engine/Connection
-            try:
-                dialect = conn.dialect.name
-                icon = get_db_icon(dialect)
-                db_type = dialect.capitalize()
-            except Exception:
-                icon = get_db_icon("default")
-                db_type = "Database"
-        elif "duckdb" in type(conn).__name__.lower():
-            icon = get_db_icon("duckdb")
-            db_type = "DuckDB"
-        else:
-            icon = get_db_icon("default")
-            db_type = "Database"
-
+        db_type, icon = get_db_type_and_icon(source.db_connection)
         st.markdown(f"{icon} **{name}** ({db_type})")
 
     # List dataframes

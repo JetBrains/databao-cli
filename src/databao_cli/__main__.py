@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 
 import click
@@ -61,7 +62,7 @@ def init(ctx: Context) -> None:
             return
     except InitDatabaoProjectError as e:
         click.echo(e.message, err=True)
-        exit(1)
+        sys.exit(1)
 
     click.echo(f"Project initialized successfully at {project_dir.resolve()}")
 

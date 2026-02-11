@@ -5,15 +5,27 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
-# Import ChatMessage from components to avoid duplication
-from databao_cli.ui.components.chat import ChatMessage
-
 if TYPE_CHECKING:
     from databao.core.thread import Thread
+
     from databao_cli.ui.streaming import StreamingWriter
 
-# Re-export ChatMessage for consumers of this module
 __all__ = ["ChatMessage", "ChatSession"]
+
+
+@dataclass
+class ChatMessage:
+    """Represents a chat message."""
+
+    role: str  # "user" or "assistant"
+    content: str
+    thinking: str | None = None
+    result: Any | None = None  # ExecutionResult
+    has_visualization: bool = False
+    visualization_data: dict[str, Any] | None = None  # Serializable visualization data
+    message_id: str = ""
+    metadata: dict[str, Any] = field(default_factory=dict)
+    timestamp: datetime = field(default_factory=datetime.now)
 
 
 def _serialize_visualization_data(data: dict[str, Any] | None) -> dict[str, Any] | None:
