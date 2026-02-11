@@ -497,9 +497,10 @@ wheels = [
 
 [[package]]
 name = "databao"
-version = "0.1.4.dev27+9688374"
-source = { git = "https://github.com/JetBrains/databao-agent.git?rev=ykhudyakov%2Fui#9688374040f04ae138b724b9017063ab0c5e6bfc" }
+version = "0.1.4.dev12+2d9d6e8"
+source = { git = "https://github.com/JetBrains/databao-agent.git?rev=main#2d9d6e8ab486417cee3826b37b060cfa602db5e5" }
 dependencies = [
+    { name = "databao-context-engine" },
     { name = "diskcache" },
     { name = "duckdb" },
     { name = "edaplot-vl" },
@@ -514,6 +515,7 @@ dependencies = [
     { name = "pandas-stubs" },
     { name = "psycopg2-binary" },
     { name = "pydantic" },
+    { name = "snowflake-sqlalchemy" },
     { name = "sqlalchemy" },
     { name = "tabulate" },
     { name = "watchdog" },
@@ -522,7 +524,6 @@ dependencies = [
 [package.optional-dependencies]
 ui = [
     { name = "click" },
-    { name = "databao-context-engine" },
     { name = "pyyaml" },
     { name = "streamlit" },
     { name = "uuid6" },
@@ -549,7 +550,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "click", specifier = ">=8.2.1,<9.0.0" },
-    { name = "databao", extras = ["ui"], git = "https://github.com/JetBrains/databao-agent.git?rev=ykhudyakov%2Fui" },
+    { name = "databao", extras = ["ui"], git = "https://github.com/JetBrains/databao-agent.git?rev=main" },
     { name = "databao-context-engine", extras = ["snowflake"], specifier = ">=0.1.6" },
     { name = "prettytable", specifier = ">=3.10.0" },
 ]
@@ -563,7 +564,7 @@ dev = [
 
 [[package]]
 name = "databao-context-engine"
-version = "0.1.6"
+version = "0.1.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -574,9 +575,9 @@ dependencies = [
     { name = "pyyaml" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d5/f4/dee3ea6e6c6a35f3b4f54ae6bcb56972a26fa932580f1bf8e97b3513570d/databao_context_engine-0.1.6.tar.gz", hash = "sha256:d14237f7888dd9d9655b639860aa46d45127f780da633e9e646d9cfb39366136", size = 74589 }
+sdist = { url = "https://files.pythonhosted.org/packages/bf/b6/4e52e470a4a672d255752e58262b735a7edecd73190b9a5f2cc2417ba9dd/databao_context_engine-0.1.7.tar.gz", hash = "sha256:5c9bed42473b8574fe8ab21d01594cb767a60e9d4acc0059a0592447935a0e04", size = 75520 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e0/ad/b906180fcf9721a3fc463df7c81bfa02c5a98f37410ac226a3578361a7d9/databao_context_engine-0.1.6-py3-none-any.whl", hash = "sha256:38137ff52c2ce05be9803ef44f5eb781c40b111bdec0f19549f9f9278063e4b2", size = 132991 },
+    { url = "https://files.pythonhosted.org/packages/f0/3c/0b80aed9f456783af48bdf7606de4da02bc0649b760db311841b5993350a/databao_context_engine-0.1.7-py3-none-any.whl", hash = "sha256:13c87c5c1686929b73f963e77a842839631bdbd0436c526489b2d70a946e3f98", size = 134010 },
 ]
 
 [package.optional-dependencies]
@@ -2584,6 +2585,19 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/37/a2/7f85a01fc13982391166c5458f4fd1078546e6f19f9e0bb184dbf6ec5f53/snowflake_connector_python-4.2.0-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b93b0195746c7734ab66889430a418ac7fd66441c11addb683bc15e364bb77c8", size = 2820920 },
     { url = "https://files.pythonhosted.org/packages/aa/80/322dafc03f77f28f1ede160e4989ae758dd27dc94529e424348865bba501/snowflake_connector_python-4.2.0-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4773949e33c2503f369c20ac8fd59697e493670fed653fea7349d465ea5a0171", size = 2854097 },
     { url = "https://files.pythonhosted.org/packages/06/05/64d3de8c98f783a3065e60107519b701d1ab7ef15efefa279d338f3fba64/snowflake_connector_python-4.2.0-cp313-cp313-win_amd64.whl", hash = "sha256:3665eae47a6ccaf00ca567936cb16d5cbdd5b9f8ab3ee3a3f072bf3c4b76986c", size = 12058956 },
+]
+
+[[package]]
+name = "snowflake-sqlalchemy"
+version = "1.8.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "snowflake-connector-python" },
+    { name = "sqlalchemy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/66/0b/5e90eb28191ad6e0318254394c7e2902c4037fd566aa299dc8b5b16238f8/snowflake_sqlalchemy-1.8.2.tar.gz", hash = "sha256:91ca38719e117f94dd195ba94c22dd22f69c585b136ed129ba4e2dd93252b0c2", size = 122603 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/dd/77/c3af74a84eb00c1004a8e3c8a98627a3eecb2563f4ee01e621326c947bce/snowflake_sqlalchemy-1.8.2-py3-none-any.whl", hash = "sha256:13ad79bf51654cdaaedfbcc60d20bee417c0a128f8710eabbf4aba65b50f6d3d", size = 72726 },
 ]
 
 [[package]]
