@@ -5,10 +5,14 @@ from pathlib import Path
 
 import click
 import pandas as pd
-from databao import Agent
+from databao import Agent, Context
+from databao.api import agent as create_agent
+from databao.configs.llm import LLMConfig, LLMConfigDirectory
 from databao.core.thread import Thread
 from prettytable import PrettyTable
 
+from databao_cli.project.layout import ProjectLayout
+from databao_cli.ui.project_utils import DCEProjectStatus, dce_status
 from databao_cli.ui.streaming import StreamingWriter
 
 # Default maximum number of rows to display in dataframe output
@@ -31,27 +35,24 @@ def dataframe_to_prettytable(df: pd.DataFrame, max_rows: int = DEFAULT_MAX_DISPL
 
 def initialize_agent_from_dce(project_path: Path, model: str | None, temperature: float) -> Agent:
     """Initialize the Databao agent using DCE project at the given path."""
-    import databao
-    from databao.configs.llm import LLMConfig, LLMConfigDirectory
-    from databao.dce import (
-        DCEProjectStatus,
-        create_all_connections,
-        get_all_context,
-    )
-    from databao.dce.project import validate_project
-
     # Validate DCE project
-    project = validate_project(project_path)
+    project = ProjectLayout(project_path)
 
-    if project.status == DCEProjectStatus.NOT_FOUND:
-        click.echo(f"No DCE project found at {project_path}. Run 'databao init' first.", err=True)
+    if dce_status(project) == DCEProjectStatus.NO_BUILD:
+        click.echo(
+            f"DCE project found at {project.project_dir} but no build output. Run 'databao build' first.",
+            err=True,
+        )
         sys.exit(1)
 
-    if project.status == DCEProjectStatus.NO_BUILD:
-        click.echo(f"DCE project found at {project.path} but no build output. Run 'databao build' first.", err=True)
-        sys.exit(1)
+    click.echo(f"Using DCE project: {project.project_dir}")
 
-    click.echo(f"Using DCE project: {project.path}")
+    # Load context from DCE project
+    context = Context.load(project.root_domain_dir)
+
+    if not context.sources.dbs and not context.sources.dfs:
+        click.echo("No datasource connections found in DCE project.", err=True)
+        sys.exit(1)
 
     # Create LLM config
     if model:
@@ -67,32 +68,10 @@ def initialize_agent_from_dce(project_path: Path, model: str | None, temperature
             llm_config = LLMConfigDirectory.DEFAULT
 
     # Create agent
-    agent = databao.new_agent(llm_config=llm_config)
+    agent = create_agent(context=context, llm_config=llm_config)
 
-    # Connect to databases
-    connections = create_all_connections(project.path)
-    if not connections:
-        click.echo("No datasource connections found in DCE project.", err=True)
-        sys.exit(1)
-
-    # Load context
-    db_contexts: list[databao.dce.DatabaseContext] = []
-    file_contexts: list[databao.dce.FileContext] = []
-    if project.latest_run_dir:
-        db_contexts, file_contexts = get_all_context(project.latest_run_dir)
-
-    db_context_map = {ctx.database_id: ctx.context_text for ctx in db_contexts}
-
-    # Add databases to agent
-    for conn_info in connections:
-        context = db_context_map.get(conn_info.name) or db_context_map.get(conn_info.db_type)
-        agent.add_db(conn_info.connection, name=conn_info.name, context=context)
-
-    # Add file contexts
-    for file_ctx in file_contexts:
-        agent.add_context(file_ctx.context_text)
-
-    click.echo(f"Connected to {len(connections)} data source(s)")
+    num_sources = len(context.sources.dbs) + len(context.sources.dfs)
+    click.echo(f"Connected to {num_sources} data source(s)")
     return agent
 
 
