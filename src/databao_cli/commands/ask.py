@@ -131,10 +131,7 @@ def run_interactive_mode(agent: Agent, show_thinking: bool) -> None:
     click.echo("\nDatabao REPL")
     click.echo("\nType \\help for available commands.\n")
 
-    if show_thinking:
-        writer = _create_cli_writer()
-    else:
-        writer = None
+    writer = _create_cli_writer() if show_thinking else None
 
     # Create thread with writer for streaming
     thread = agent.thread(
@@ -200,10 +197,7 @@ def run_interactive_mode(agent: Agent, show_thinking: bool) -> None:
 def run_one_shot_mode(agent: Agent, question: str, show_thinking: bool) -> None:
     """Run a single question and exit."""
 
-    if show_thinking:
-        writer = _create_cli_writer()
-    else:
-        writer = None
+    writer = _create_cli_writer() if show_thinking else None
 
     # Create thread with writer for streaming
     thread = agent.thread(
