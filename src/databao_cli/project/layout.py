@@ -38,7 +38,7 @@ class ProjectLayout:
         return self.domains_dir / "root"
 
     @cached_property
-    def root_domain_project(self)-> DCEProjectLayout | None:
+    def root_domain_project(self) -> DCEProjectLayout | None:
         return validate_project_dir(self.root_domain_dir)
 
 

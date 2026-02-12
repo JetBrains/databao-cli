@@ -9,6 +9,7 @@ class DCEProjectStatus(Enum):
     VALID = "valid"
     NO_BUILD = "no_build"
 
+
 def dce_status(project: ProjectLayout) -> DCEProjectStatus:
     root_domain = project.root_domain_project
     if root_domain is None:
@@ -18,4 +19,3 @@ def dce_status(project: ProjectLayout) -> DCEProjectStatus:
         return DCEProjectStatus.VALID
     else:
         return DCEProjectStatus.NO_BUILD
-

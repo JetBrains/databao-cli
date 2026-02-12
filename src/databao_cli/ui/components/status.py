@@ -24,6 +24,7 @@ class AppStatus(str, Enum):
     INITIALIZING = "initializing"
     ERROR = "error"
 
+
 def _ensure_status_state() -> None:
     """Ensure status-related session state is initialized."""
     if "status_stack" not in st.session_state:
@@ -32,6 +33,7 @@ def _ensure_status_state() -> None:
         st.session_state.app_status = AppStatus.INITIALIZING
     if "status_message" not in st.session_state:
         st.session_state.status_message = None
+
 
 @st.fragment(run_every=timedelta(milliseconds=500))
 def render_status_fragment() -> None:
@@ -60,6 +62,7 @@ def render_status_fragment() -> None:
     elif status == AppStatus.ERROR:
         st.error(message or "Unknown error", icon="❌")
 
+
 def set_status(status: AppStatus, message: str | None = None) -> None:
     """Set status permanently (survives until next set_status call).
 
@@ -73,6 +76,7 @@ def set_status(status: AppStatus, message: str | None = None) -> None:
     _ensure_status_state()
     st.session_state.app_status = status
     st.session_state.status_message = message
+
 
 @contextmanager
 def status_context(
@@ -102,10 +106,7 @@ def status_context(
     try:
         yield
     finally:
-        status_not_changed = (
-            st.session_state.app_status == status
-            and st.session_state.status_message == message
-        )
+        status_not_changed = st.session_state.app_status == status and st.session_state.status_message == message
         if (not preserve_inner_status or status_not_changed) and st.session_state.status_stack:
             prev_status, prev_message = st.session_state.status_stack.pop()
             set_status(prev_status, prev_message)

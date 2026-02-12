@@ -7,6 +7,7 @@ from databao_cli.ui.services.storage import get_settings_path
 
 logger = logging.getLogger(__name__)
 
+
 def save_settings(settings: Settings) -> None:
     """Save settings to YAML file.
 
@@ -19,6 +20,7 @@ def save_settings(settings: Settings) -> None:
     yaml_content = settings.to_yaml()
     path.write_text(yaml_content)
     logger.info(f"Settings saved to {path}")
+
 
 def load_settings() -> Settings | None:
     """Load settings from YAML file.
@@ -40,6 +42,7 @@ def load_settings() -> Settings | None:
         logger.error(f"Failed to load settings from {path}: {e}")
         return None
 
+
 def delete_settings() -> bool:
     """Delete settings file (for reset to defaults).
 
@@ -57,6 +60,7 @@ def delete_settings() -> bool:
             logger.error(f"Failed to delete settings: {e}")
             return False
     return False
+
 
 def get_or_create_settings() -> Settings:
     """Get existing settings or create new defaults.

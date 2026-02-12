@@ -16,16 +16,19 @@ logger = logging.getLogger(__name__)
 
 SuggestionsResult = tuple[list[str], bool]
 
+
 @st.cache_resource
 def _get_suggestions_executor() -> ThreadPoolExecutor:
     """Get a shared thread pool executor for suggestions generation."""
     return ThreadPoolExecutor(max_workers=1, thread_name_prefix="suggestions")
+
 
 FALLBACK_QUESTIONS = [
     "What tables are available in my database?",
     "Show me a summary of the main data",
     "What are the key metrics I can analyze?",
 ]
+
 
 class SuggestedQuestions(BaseModel):
     """Structured output model for suggested questions."""
@@ -35,6 +38,7 @@ class SuggestedQuestions(BaseModel):
         min_length=3,
         max_length=3,
     )
+
 
 def _build_context_from_sources(agent: "Agent") -> str:
     """Extract schema/context information from agent sources."""
@@ -56,6 +60,7 @@ def _build_context_from_sources(agent: "Agent") -> str:
 
     return "\n\n".join(context_parts)
 
+
 SUGGESTION_PROMPT = """You are helping suggest questions for a data analysis assistant.
 The user has connected the following data sources:
 
@@ -68,6 +73,7 @@ Generate exactly 3 short questions (maximum 60 characters each) that:
 
 The questions should be simple and direct, suitable for display as clickable buttons.
 Do not include numbering or bullet points in the questions themselves."""
+
 
 def generate_suggested_questions(agent: "Agent") -> tuple[list[str], bool]:
     """Generate suggested questions based on the agent's data sources.
@@ -90,10 +96,12 @@ def generate_suggested_questions(agent: "Agent") -> tuple[list[str], bool]:
 
         llm_with_structure = agent.llm.with_structured_output(SuggestedQuestions)
 
-        result = llm_with_structure.invoke([
-            SystemMessage(content=prompt),
-            HumanMessage(content="Generate 3 suggested questions for exploring this data."),
-        ])
+        result = llm_with_structure.invoke(
+            [
+                SystemMessage(content=prompt),
+                HumanMessage(content="Generate 3 suggested questions for exploring this data."),
+            ]
+        )
 
         if result and result.questions and len(result.questions) == 3:
             logger.info(f"Successfully generated {len(result.questions)} suggested questions via LLM")
@@ -105,6 +113,7 @@ def generate_suggested_questions(agent: "Agent") -> tuple[list[str], bool]:
     except Exception as e:
         logger.warning(f"Failed to generate suggested questions: {e}. Using fallback.")
         return FALLBACK_QUESTIONS.copy(), False
+
 
 def _generate_suggestions_task(agent: "Agent") -> SuggestionsResult:
     """Background task that generates suggestions.
@@ -120,6 +129,7 @@ def _generate_suggestions_task(agent: "Agent") -> SuggestionsResult:
     except Exception as e:
         logger.warning(f"Background suggestions generation failed: {e}")
         return FALLBACK_QUESTIONS.copy(), False
+
 
 def start_suggestions_generation(agent: "Agent") -> bool:
     """Start background suggestions generation.
@@ -140,6 +150,7 @@ def start_suggestions_generation(agent: "Agent") -> bool:
     logger.info("Started background suggestions generation")
     return True
 
+
 def reset_suggestions_state() -> None:
     """Reset suggestions state to allow regeneration.
 
@@ -151,6 +162,7 @@ def reset_suggestions_state() -> None:
     st.session_state.suggestions_are_llm_generated = False
 
     logger.info("Reset suggestions state")
+
 
 def check_suggestions_completion() -> bool:
     """Check if background suggestions generation has completed.
@@ -196,6 +208,7 @@ def check_suggestions_completion() -> bool:
 
     logger.info(f"Suggestions generation completed with {len(questions)} questions")
     return True
+
 
 def is_suggestions_loading() -> bool:
     """Check if suggestions are currently being generated.

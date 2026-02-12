@@ -12,7 +12,7 @@ dependencies = [
     "click>=8.2.1,<9.0.0",
     "databao-context-engine[snowflake]>=0.1.6",
     "prettytable>=3.10.0",
-    "databao @ git+https://github.com/JetBrains/databao-agent.git@main",
+    "databao @ git+https://github.com/JetBrains/databao-agent.git@ykhudyakov/ui",
     "streamlit>=1.53.0",
     "uuid6>=2024.7.10",
     "pyyaml>=6.0",
@@ -33,6 +33,7 @@ packages = ["src/databao_cli"]
 
 [dependency-groups]
 dev = [
+    "pre-commit>=4.5.1",
     "pytest>=9.0.2,<10.0.0",
     "ruff>=0.9.0,<1.0.0",
 ]

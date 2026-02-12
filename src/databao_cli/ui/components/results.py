@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+
 def _extract_visualization_data(thread: "Thread") -> dict[str, Any] | None:
     """Extract serializable visualization data from thread._visualization_result.
 
@@ -35,12 +36,14 @@ def _extract_visualization_data(thread: "Thread") -> dict[str, Any] | None:
 
     return data
 
+
 def render_response_section(text: str, has_visualization: bool) -> None:
     """Render the response text section."""
     expanded = not has_visualization
 
     with st.expander("📝 Response", expanded=expanded):
         st.markdown(text)
+
 
 def render_code_section(code: str) -> None:
     """Render the code section (collapsed by default)."""
@@ -50,6 +53,7 @@ def render_code_section(code: str) -> None:
             st.code(code, language="sql")
         else:
             st.code(code, language="python")
+
 
 def render_dataframe_section(result: "ExecutionResult", has_visualization: bool) -> None:
     """Render the dataframe section."""
@@ -62,9 +66,8 @@ def render_dataframe_section(result: "ExecutionResult", has_visualization: bool)
     with st.expander(f"📊 Data ({len(df)} rows)", expanded=expanded):
         st.dataframe(df, width="stretch")
 
-def render_visualization_section(
-    thread: "Thread", visualization_data: dict[str, Any] | None = None
-) -> None:
+
+def render_visualization_section(thread: "Thread", visualization_data: dict[str, Any] | None = None) -> None:
     """Render the visualization section.
 
     Follows the same rendering logic as Jupyter notebooks:
@@ -159,6 +162,7 @@ def render_visualization_section(
 
         st.warning(f"Could not render visualization: {plot_type}")
 
+
 def _get_current_chat() -> "ChatSession | None":
     """Get the current chat session from session state."""
     current_chat_id = st.session_state.get("current_chat_id")
@@ -166,6 +170,7 @@ def _get_current_chat() -> "ChatSession | None":
     if current_chat_id and current_chat_id in chats:
         return chats[current_chat_id]
     return None
+
 
 @st.fragment
 def render_visualization_and_actions(
@@ -206,6 +211,7 @@ def render_visualization_and_actions(
     if is_latest:
         _render_and_handle_action_buttons(result, current_chat, message_index, has_visualization)
 
+
 def _render_and_handle_action_buttons(
     result: "ExecutionResult",
     chat: "ChatSession",
@@ -237,6 +243,7 @@ def _render_and_handle_action_buttons(
         if clicked and not is_processing:
             _handle_generate_plot(chat, message_index)
 
+
 def _handle_generate_plot(chat: "ChatSession", message_index: int) -> None:
     """Handle Generate Plot button click.
 
@@ -259,6 +266,7 @@ def _handle_generate_plot(chat: "ChatSession", message_index: int) -> None:
             st.rerun()
         except Exception as e:
             st.error(f"Failed to generate visualization: {e}")
+
 
 def render_execution_result(
     result: "ExecutionResult",

@@ -21,6 +21,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class QueryResult:
     """Result of a background query execution."""
@@ -31,6 +32,7 @@ class QueryResult:
     has_visualization: bool
     visualization_data: dict[str, Any] | None = None
     error: str | None = None
+
 
 class QueryThread(threading.Thread):
     """Custom thread for query execution that stores its result."""
@@ -84,6 +86,7 @@ class QueryThread(threading.Thread):
                 error=str(e),
             )
 
+
 def start_query_execution(chat: "ChatSession", thread: "Thread", query: str) -> bool:
     """Start background query execution for a chat.
 
@@ -121,6 +124,7 @@ def start_query_execution(chat: "ChatSession", thread: "Thread", query: str) -> 
 
     logger.info(f"Started background query execution for chat {chat.id}: {query[:50]}")
     return True
+
 
 def check_query_completion(chat: "ChatSession") -> QueryResult | None:
     """Check if a chat's background query has completed.
@@ -161,6 +165,7 @@ def check_query_completion(chat: "ChatSession") -> QueryResult | None:
 
     logger.info(f"Query completed for chat {chat.id}: success={result.error is None}")
     return result
+
 
 def is_query_running(chat: "ChatSession") -> bool:
     """Check if a chat has a query currently running.

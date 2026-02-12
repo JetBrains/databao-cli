@@ -17,10 +17,12 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+
 @st.cache_resource
 def _get_title_executor() -> ThreadPoolExecutor:
     """Get a shared thread pool executor for title generation."""
     return ThreadPoolExecutor(max_workers=2, thread_name_prefix="chat_title")
+
 
 class ChatTitle(BaseModel):
     """Structured output model for chat title."""
@@ -29,6 +31,7 @@ class ChatTitle(BaseModel):
         description="A short 3-5 word title summarizing the conversation topic",
         max_length=50,
     )
+
 
 TITLE_PROMPT = """Generate a very short title (3-5 words, max 50 characters) that summarizes what this question is about.
 The title should be descriptive and help identify the conversation later.
@@ -44,9 +47,11 @@ Just output a short, descriptive phrase like:
 - "Product Inventory Summary"
 """
 
+
 def _fallback_title(created_at: datetime) -> str:
     """Create a fallback title using timestamp."""
     return f"Chat {created_at.strftime('%b %d, %H:%M')}"
+
 
 def _generate_chat_title(agent: "Agent", first_message: str, created_at: datetime) -> str:
     """Generate a short title for a chat based on the first user message.
@@ -62,10 +67,12 @@ def _generate_chat_title(agent: "Agent", first_message: str, created_at: datetim
     try:
         llm_with_structure = agent.llm.with_structured_output(ChatTitle)
 
-        result = llm_with_structure.invoke([
-            SystemMessage(content=TITLE_PROMPT),
-            HumanMessage(content=f"Question: {first_message}"),
-        ])
+        result = llm_with_structure.invoke(
+            [
+                SystemMessage(content=TITLE_PROMPT),
+                HumanMessage(content=f"Question: {first_message}"),
+            ]
+        )
 
         if result and result.title:
             title = result.title.strip()
@@ -79,6 +86,7 @@ def _generate_chat_title(agent: "Agent", first_message: str, created_at: datetim
     except Exception as e:
         logger.warning(f"Failed to generate chat title: {e}")
         return _fallback_title(created_at)
+
 
 def _generate_title_task(
     agent: "Agent",
@@ -104,6 +112,7 @@ def _generate_title_task(
         logger.warning(f"Background title generation failed for chat {chat_id}: {e}")
         return chat_id, _fallback_title(created_at)
 
+
 def trigger_title_generation(agent: "Agent", chat: "ChatSession") -> bool:
     """Start background title generation for a chat if needed.
 
@@ -119,9 +128,7 @@ def trigger_title_generation(agent: "Agent", chat: "ChatSession") -> bool:
         return False
 
     executor = _get_title_executor()
-    future: Future[tuple[str, str]] = executor.submit(
-        _generate_title_task, agent, chat.id, first_msg, chat.created_at
-    )
+    future: Future[tuple[str, str]] = executor.submit(_generate_title_task, agent, chat.id, first_msg, chat.created_at)
 
     title_futures = st.session_state.get("title_futures", {})
     title_futures[chat.id] = future
@@ -131,6 +138,7 @@ def trigger_title_generation(agent: "Agent", chat: "ChatSession") -> bool:
 
     logger.info(f"Started background title generation for chat {chat.id}")
     return True
+
 
 def check_title_completion(chat: "ChatSession") -> bool:
     """Check if title generation for a chat has completed.

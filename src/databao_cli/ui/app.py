@@ -18,6 +18,7 @@ from databao_cli.ui.services.storage import get_cache_dir
 
 logger = logging.getLogger(__name__)
 
+
 def _load_persisted_state() -> None:
     """Load settings and chats from disk on startup."""
     from databao_cli.ui.services.chat_persistence import load_all_chats
@@ -35,6 +36,7 @@ def _load_persisted_state() -> None:
             st.session_state.chats = chats
             logger.info(f"Loaded {len(chats)} chats from disk")
         st.session_state._chats_loaded = True
+
 
 def _save_settings_if_changed() -> None:
     """Save settings to disk if they've changed."""
@@ -56,6 +58,7 @@ def _save_settings_if_changed() -> None:
         save_settings(settings)
         logger.debug("Settings saved")
 
+
 def _get_or_create_disk_cache() -> DiskCache:
     """Get or create the DiskCache instance for the agent."""
     if "disk_cache" not in st.session_state:
@@ -63,6 +66,7 @@ def _get_or_create_disk_cache() -> DiskCache:
         config = DiskCacheConfig(db_dir=cache_dir / "diskcache")
         st.session_state.disk_cache = DiskCache(config=config)
     return st.session_state.disk_cache
+
 
 def _initialize_agent(project: ProjectLayout) -> Agent | None:
     """Initialize or return existing Databao agent.
@@ -112,6 +116,7 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
         set_status(AppStatus.ERROR, f"Failed to initialize agent: {e}")
         return None
 
+
 def _clear_all_chat_threads() -> None:
     """Clear thread references from all chats.
 
@@ -121,6 +126,7 @@ def _clear_all_chat_threads() -> None:
     chats: dict[str, ChatSession] = st.session_state.get("chats", {})
     for chat in chats.values():
         chat.thread = None
+
 
 def _initialize_app(project_dir: str):
     """Initialize app-level resources: project and agent.
@@ -142,6 +148,7 @@ def _initialize_app(project_dir: str):
 
     if agent:
         set_status(AppStatus.READY)
+
 
 def init_session_state() -> None:
     """Initialize session state variables."""
@@ -177,6 +184,7 @@ def init_session_state() -> None:
     if "title_futures" not in st.session_state:
         st.session_state.title_futures = {}
 
+
 def _create_new_chat() -> None:
     """Create a new chat and navigate to it."""
     from uuid6 import uuid6
@@ -199,6 +207,7 @@ def _create_new_chat() -> None:
     st.session_state._navigate_to_chat = chat_id
 
     save_chat(chat)
+
 
 def build_navigation() -> None:
     """Build the multipage navigation structure."""
@@ -258,6 +267,7 @@ def build_navigation() -> None:
         sorted_chats = sorted(chats.values(), key=lambda c: c.created_at, reverse=True)
 
         for chat in sorted_chats:
+
             def make_chat_page(chat_id: str):
                 def page_fn():
                     st.session_state.current_chat_id = chat_id
@@ -304,6 +314,7 @@ def build_navigation() -> None:
 
     pg.run()
 
+
 def _get_current_project(project_dir: str) -> ProjectLayout:
     """Get the current DCE project, auto-detecting if needed.
 
@@ -317,6 +328,7 @@ def _get_current_project(project_dir: str) -> ProjectLayout:
 
     return project
 
+
 def _render_global_sidebar() -> None:
     """Render sidebar elements that appear on all pages.
 
@@ -326,6 +338,7 @@ def _render_global_sidebar() -> None:
 
     with st.sidebar:
         render_sidebar_header()
+
 
 def main() -> None:
     """Main application entry point."""
@@ -356,6 +369,7 @@ def main() -> None:
     build_navigation()
 
     _save_settings_if_changed()
+
 
 if __name__ == "__main__":
     main()

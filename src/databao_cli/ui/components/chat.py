@@ -21,10 +21,12 @@ from databao_cli.ui.suggestions import (
 if TYPE_CHECKING:
     from databao_cli.ui.models.chat_session import ChatSession
 
+
 def render_user_message(message: ChatMessage) -> None:
     """Render a user message."""
     with st.chat_message("user"):
         st.markdown(message.content)
+
 
 def render_assistant_message(
     message: ChatMessage, chat: "ChatSession", message_index: int, *, is_latest: bool = False
@@ -45,11 +47,13 @@ def render_assistant_message(
                 visualization_data=message.visualization_data,
             )
 
+
 def _truncate_question(question: str, max_len: int = 60) -> tuple[str, bool]:
     """Truncate a question for display, returning (display_text, was_truncated)."""
     if len(question) <= max_len:
         return question, False
     return question[: max_len - 3] + "...", True
+
 
 @st.fragment
 def render_welcome_component(chat: "ChatSession") -> None:
@@ -137,6 +141,7 @@ def render_welcome_component(chat: "ChatSession") -> None:
             unsafe_allow_html=True,
         )
 
+
 def _get_current_chat() -> "ChatSession | None":
     """Get the current chat session from session state."""
     current_chat_id = st.session_state.get("current_chat_id")
@@ -144,6 +149,7 @@ def _get_current_chat() -> "ChatSession | None":
     if current_chat_id and current_chat_id in chats:
         return chats[current_chat_id]
     return None
+
 
 def render_chat_history(chat: "ChatSession") -> None:
     """Render all messages in chat history."""
@@ -163,6 +169,7 @@ def render_chat_history(chat: "ChatSession") -> None:
             is_latest = (i == last_assistant_idx) and not is_processing
             render_assistant_message(message, chat, i, is_latest=is_latest)
 
+
 def start_background_query(chat: "ChatSession", query: str) -> None:
     """Start a background query execution for the chat.
 
@@ -177,6 +184,7 @@ def start_background_query(chat: "ChatSession", query: str) -> None:
         return
 
     start_query_execution(chat, chat.thread, query)
+
 
 def handle_query_completion(chat: "ChatSession") -> bool:
     """Check if query completed and create assistant message if so.
@@ -216,10 +224,12 @@ def handle_query_completion(chat: "ChatSession") -> bool:
 
     return True
 
+
 def render_thinking_section(chat: "ChatSession") -> None:
     """Render the thinking section wrapper that contains the streaming fragment."""
     with st.chat_message("assistant"), st.expander("💭 Thinking...", expanded=True):
         _thinking_stream_fragment(chat)
+
 
 @st.fragment(run_every=0.1)
 def _thinking_stream_fragment(chat: "ChatSession") -> None:
@@ -234,6 +244,7 @@ def _thinking_stream_fragment(chat: "ChatSession") -> None:
         st.markdown(current_text)
     else:
         st.caption("Processing...")
+
 
 @st.fragment(run_every=1.0)
 def _suggestions_polling_fragment() -> None:
@@ -251,6 +262,7 @@ def _suggestions_polling_fragment() -> None:
 
     if check_suggestions_completion():
         st.rerun()
+
 
 @st.fragment(run_every=1.0)
 def _query_polling_fragment() -> None:
@@ -273,6 +285,7 @@ def _query_polling_fragment() -> None:
     if handle_query_completion(chat):
         st.rerun()
 
+
 def _should_show_welcome(chat: "ChatSession") -> bool:
     """Determine if we should show the welcome screen.
 
@@ -285,6 +298,7 @@ def _should_show_welcome(chat: "ChatSession") -> bool:
     query_running = is_query_running(chat)
 
     return not has_messages and not query_running
+
 
 def render_chat_interface(chat: "ChatSession") -> None:
     """Render the complete chat interface."""

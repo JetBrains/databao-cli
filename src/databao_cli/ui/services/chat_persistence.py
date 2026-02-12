@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+
 def save_current_chat() -> None:
     """Save the current chat from session state to disk.
 
@@ -28,9 +29,11 @@ def save_current_chat() -> None:
     if current_chat_id and current_chat_id in chats:
         save_chat(chats[current_chat_id])
 
+
 _SESSION_FILE = "session.json"
 _RESULTS_DIR = "results"
 _VISUALIZATIONS_DIR = "visualizations"
+
 
 def save_chat(chat: ChatSession) -> None:
     """Save a chat session to disk.
@@ -83,6 +86,7 @@ def save_chat(chat: ChatSession) -> None:
             vis_df_path.unlink()
 
     logger.debug(f"Chat saved: {chat.id}")
+
 
 def load_chat(chat_id: str) -> ChatSession | None:
     """Load a chat session from disk.
@@ -145,6 +149,7 @@ def load_chat(chat_id: str) -> ChatSession | None:
         logger.error(f"Failed to load chat {chat_id}: {e}")
         return None
 
+
 def load_all_chats() -> dict[str, ChatSession]:
     """Load all chat sessions from disk.
 
@@ -168,6 +173,7 @@ def load_all_chats() -> dict[str, ChatSession]:
 
     logger.info(f"Loaded {len(chats)} chats from disk")
     return chats
+
 
 def delete_chat(chat_id: str) -> bool:
     """Delete a chat session and its cache data.
@@ -200,6 +206,7 @@ def delete_chat(chat_id: str) -> bool:
 
     return True
 
+
 def _delete_cache_scope(cache_scope: str) -> None:
     """Delete cache data for a specific scope.
 
@@ -217,6 +224,7 @@ def _delete_cache_scope(cache_scope: str) -> None:
         logger.debug(f"Invalidated cache tag: {cache_scope}")
     finally:
         cache.close()
+
 
 def delete_all_chats() -> int:
     """Delete all chat sessions.

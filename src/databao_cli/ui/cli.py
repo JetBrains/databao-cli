@@ -11,10 +11,9 @@ def _get_streamlit_app_path() -> str:
     """
     spec = importlib.util.find_spec("databao_cli.ui.app")
     if spec is None or spec.origin is None:
-        raise ValueError(
-            "Could not find databao_cli.ui.app module. "
-        )
+        raise ValueError("Could not find databao_cli.ui.app module. ")
     return spec.origin
+
 
 def bootstrap_streamlit_app(project_path: Path, streamlit_args: list[str] | None = None):
     """Bootstrap the UI."""
@@ -24,7 +23,7 @@ def bootstrap_streamlit_app(project_path: Path, streamlit_args: list[str] | None
 
     app_path = _get_streamlit_app_path()
 
-    subprocess.run(  # noqa: S603
+    subprocess.run(
         [sys.executable, "-m", "streamlit", "run", app_path, *streamlit_args, "--", "--project-dir", project_path],
         check=True,
     )

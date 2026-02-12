@@ -13,9 +13,11 @@ DB_ICONS = {
     "default": "🗄️",
 }
 
+
 def get_db_icon(db_type: str) -> str:
     """Get icon for database type."""
     return DB_ICONS.get(db_type.lower(), DB_ICONS["default"])
+
 
 def get_db_type_and_icon(conn: Any) -> tuple[str, str]:
     """Detect database type and icon from a connection object.

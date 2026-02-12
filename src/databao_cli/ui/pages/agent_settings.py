@@ -10,6 +10,7 @@ EXECUTOR_TYPES = {
     "react_duckdb": "ReactDuckDBExecutor (experimental)",
 }
 
+
 def render_agent_settings_page() -> None:
     """Render the Agent Settings page."""
     st.title("Agent Settings")
@@ -83,4 +84,3 @@ def render_agent_settings_page() -> None:
             st.code(f"Model: {model_name}")
         except Exception:
             st.caption("Could not retrieve model information.")
-

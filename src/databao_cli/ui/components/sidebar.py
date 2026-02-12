@@ -37,6 +37,7 @@ def _confirm_delete_chat(chat_id: str, chat_title: str) -> None:
             st.session_state._navigate_to_chat = None
             st.rerun()
 
+
 def render_project_info(project: ProjectLayout | None) -> None:
     """Render project information section with Reload button."""
     st.markdown("### 📊 Project")
@@ -70,6 +71,7 @@ def render_project_info(project: ProjectLayout | None) -> None:
         reset_suggestions_state()
         st.rerun()
 
+
 def render_sources_info() -> None:
     """Render connected sources section."""
     st.markdown("### 🔗 Sources")
@@ -93,6 +95,7 @@ def render_sources_info() -> None:
     for name in dfs:
         st.markdown(f"📊 **{name}** (DataFrame)")
 
+
 def render_executor_selector() -> None:
     """Render executor type selector."""
     st.markdown("### ⚙️ Executor")
@@ -114,6 +117,7 @@ def render_executor_selector() -> None:
         _clear_all_chat_threads()
         set_status(AppStatus.INITIALIZING, "Applying executor change...")
         st.rerun()
+
 
 def render_sidebar_header() -> None:
     """Render shared sidebar header (logo + status).
@@ -143,6 +147,7 @@ def render_sidebar_header() -> None:
     st.markdown("")
 
     render_status_fragment()
+
 
 def render_sidebar_chat_content(project: ProjectLayout | None) -> None:
     """Render chat-specific sidebar content.

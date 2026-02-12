@@ -50,6 +50,7 @@ def render_context_settings_page() -> None:
     else:
         _render_sources(agent)
 
+
 def _render_project_info(project: ProjectLayout) -> bool:
     """
     Render project information.
@@ -70,6 +71,7 @@ def _render_project_info(project: ProjectLayout) -> bool:
     reload_clicked = st.button("🔄 Reload")
 
     return reload_clicked
+
 
 def _render_sources(agent: Agent) -> None:
     """Render connected data sources."""

@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 
 __all__ = ["ChatMessage", "ChatSession"]
 
+
 @dataclass
 class ChatMessage:
     """Represents a chat message."""
@@ -28,6 +29,7 @@ class ChatMessage:
     metadata: dict[str, Any] = field(default_factory=dict)
     timestamp: datetime = field(default_factory=datetime.now)
 
+
 def _serialize_visualization_data(data: dict[str, Any] | None) -> dict[str, Any] | None:
     """Serialize visualization_data for JSON, excluding non-serializable fields like spec_df."""
     if data is None:
@@ -36,6 +38,7 @@ def _serialize_visualization_data(data: dict[str, Any] | None) -> dict[str, Any]
     if "spec_df" in data and data["spec_df"] is not None:
         serializable["_has_spec_df"] = True
     return serializable
+
 
 @dataclass
 class ChatSession:
@@ -128,9 +131,7 @@ class ChatSession:
                     visualization_data=msg_data.get("visualization_data"),
                     message_id=msg_data.get("message_id", ""),
                     metadata=msg_data.get("metadata", {}),
-                    timestamp=datetime.fromisoformat(msg_data["timestamp"])
-                    if "timestamp" in msg_data
-                    else datetime.now(),
+                    timestamp=datetime.fromisoformat(msg_data["timestamp"]) if "timestamp" in msg_data else datetime.now(),
                 )
             )
 

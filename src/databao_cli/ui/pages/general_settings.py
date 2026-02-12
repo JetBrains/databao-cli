@@ -11,6 +11,7 @@ from databao_cli.ui.services.storage import get_cache_dir, get_chats_dir, get_st
 
 logger = logging.getLogger(__name__)
 
+
 @st.dialog("Clear All Chats")
 def _confirm_clear_chats() -> None:
     """Dialog to confirm clearing all chats."""
@@ -31,6 +32,7 @@ def _confirm_clear_chats() -> None:
             _clear_all_chat_threads()
             st.success(f"Deleted {deleted} chats")
             st.rerun()
+
 
 @st.dialog("Reset to Defaults")
 def _confirm_reset_settings() -> None:
@@ -53,6 +55,7 @@ def _confirm_reset_settings() -> None:
             st.session_state.app_settings = None
             st.success("Settings reset to defaults")
             st.rerun()
+
 
 def render_general_settings_page() -> None:
     """Render the General Settings page."""
@@ -113,4 +116,3 @@ def render_general_settings_page() -> None:
             help="Resets settings but keeps chats.",
         ):
             _confirm_reset_settings()
-

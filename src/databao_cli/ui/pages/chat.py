@@ -19,6 +19,7 @@ from databao_cli.ui.services.chat_title import check_title_completion, trigger_t
 
 logger = logging.getLogger(__name__)
 
+
 def _render_chat_sidebar(project: ProjectLayout | None) -> None:
     """Render chat-specific sidebar content.
 
@@ -28,6 +29,7 @@ def _render_chat_sidebar(project: ProjectLayout | None) -> None:
     with st.sidebar:
         st.markdown("---")
         render_sidebar_chat_content(project)
+
 
 def render_chat_page() -> None:
     """Render the chat page for a specific chat session."""
@@ -84,6 +86,7 @@ def render_chat_page() -> None:
         st.session_state.chats = chats
         save_chat(chat)
 
+
 def _get_or_create_current_chat() -> ChatSession | None:
     """Get the current chat session from URL or session state."""
     from uuid6 import uuid6
@@ -111,6 +114,7 @@ def _get_or_create_current_chat() -> ChatSession | None:
 
     return chat
 
+
 def _get_current_project() -> ProjectLayout | None:
     """Get the current DCE project from session state.
 
@@ -119,6 +123,7 @@ def _get_current_project() -> ProjectLayout | None:
     """
     project = st.session_state.get("databao_project")
     return cast(ProjectLayout, project) if project is not None else None
+
 
 def _get_or_create_thread_for_chat(chat: ChatSession, agent: Agent) -> bool:
     """Get or create a thread for the specific chat session.
@@ -156,6 +161,7 @@ def _get_or_create_thread_for_chat(chat: ChatSession, agent: Agent) -> bool:
         logger.exception("Failed to create thread")
         return False
 
+
 def _restore_thread_state_from_messages(thread: Thread, chat: ChatSession) -> None:
     """Restore thread's internal state from persisted chat messages.
 
@@ -173,6 +179,7 @@ def _restore_thread_state_from_messages(thread: Thread, chat: ChatSession) -> No
             thread._data_result = msg.result
             logger.debug(f"Restored thread._data_result from persisted chat {chat.id}")
             break
+
 
 def _render_no_project_state() -> None:
     """Render state when no DCE project is found."""
@@ -200,6 +207,7 @@ def _render_no_project_state() -> None:
     if context_settings_page and st.button("⚙️ Go to Settings"):
         st.switch_page(context_settings_page)
 
+
 def _render_no_build_state(project: ProjectLayout) -> None:
     """Render state when DCE project has no build output."""
     st.title("💬 Chat")
@@ -225,6 +233,7 @@ def _render_no_build_state(project: ProjectLayout) -> None:
         st.session_state.databao_project = None
         st.session_state.context = None
         st.rerun()
+
 
 def _render_error_state() -> None:
     """Render error state."""
