@@ -42,7 +42,26 @@ line-length = 127
 target-version = "py312"
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "W", "B", "UP", "SIM", "RUF", "S"]
+select = [
+    # pycodestyle
+    "E",
+    # pycodestyle warnings
+    "W",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+    # ruff-specific
+    "RUF",
+    # Prefer absolute imports over relative ones
+    "TID252",
+]
 ignore = ["S301"]  # pickle usage is needed; suppressed inline at call sites
 
 [tool.ruff.lint.per-file-ignores]
