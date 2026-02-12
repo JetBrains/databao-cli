@@ -24,10 +24,7 @@ from databao_cli.project.layout import ProjectLayout
 @click.pass_context
 def cli(ctx: Context, project_dir: Path | None):
     """Databao Common CLI"""
-    if project_dir is None:
-        project_path = Path.cwd()
-    else:
-        project_path = project_dir.expanduser().resolve()
+    project_path = Path.cwd() if project_dir is None else project_dir.expanduser().resolve()
 
     configure_logging()
 

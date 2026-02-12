@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 from functools import cached_property
 from pathlib import Path
-from databao_context_engine.project.layout import ProjectLayout as DCEProjectLayout, validate_project_dir
+
+from databao_context_engine.project.layout import ProjectLayout as DCEProjectLayout
+from databao_context_engine.project.layout import validate_project_dir
 
 
 def get_databao_project_dir(project_dir: Path) -> Path:
@@ -41,7 +43,7 @@ class ProjectLayout:
 
 
 def find_project(initial_dir: Path) -> ProjectLayout | None:
-    dirs_to_check = [initial_dir] + list(initial_dir.parents)
+    dirs_to_check = [initial_dir, *list(initial_dir.parents)]
     for project_dir_candidate in dirs_to_check:
         databao_project_dir = get_databao_project_dir(project_dir_candidate)
         if databao_project_dir.exists():
