@@ -1,9 +1,5 @@
 from dataclasses import dataclass
-from functools import cached_property
 from pathlib import Path
-
-from databao_context_engine.project.layout import ProjectLayout as DCEProjectLayout
-from databao_context_engine.project.layout import validate_project_dir
 
 
 def get_databao_project_dir(project_dir: Path) -> Path:
@@ -36,10 +32,6 @@ class ProjectLayout:
         Root domain is the domain which is used by default unless domain parameter is specified
         """
         return self.domains_dir / "root"
-
-    @cached_property
-    def root_domain_project(self) -> DCEProjectLayout | None:
-        return validate_project_dir(self.root_domain_dir)
 
 
 def find_project(initial_dir: Path) -> ProjectLayout | None:

@@ -49,7 +49,13 @@ def render_chat_page() -> None:
         _render_no_project_state()
         return
 
-    if dce_status(project) == DCEProjectStatus.NO_BUILD:
+    status = dce_status(project)
+    if status == DCEProjectStatus.NO_DATASOURCES:
+        _render_chat_sidebar(project)
+        _render_no_datasources_state(project)
+        return
+
+    if status == DCEProjectStatus.NO_BUILD:
         _render_chat_sidebar(project)
         _render_no_build_state(project)
         return
@@ -206,6 +212,28 @@ def _render_no_project_state() -> None:
     context_settings_page = st.session_state.get("_page_context_settings")
     if context_settings_page and st.button("⚙️ Go to Settings"):
         st.switch_page(context_settings_page)
+
+
+def _render_no_datasources_state(project: ProjectLayout) -> None:
+    """Render state when no datasources are configured in the DCE project."""
+    st.title("💬 Chat")
+    st.markdown("---")
+
+    st.warning(f"No datasources configured in project at `{project.project_dir}`.")
+
+    st.markdown(
+        """
+
+        Add datasources to your project before using Databao.
+
+        See the documentation for how to configure datasources.
+        """
+    )
+
+    if st.button("🔄 Check Again"):
+        st.session_state.databao_project = None
+        st.session_state.context = None
+        st.rerun()
 
 
 def _render_no_build_state(project: ProjectLayout) -> None:

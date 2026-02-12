@@ -57,9 +57,12 @@ def render_project_info(project: ProjectLayout | None) -> None:
     st.markdown(f"**{project.name}**")
     st.caption(str(project.project_dir))
 
-    if dce_status(project) == DCEProjectStatus.VALID:
+    status = dce_status(project)
+    if status == DCEProjectStatus.VALID:
         st.success("✓ Ready", icon="✅")
-    elif dce_status(project) == DCEProjectStatus.NO_BUILD:
+    elif status == DCEProjectStatus.NO_DATASOURCES:
+        st.warning("No datasources", icon="⚠️")
+    elif status == DCEProjectStatus.NO_BUILD:
         st.warning("Build required", icon="⚠️")
 
     if st.button("🔄 Reload", width="stretch", help="Reload DCE project"):

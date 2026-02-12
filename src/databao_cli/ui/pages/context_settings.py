@@ -43,10 +43,14 @@ def render_context_settings_page() -> None:
     if agent is None:
         if project is None:
             st.caption("Configure a project to see available sources.")
-        elif dce_status(project) == DCEProjectStatus.NO_BUILD:
-            st.warning("Project needs to be built first. Run `databao build`.")
         else:
-            st.caption("Sources will appear after initialization.")
+            status = dce_status(project)
+            if status == DCEProjectStatus.NO_DATASOURCES:
+                st.warning("No datasources configured. Add datasources to your project.")
+            elif status == DCEProjectStatus.NO_BUILD:
+                st.warning("Project needs to be built first. Run `databao build`.")
+            else:
+                st.caption("Sources will appear after initialization.")
     else:
         _render_sources(agent)
 
@@ -61,9 +65,12 @@ def _render_project_info(project: ProjectLayout) -> bool:
     st.markdown(f"**{project.name}**")
     st.code(str(project.project_dir), language=None)
 
-    if dce_status(project) == DCEProjectStatus.VALID:
+    status = dce_status(project)
+    if status == DCEProjectStatus.VALID:
         st.success("Project is ready", icon="✅")
-    elif dce_status(project) == DCEProjectStatus.NO_BUILD:
+    elif status == DCEProjectStatus.NO_DATASOURCES:
+        st.warning("No datasources configured", icon="⚠️")
+    elif status == DCEProjectStatus.NO_BUILD:
         st.warning("Build required - run `databao build`", icon="⚠️")
     else:
         st.error("Project not found", icon="❌")

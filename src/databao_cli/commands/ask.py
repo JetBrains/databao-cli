@@ -38,7 +38,15 @@ def initialize_agent_from_dce(project_path: Path, model: str | None, temperature
     # Validate DCE project
     project = ProjectLayout(project_path)
 
-    if dce_status(project) == DCEProjectStatus.NO_BUILD:
+    status = dce_status(project)
+    if status == DCEProjectStatus.NO_DATASOURCES:
+        click.echo(
+            f"No datasources configured in project at {project.project_dir}. Add datasources first.",
+            err=True,
+        )
+        sys.exit(1)
+
+    if status == DCEProjectStatus.NO_BUILD:
         click.echo(
             f"DCE project found at {project.project_dir} but no build output. Run 'databao build' first.",
             err=True,

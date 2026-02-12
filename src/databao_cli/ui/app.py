@@ -76,7 +76,15 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
     if st.session_state.get("agent") is not None:
         return cast(Agent, st.session_state.agent)
 
-    if dce_status(project) == DCEProjectStatus.NO_BUILD:
+    status = dce_status(project)
+    if status == DCEProjectStatus.NO_DATASOURCES:
+        set_status(
+            AppStatus.INITIALIZING,
+            "No datasources configured. Add datasources to your project first.",
+        )
+        return None
+
+    if status == DCEProjectStatus.NO_BUILD:
         set_status(
             AppStatus.INITIALIZING,
             "DCE project found but no build output. Run 'databao build' first.",
@@ -136,7 +144,12 @@ def _initialize_app(project_dir: str):
 
     project = _get_current_project(project_dir)
 
-    if dce_status(project) == DCEProjectStatus.NO_BUILD:
+    status = dce_status(project)
+    if status == DCEProjectStatus.NO_DATASOURCES:
+        set_status(AppStatus.INITIALIZING, "No datasources configured")
+        return
+
+    if status == DCEProjectStatus.NO_BUILD:
         set_status(AppStatus.INITIALIZING, "Project needs build")
         return
 
