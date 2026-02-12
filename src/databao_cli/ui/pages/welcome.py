@@ -10,11 +10,9 @@ from databao_cli.ui.app import _create_new_chat
 
 def render_welcome_page() -> None:
     """Render the welcome page with overview and quick actions."""
-    # Center content with columns
     _col1, col2, _col3 = st.columns([1, 2, 1])
 
     with col2:
-        # Logo and title
         logo_path = Path(__file__).parent.parent / "assets" / "bao.png"
         if logo_path.exists():
             with open(logo_path, "rb") as f:
@@ -43,11 +41,9 @@ def render_welcome_page() -> None:
             unsafe_allow_html=True,
         )
 
-        # Quick stats
         chats = st.session_state.get("chats", {})
         agent = st.session_state.get("agent")
 
-        # Stats row
         stat_col1, stat_col2, stat_col3 = st.columns(3)
 
         with stat_col1:
@@ -65,7 +61,6 @@ def render_welcome_page() -> None:
 
         st.markdown("---")
 
-        # Quick actions
         st.subheader("Quick Actions")
 
         action_col1, action_col2 = st.columns(2)
@@ -81,7 +76,6 @@ def render_welcome_page() -> None:
                 if context_settings_page:
                     st.switch_page(context_settings_page)
 
-        # Getting started section
         st.markdown("---")
         st.subheader("Getting Started")
 
@@ -100,17 +94,15 @@ def render_welcome_page() -> None:
                 """
             )
 
-        # Recent chats (if any)
         if chats:
             st.markdown("---")
             st.subheader("Recent Chats")
 
-            # Sort by creation time, newest first
             sorted_chats = sorted(
                 chats.values(),
                 key=lambda c: c.created_at,
                 reverse=True,
-            )[:5]  # Show max 5
+            )[:5]
 
             for chat in sorted_chats:
                 col_title, col_action = st.columns([4, 1])
@@ -120,6 +112,5 @@ def render_welcome_page() -> None:
                 with col_action:
                     if st.button("Open", key=f"open_{chat.id}"):
                         st.session_state.current_chat_id = chat.id
-                        # Flag for navigation system to switch to this chat
                         st.session_state._navigate_to_chat = chat.id
                         st.rerun()

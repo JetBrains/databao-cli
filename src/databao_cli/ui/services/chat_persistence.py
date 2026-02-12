@@ -15,7 +15,6 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-
 def save_current_chat() -> None:
     """Save the current chat from session state to disk.
 
@@ -29,11 +28,9 @@ def save_current_chat() -> None:
     if current_chat_id and current_chat_id in chats:
         save_chat(chats[current_chat_id])
 
-# File names within chat directory
 _SESSION_FILE = "session.json"
 _RESULTS_DIR = "results"
 _VISUALIZATIONS_DIR = "visualizations"
-
 
 def save_chat(chat: ChatSession) -> None:
     """Save a chat session to disk.
@@ -47,13 +44,11 @@ def save_chat(chat: ChatSession) -> None:
     """
     chat_dir = get_chat_dir(chat.id)
 
-    # Save session JSON
     session_data = chat.to_dict()
     session_path = chat_dir / _SESSION_FILE
     with open(session_path, "w") as f:
         json.dump(session_data, f, indent=2)
 
-    # Save results as pickle files
     results_dir = chat_dir / _RESULTS_DIR
     results_dir.mkdir(parents=True, exist_ok=True)
 
@@ -65,14 +60,11 @@ def save_chat(chat: ChatSession) -> None:
                     pickle.dump(msg.result, f)
             except Exception as e:
                 logger.warning(f"Failed to pickle result for message {i}: {e}")
-                # Remove failed pickle file if it exists
                 if result_path.exists():
                     result_path.unlink()
         elif result_path.exists():
-            # Clean up old result file if message no longer has result
             result_path.unlink()
 
-    # Save visualization spec_df as pickle files (spec is in session.json via visualization_data)
     visualizations_dir = chat_dir / _VISUALIZATIONS_DIR
     visualizations_dir.mkdir(parents=True, exist_ok=True)
 
@@ -88,11 +80,9 @@ def save_chat(chat: ChatSession) -> None:
                 if vis_df_path.exists():
                     vis_df_path.unlink()
         elif vis_df_path.exists():
-            # Clean up old file if visualization was removed
             vis_df_path.unlink()
 
     logger.debug(f"Chat saved: {chat.id}")
-
 
 def load_chat(chat_id: str) -> ChatSession | None:
     """Load a chat session from disk.
@@ -116,11 +106,9 @@ def load_chat(chat_id: str) -> ChatSession | None:
         return None
 
     try:
-        # Load session JSON
         with open(session_path) as f:
             session_data = json.load(f)
 
-        # Load results
         results_dir = chat_dir / _RESULTS_DIR
         results: list[Any] = []
 
@@ -137,7 +125,6 @@ def load_chat(chat_id: str) -> ChatSession | None:
             else:
                 results.append(None)
 
-        # Load visualization spec_df into session_data
         visualizations_dir = chat_dir / _VISUALIZATIONS_DIR
         for i, msg_data in enumerate(session_data.get("messages", [])):
             vis_data = msg_data.get("visualization_data")
@@ -150,7 +137,6 @@ def load_chat(chat_id: str) -> ChatSession | None:
                     except Exception as e:
                         logger.warning(f"Failed to unpickle visualization spec_df {i} for chat {chat_id}: {e}")
 
-        # Create ChatSession with results
         chat = ChatSession.from_dict(session_data, results)
         logger.debug(f"Chat loaded: {chat_id}")
         return chat
@@ -158,7 +144,6 @@ def load_chat(chat_id: str) -> ChatSession | None:
     except Exception as e:
         logger.error(f"Failed to load chat {chat_id}: {e}")
         return None
-
 
 def load_all_chats() -> dict[str, ChatSession]:
     """Load all chat sessions from disk.
@@ -184,7 +169,6 @@ def load_all_chats() -> dict[str, ChatSession]:
     logger.info(f"Loaded {len(chats)} chats from disk")
     return chats
 
-
 def delete_chat(chat_id: str) -> bool:
     """Delete a chat session and its cache data.
 
@@ -194,11 +178,9 @@ def delete_chat(chat_id: str) -> bool:
     Returns:
         True if deleted successfully, False otherwise
     """
-    # Load chat to get cache_scope before deleting
     chat = load_chat(chat_id)
     cache_scope = chat.cache_scope if chat else None
 
-    # Delete chat directory
     chats_dir = get_chats_dir()
     chat_dir = chats_dir / chat_id
 
@@ -210,16 +192,13 @@ def delete_chat(chat_id: str) -> bool:
         logger.error(f"Failed to delete chat directory {chat_dir}: {e}")
         return False
 
-    # Delete cache scope data if available
     if cache_scope:
         try:
             _delete_cache_scope(cache_scope)
         except Exception as e:
             logger.warning(f"Failed to delete cache scope {cache_scope}: {e}")
-            # Don't fail the whole operation if cache cleanup fails
 
     return True
-
 
 def _delete_cache_scope(cache_scope: str) -> None:
     """Delete cache data for a specific scope.
@@ -234,14 +213,10 @@ def _delete_cache_scope(cache_scope: str) -> None:
     cache = DiskCache(config=config)
 
     try:
-        # The cache scope is used as a tag prefix, we can evict by tag
-        # Note: This may not perfectly clean up all scoped data depending on
-        # how the cache is used, but it's a best effort cleanup
         cache.invalidate_tag(cache_scope)
         logger.debug(f"Invalidated cache tag: {cache_scope}")
     finally:
         cache.close()
-
 
 def delete_all_chats() -> int:
     """Delete all chat sessions.
@@ -263,7 +238,6 @@ def delete_all_chats() -> int:
         if delete_chat(chat_id):
             deleted += 1
 
-    # Also clear the entire cache directory for a clean slate
     cache_dir = get_cache_dir()
     diskcache_dir = cache_dir / "diskcache"
     if diskcache_dir.exists():

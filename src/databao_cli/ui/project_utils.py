@@ -6,9 +6,8 @@ from databao_cli.project.layout import ProjectLayout
 class DCEProjectStatus(Enum):
     """Status of a DCE project."""
 
-    VALID = "valid"  # Project found with build outputs
-    NO_BUILD = "no_build"  # Project found but no output/run
-
+    VALID = "valid"
+    NO_BUILD = "no_build"
 
 def dce_status(project: ProjectLayout) -> DCEProjectStatus:
     root_domain = project.root_domain_project

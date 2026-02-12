@@ -24,7 +24,6 @@ class AppStatus(str, Enum):
     INITIALIZING = "initializing"
     ERROR = "error"
 
-
 def _ensure_status_state() -> None:
     """Ensure status-related session state is initialized."""
     if "status_stack" not in st.session_state:
@@ -33,7 +32,6 @@ def _ensure_status_state() -> None:
         st.session_state.app_status = AppStatus.INITIALIZING
     if "status_message" not in st.session_state:
         st.session_state.status_message = None
-
 
 @st.fragment(run_every=timedelta(milliseconds=500))
 def render_status_fragment() -> None:
@@ -45,7 +43,6 @@ def render_status_fragment() -> None:
     _ensure_status_state()
 
     status_value = st.session_state.get("app_status", AppStatus.INITIALIZING)
-    # Handle both enum and string values for backwards compatibility
     if isinstance(status_value, str):
         try:
             status = AppStatus(status_value)
@@ -63,7 +60,6 @@ def render_status_fragment() -> None:
     elif status == AppStatus.ERROR:
         st.error(message or "Unknown error", icon="❌")
 
-
 def set_status(status: AppStatus, message: str | None = None) -> None:
     """Set status permanently (survives until next set_status call).
 
@@ -77,7 +73,6 @@ def set_status(status: AppStatus, message: str | None = None) -> None:
     _ensure_status_state()
     st.session_state.app_status = status
     st.session_state.status_message = message
-
 
 @contextmanager
 def status_context(
@@ -96,21 +91,17 @@ def status_context(
     Example:
         with status_context(AppStatus.INITIALIZING, "Loading data..."):
             load_data()
-        # Previous status is automatically restored here
     """
     _ensure_status_state()
 
-    # Push current status to stack
     prev_status = st.session_state.get("app_status", AppStatus.INITIALIZING)
     prev_message = st.session_state.get("status_message")
     st.session_state.status_stack.append((prev_status, prev_message))
 
-    # Set new status
     set_status(status, message)
     try:
         yield
     finally:
-        # Pop and restore previous status
         status_not_changed = (
             st.session_state.app_status == status
             and st.session_state.status_message == message

@@ -21,18 +21,16 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class QueryResult:
     """Result of a background query execution."""
 
-    text: str  # Response text
-    thinking: str  # Captured thinking/reasoning text
-    result: Any  # ExecutionResult from thread._data_result
+    text: str
+    thinking: str
+    result: Any
     has_visualization: bool
-    visualization_data: dict[str, Any] | None = None  # Extracted visualization data (spec, spec_df, etc.)
-    error: str | None = None  # Error message if execution failed
-
+    visualization_data: dict[str, Any] | None = None
+    error: str | None = None
 
 class QueryThread(threading.Thread):
     """Custom thread for query execution that stores its result."""
@@ -86,7 +84,6 @@ class QueryThread(threading.Thread):
                 error=str(e),
             )
 
-
 def start_query_execution(chat: "ChatSession", thread: "Thread", query: str) -> bool:
     """Start background query execution for a chat.
 
@@ -107,30 +104,23 @@ def start_query_execution(chat: "ChatSession", thread: "Thread", query: str) -> 
         logger.warning(f"Query already running for chat {chat.id}")
         return False
 
-    # Clear the writer buffer before starting a new query
     if chat.writer:
         chat.writer.clear()
 
-    # Capture the current Streamlit script context
     script_ctx = get_script_run_ctx()
 
-    # Create thread object
     query_thread = QueryThread(thread, query, chat.writer)
 
-    # Add script context BEFORE starting thread (per Streamlit docs)
     if script_ctx is not None:
         add_script_run_ctx(query_thread, script_ctx)
 
-    # Start the thread
     query_thread.start()
 
-    # Update chat state
     chat.query_thread = query_thread
     chat.query_status = "running"
 
     logger.info(f"Started background query execution for chat {chat.id}: {query[:50]}")
     return True
-
 
 def check_query_completion(chat: "ChatSession") -> QueryResult | None:
     """Check if a chat's background query has completed.
@@ -150,15 +140,12 @@ def check_query_completion(chat: "ChatSession") -> QueryResult | None:
 
     query_thread: QueryThread | None = chat.query_thread
     if query_thread is None:
-        # No thread but status is running - inconsistent state, reset
         chat.query_status = "idle"
         return None
 
     if query_thread.is_alive():
         return None
 
-    # Thread has finished -- safe to read result without locks
-    # (thread is dead, so no concurrent writes)
     result = query_thread.result
     if result is None:
         result = QueryResult(
@@ -169,13 +156,11 @@ def check_query_completion(chat: "ChatSession") -> QueryResult | None:
             error="Thread finished without result",
         )
 
-    # Clean up chat state
     chat.query_thread = None
     chat.query_status = "completed" if result.error is None else "error"
 
     logger.info(f"Query completed for chat {chat.id}: success={result.error is None}")
     return result
-
 
 def is_query_running(chat: "ChatSession") -> bool:
     """Check if a chat has a query currently running.

@@ -11,7 +11,6 @@ from databao_cli.ui.services.storage import get_cache_dir, get_chats_dir, get_st
 
 logger = logging.getLogger(__name__)
 
-
 @st.dialog("Clear All Chats")
 def _confirm_clear_chats() -> None:
     """Dialog to confirm clearing all chats."""
@@ -24,18 +23,14 @@ def _confirm_clear_chats() -> None:
             st.rerun()
     with col2:
         if st.button("🗑️ Delete All", type="primary", use_container_width=True):
-            # Delete all chats (also deletes diskcache directory)
             deleted = delete_all_chats()
-            # Clear session state
             st.session_state.chats = {}
             st.session_state.current_chat_id = None
-            # Reset agent AND disk_cache since cache directory was deleted
             st.session_state.agent = None
-            st.session_state.disk_cache = None  # Critical: also reset the cache!
+            st.session_state.disk_cache = None
             _clear_all_chat_threads()
             st.success(f"Deleted {deleted} chats")
             st.rerun()
-
 
 @st.dialog("Reset to Defaults")
 def _confirm_reset_settings() -> None:
@@ -49,9 +44,7 @@ def _confirm_reset_settings() -> None:
             st.rerun()
     with col2:
         if st.button("🔄 Reset", type="primary", use_container_width=True):
-            # Delete settings file
             delete_settings()
-            # Clear settings-related session state
             st.session_state.executor_type = "lighthouse"
             st.session_state.databao_project = None
             st.session_state.context = None
@@ -61,7 +54,6 @@ def _confirm_reset_settings() -> None:
             st.success("Settings reset to defaults")
             st.rerun()
 
-
 def render_general_settings_page() -> None:
     """Render the General Settings page."""
     st.title("General Settings")
@@ -69,7 +61,6 @@ def render_general_settings_page() -> None:
 
     st.markdown("---")
 
-    # Storage Information
     st.subheader("📁 Storage Location")
 
     base_path = get_storage_base_path()
@@ -86,7 +77,6 @@ def render_general_settings_page() -> None:
         st.markdown("**Cache Directory**")
         st.code(str(cache_dir), language=None)
 
-        # Show storage statistics
         try:
             chats = st.session_state.get("chats", {})
             num_chats = len(chats)
@@ -96,7 +86,6 @@ def render_general_settings_page() -> None:
 
     st.markdown("---")
 
-    # Danger Zone
     st.subheader("⚠️ Data Management")
 
     st.markdown(

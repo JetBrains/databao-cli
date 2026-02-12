@@ -18,28 +18,23 @@ from databao_cli.ui.services.storage import get_cache_dir
 
 logger = logging.getLogger(__name__)
 
-
 def _load_persisted_state() -> None:
     """Load settings and chats from disk on startup."""
     from databao_cli.ui.services.chat_persistence import load_all_chats
     from databao_cli.ui.services.settings_persistence import get_or_create_settings
 
-    # Load or create settings
     if "app_settings" not in st.session_state:
         settings = get_or_create_settings()
         st.session_state.app_settings = settings
 
-        # Apply loaded settings to session state
         st.session_state.executor_type = settings.agent.executor_type
 
-    # Load chats from disk (only once on startup)
     if "_chats_loaded" not in st.session_state:
         chats = load_all_chats()
         if chats:
             st.session_state.chats = chats
             logger.info(f"Loaded {len(chats)} chats from disk")
         st.session_state._chats_loaded = True
-
 
 def _save_settings_if_changed() -> None:
     """Save settings to disk if they've changed."""
@@ -50,7 +45,6 @@ def _save_settings_if_changed() -> None:
     if settings is None:
         return
 
-    # Check for changes and update settings object
     changed = False
 
     current_executor = st.session_state.get("executor_type", "lighthouse")
@@ -62,7 +56,6 @@ def _save_settings_if_changed() -> None:
         save_settings(settings)
         logger.debug("Settings saved")
 
-
 def _get_or_create_disk_cache() -> DiskCache:
     """Get or create the DiskCache instance for the agent."""
     if "disk_cache" not in st.session_state:
@@ -70,7 +63,6 @@ def _get_or_create_disk_cache() -> DiskCache:
         config = DiskCacheConfig(db_dir=cache_dir / "diskcache")
         st.session_state.disk_cache = DiskCache(config=config)
     return st.session_state.disk_cache
-
 
 def _initialize_agent(project: ProjectLayout) -> Agent | None:
     """Initialize or return existing Databao agent.
@@ -90,7 +82,6 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
     try:
         executor_type = st.session_state.get("executor_type", "lighthouse")
 
-        # Use DiskCache for persistence
         cache = _get_or_create_disk_cache()
 
         if "context" not in st.session_state or st.session_state.context is None:
@@ -100,7 +91,6 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
         else:
             context = st.session_state.context
 
-        # Check if we have any datasources
         if not context.sources.dbs and not context.sources.dfs:
             set_status(AppStatus.ERROR, "No datasource connections found in DCE project.")
             return None
@@ -122,7 +112,6 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
         set_status(AppStatus.ERROR, f"Failed to initialize agent: {e}")
         return None
 
-
 def _clear_all_chat_threads() -> None:
     """Clear thread references from all chats.
 
@@ -132,7 +121,6 @@ def _clear_all_chat_threads() -> None:
     chats: dict[str, ChatSession] = st.session_state.get("chats", {})
     for chat in chats.values():
         chat.thread = None
-
 
 def _initialize_app(project_dir: str):
     """Initialize app-level resources: project and agent.
@@ -146,7 +134,6 @@ def _initialize_app(project_dir: str):
         set_status(AppStatus.INITIALIZING, "Project needs build")
         return
 
-    # Load persisted state (settings + chats)
     with status_context(AppStatus.INITIALIZING, "Loading app data from disk..."):
         _load_persisted_state()
 
@@ -156,16 +143,13 @@ def _initialize_app(project_dir: str):
     if agent:
         set_status(AppStatus.READY)
 
-
 def init_session_state() -> None:
     """Initialize session state variables."""
-    # Chat sessions
     if "chats" not in st.session_state:
         st.session_state.chats = {}
     if "current_chat_id" not in st.session_state:
         st.session_state.current_chat_id = None
 
-    # DCE/Agent state
     if "databao_project" not in st.session_state:
         st.session_state.databao_project = None
     if "databao_context" not in st.session_state:
@@ -179,7 +163,6 @@ def init_session_state() -> None:
     if "executor_type" not in st.session_state:
         st.session_state.executor_type = "lighthouse"
 
-    # Suggestions state
     if "suggested_questions" not in st.session_state:
         st.session_state.suggested_questions = []
     if "suggestions_are_llm_generated" not in st.session_state:
@@ -191,10 +174,8 @@ def init_session_state() -> None:
     if "suggestions_cancel_event" not in st.session_state:
         st.session_state.suggestions_cancel_event = None
 
-    # Title generation state
     if "title_futures" not in st.session_state:
         st.session_state.title_futures = {}
-
 
 def _create_new_chat() -> None:
     """Create a new chat and navigate to it."""
@@ -202,15 +183,12 @@ def _create_new_chat() -> None:
 
     from databao_cli.ui.services.chat_persistence import save_chat
 
-    # Save current chat before creating new one
     prev_chat_id = st.session_state.get("current_chat_id")
     chats: dict[str, ChatSession] = st.session_state.get("chats", {})
     if prev_chat_id and prev_chat_id in chats:
         prev_chat = chats[prev_chat_id]
-        # Persist previous chat to disk (messages and thread are already in chat object)
         save_chat(prev_chat)
 
-    # Create new chat
     chat_id = str(uuid6())
     chat = ChatSession(id=chat_id)
 
@@ -218,12 +196,9 @@ def _create_new_chat() -> None:
     st.session_state.chats = chats
     st.session_state.current_chat_id = chat_id
 
-    # Flag to navigate to this chat on next rerun
     st.session_state._navigate_to_chat = chat_id
 
-    # Save new chat to disk
     save_chat(chat)
-
 
 def build_navigation() -> None:
     """Build the multipage navigation structure."""
@@ -233,13 +208,10 @@ def build_navigation() -> None:
     from databao_cli.ui.pages.general_settings import render_general_settings_page
     from databao_cli.ui.pages.welcome import render_welcome_page
 
-    # Check if we need to navigate to a newly created chat
     navigate_to_chat: str | None = st.session_state.get("_navigate_to_chat")
     if navigate_to_chat:
-        # Clear the navigation flag
         st.session_state._navigate_to_chat = None
 
-    # Settings pages - store in session state for navigation access
     general_settings_page = st.Page(
         render_general_settings_page,
         title="General",
@@ -260,19 +232,14 @@ def build_navigation() -> None:
     )
     settings_pages = [general_settings_page, context_settings_page, agent_settings_page]
 
-    # Store page objects in session state for cross-page navigation
     st.session_state._page_general_settings = general_settings_page
     st.session_state._page_context_settings = context_settings_page
     st.session_state._page_agent_settings = agent_settings_page
 
-    # Chat pages - build dynamically from session state
     chat_pages: list[st.Page] = []
 
-    # "New Chat" action (using a function that creates and navigates)
     def new_chat_action():
         _create_new_chat()
-        # The chat is created and _navigate_to_chat is set.
-        # We need to rerun so navigation picks up the new chat.
         st.rerun()
 
     chat_pages.append(
@@ -284,17 +251,13 @@ def build_navigation() -> None:
         )
     )
 
-    # Existing chats
     chats: dict[str, ChatSession] = st.session_state.get("chats", {})
     target_chat_page: st.Page | None = None
 
     if chats:
-        # Sort by creation time, newest first
         sorted_chats = sorted(chats.values(), key=lambda c: c.created_at, reverse=True)
 
         for chat in sorted_chats:
-            # Create a page for each chat
-            # Use a closure to capture the chat_id
             def make_chat_page(chat_id: str):
                 def page_fn():
                     st.session_state.current_chat_id = chat_id
@@ -304,22 +267,20 @@ def build_navigation() -> None:
 
             title = chat.display_title
 
-            # Check if this is the chat we should navigate to
             is_target = navigate_to_chat == chat.id
 
             page = st.Page(
                 make_chat_page(chat.id),
                 title=title,
                 icon="💬",
-                url_path=f"chat-{chat.id}",  # Flat path (no nested paths allowed)
-                default=is_target,  # Make this the default if we're navigating to it
+                url_path=f"chat-{chat.id}",
+                default=is_target,
             )
             chat_pages.append(page)
 
             if is_target:
                 target_chat_page = page
 
-    # Welcome page (default only if we're not navigating to a chat)
     welcome_page = st.Page(
         render_welcome_page,
         title="Home",
@@ -328,31 +289,26 @@ def build_navigation() -> None:
         default=(navigate_to_chat is None),
     )
 
-    # Store welcome page in session state for navigation
     st.session_state._page_welcome = welcome_page
 
-    # Build navigation with sections
     pages = {
-        "": [welcome_page],  # Empty string = no header
+        "": [welcome_page],
         "Settings": settings_pages,
         "Chats": chat_pages,
     }
 
     pg = st.navigation(pages)
 
-    # If we have a target chat page and navigation returned it, switch to it
     if target_chat_page is not None:
         st.switch_page(target_chat_page)
 
     pg.run()
-
 
 def _get_current_project(project_dir: str) -> ProjectLayout:
     """Get the current DCE project, auto-detecting if needed.
 
     This is called at app level to determine project status for all pages.
     """
-    # 1. Return existing project if available
     if st.session_state.get("databao_project") is not None:
         return st.session_state.databao_project
 
@@ -360,7 +316,6 @@ def _get_current_project(project_dir: str) -> ProjectLayout:
     st.session_state.databao_project = project
 
     return project
-
 
 def _render_global_sidebar() -> None:
     """Render sidebar elements that appear on all pages.
@@ -375,7 +330,6 @@ def _render_global_sidebar() -> None:
 def main() -> None:
     """Main application entry point."""
 
-    # Page config - use Databao logo as favicon
     assets_dir = Path(__file__).parent / "assets"
     favicon = assets_dir / "bao.png"
 
@@ -397,13 +351,11 @@ def main() -> None:
     project_dir = args.project_dir
 
     init_session_state()
-    _initialize_app(project_dir)  # Project + agent initialization
-    _render_global_sidebar()  # UI only
+    _initialize_app(project_dir)
+    _render_global_sidebar()
     build_navigation()
 
-    # Save settings if changed (at end of main loop)
     _save_settings_if_changed()
-
 
 if __name__ == "__main__":
     main()

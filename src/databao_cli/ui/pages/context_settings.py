@@ -17,7 +17,6 @@ def render_context_settings_page() -> None:
 
     st.markdown("---")
 
-    # Current project section
     st.subheader("📊 DCE Project")
 
     project: ProjectLayout | None = st.session_state.get("databao_project")
@@ -28,7 +27,6 @@ def render_context_settings_page() -> None:
     else:
         st.info("No DCE project detected. Configure one below.")
 
-    # Handle reload
     if reload_clicked:
         st.session_state.databao_project = None
         st.session_state.context = None
@@ -39,7 +37,6 @@ def render_context_settings_page() -> None:
 
     st.markdown("---")
 
-    # Connected sources section
     st.subheader("🔗 Connected Sources")
 
     agent = st.session_state.get("agent")
@@ -53,7 +50,6 @@ def render_context_settings_page() -> None:
     else:
         _render_sources(agent)
 
-
 def _render_project_info(project: ProjectLayout) -> bool:
     """
     Render project information.
@@ -64,7 +60,6 @@ def _render_project_info(project: ProjectLayout) -> bool:
     st.markdown(f"**{project.name}**")
     st.code(str(project.project_dir), language=None)
 
-    # Status indicator
     if dce_status(project) == DCEProjectStatus.VALID:
         st.success("Project is ready", icon="✅")
     elif dce_status(project) == DCEProjectStatus.NO_BUILD:
@@ -76,7 +71,6 @@ def _render_project_info(project: ProjectLayout) -> bool:
 
     return reload_clicked
 
-
 def _render_sources(agent: Agent) -> None:
     """Render connected data sources."""
     dbs = agent.dbs
@@ -86,7 +80,6 @@ def _render_sources(agent: Agent) -> None:
         st.caption("No sources configured in this project.")
         return
 
-    # Databases
     if dbs:
         st.markdown("**Databases:**")
         for name, source in dbs.items():
@@ -99,12 +92,10 @@ def _render_sources(agent: Agent) -> None:
                 with col2:
                     st.caption(db_type)
 
-                # Show context preview if available
                 if source.context:
                     with st.expander("View context", expanded=False):
                         st.code(source.context[:500] + "..." if len(source.context) > 500 else source.context)
 
-    # DataFrames
     if dfs:
         st.markdown("**DataFrames:**")
         for name in dfs:

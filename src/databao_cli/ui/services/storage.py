@@ -9,11 +9,9 @@ logger = logging.getLogger(__name__)
 
 _UI_SUBDIR = "ui"
 
-# Subdirectories within the storage
 _CHATS_SUBDIR = "chats"
 _CACHE_SUBDIR = "cache"
 _SETTINGS_FILE = "settings.yaml"
-
 
 def get_storage_base_path() -> Path:
     """Get the storage path for UI settings and chats.
@@ -26,7 +24,6 @@ def get_storage_base_path() -> Path:
         raise RuntimeError("Databao project path not set")
     return databao_project.databao_dir / _UI_SUBDIR
 
-
 def get_settings_path() -> Path:
     """Get the path to settings.yaml file.
 
@@ -35,7 +32,6 @@ def get_settings_path() -> Path:
     """
     base = get_storage_base_path()
     return base / _SETTINGS_FILE
-
 
 def get_chats_dir() -> Path:
     """Get the chats directory path.
@@ -48,7 +44,6 @@ def get_chats_dir() -> Path:
     chats_dir.mkdir(parents=True, exist_ok=True)
     return chats_dir
 
-
 def get_cache_dir() -> Path:
     """Get the cache directory path for DiskCache.
 
@@ -59,7 +54,6 @@ def get_cache_dir() -> Path:
     cache_dir = base / _CACHE_SUBDIR
     cache_dir.mkdir(parents=True, exist_ok=True)
     return cache_dir
-
 
 def get_chat_dir(chat_id: str) -> Path:
     """Get the directory for a specific chat.

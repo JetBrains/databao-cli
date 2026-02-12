@@ -25,22 +25,17 @@ def _confirm_delete_chat(chat_id: str, chat_title: str) -> None:
             st.rerun()
     with col2:
         if st.button("🗑️ Delete", type="primary", use_container_width=True):
-            # Delete chat from disk and memory
             delete_chat(chat_id)
 
-            # Remove from session state
             chats = st.session_state.get("chats", {})
             if chat_id in chats:
                 del chats[chat_id]
                 st.session_state.chats = chats
 
-            # Clear current chat state
             st.session_state.current_chat_id = None
 
-            # Navigate to home
             st.session_state._navigate_to_chat = None
             st.rerun()
-
 
 def render_project_info(project: ProjectLayout | None) -> None:
     """Render project information section with Reload button."""
@@ -48,7 +43,6 @@ def render_project_info(project: ProjectLayout | None) -> None:
 
     if project is None:
         st.caption("No project selected")
-        # Show Reload button even with no project
         if st.button("🔄 Reload", width="stretch", help="Reload DCE project"):
             st.session_state.databao_project = None
             st.session_state.context = None
@@ -62,23 +56,19 @@ def render_project_info(project: ProjectLayout | None) -> None:
     st.markdown(f"**{project.name}**")
     st.caption(str(project.project_dir))
 
-    # Status indicator
     if dce_status(project) == DCEProjectStatus.VALID:
         st.success("✓ Ready", icon="✅")
     elif dce_status(project) == DCEProjectStatus.NO_BUILD:
         st.warning("Build required", icon="⚠️")
 
-    # Reload button at bottom of Project section
     if st.button("🔄 Reload", width="stretch", help="Reload DCE project"):
         st.session_state.databao_project = None
         st.session_state.context = None
         st.session_state.agent = None
         _clear_all_chat_threads()
         set_status(AppStatus.INITIALIZING, "Reloading project...")
-        # Reset suggestions so they get regenerated with new agent
         reset_suggestions_state()
         st.rerun()
-
 
 def render_sources_info() -> None:
     """Render connected sources section."""
@@ -89,7 +79,6 @@ def render_sources_info() -> None:
         st.caption("No sources connected")
         return
 
-    # Get databases
     dbs = agent.dbs
     dfs = agent.dfs
 
@@ -97,15 +86,12 @@ def render_sources_info() -> None:
         st.caption("No sources configured")
         return
 
-    # List databases
     for name, source in dbs.items():
         db_type, icon = get_db_type_and_icon(source.db_connection)
         st.markdown(f"{icon} **{name}** ({db_type})")
 
-    # List dataframes
     for name in dfs:
         st.markdown(f"📊 **{name}** (DataFrame)")
-
 
 def render_executor_selector() -> None:
     """Render executor type selector."""
@@ -124,12 +110,10 @@ def render_executor_selector() -> None:
 
     if selected != current:
         st.session_state.executor_type = selected
-        # Reset agent when executor changes
         st.session_state.agent = None
         _clear_all_chat_threads()
         set_status(AppStatus.INITIALIZING, "Applying executor change...")
         st.rerun()
-
 
 def render_sidebar_header() -> None:
     """Render shared sidebar header (logo + status).
@@ -140,7 +124,6 @@ def render_sidebar_header() -> None:
     import base64
     from pathlib import Path
 
-    # Header with logo - use HTML for proper vertical alignment
     logo_path = Path(__file__).parent.parent / "assets" / "bao.png"
     if logo_path.exists():
         with open(logo_path, "rb") as f:
@@ -157,11 +140,9 @@ def render_sidebar_header() -> None:
     else:
         st.markdown("## Databao")
 
-    st.markdown("")  # Vertical spacing
+    st.markdown("")
 
-    # Status (right after header) - uses st.empty() for real-time updates
     render_status_fragment()
-
 
 def render_sidebar_chat_content(project: ProjectLayout | None) -> None:
     """Render chat-specific sidebar content.
@@ -171,22 +152,18 @@ def render_sidebar_chat_content(project: ProjectLayout | None) -> None:
     """
     from databao_cli.ui.models.chat_session import ChatSession
 
-    # Project info (includes Reload button)
     render_project_info(project)
 
     st.markdown("---")
 
-    # Sources
     render_sources_info()
 
     st.markdown("---")
 
-    # Executor selector
     render_executor_selector()
 
     st.markdown("---")
 
-    # Remove chat button (only show if there's a current chat)
     current_chat_id = st.session_state.get("current_chat_id")
     chats: dict[str, ChatSession] = st.session_state.get("chats", {})
 
@@ -195,6 +172,5 @@ def render_sidebar_chat_content(project: ProjectLayout | None) -> None:
         if st.button("🗑️ Remove Chat", use_container_width=True, type="primary"):
             _confirm_delete_chat(current_chat_id, chat.display_title)
 
-    # Footer
     st.markdown("---")
     st.caption("Databao v0.1")

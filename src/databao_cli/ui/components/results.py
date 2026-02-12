@@ -15,7 +15,6 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-
 def _extract_visualization_data(thread: "Thread") -> dict[str, Any] | None:
     """Extract serializable visualization data from thread._visualization_result.
 
@@ -30,33 +29,27 @@ def _extract_visualization_data(thread: "Thread") -> dict[str, Any] | None:
         "code": vis_result.code,
     }
 
-    # Check if it's a VegaChatResult with spec and spec_df
     if hasattr(vis_result, "spec") and hasattr(vis_result, "spec_df"):
-        data["spec"] = vis_result.spec  # dict, JSON-serializable
-        data["spec_df"] = vis_result.spec_df  # DataFrame, will be pickled separately
+        data["spec"] = vis_result.spec
+        data["spec_df"] = vis_result.spec_df
 
     return data
 
-
 def render_response_section(text: str, has_visualization: bool) -> None:
     """Render the response text section."""
-    # Response is expanded by default if no visualization
     expanded = not has_visualization
 
     with st.expander("📝 Response", expanded=expanded):
         st.markdown(text)
 
-
 def render_code_section(code: str) -> None:
     """Render the code section (collapsed by default)."""
     with st.expander("💻 Code", expanded=False):
-        # Try to detect SQL
         sql_keywords = ["SELECT", "FROM", "WHERE", "JOIN", "INSERT", "UPDATE", "DELETE"]
         if any(keyword in code.upper() for keyword in sql_keywords):
             st.code(code, language="sql")
         else:
             st.code(code, language="python")
-
 
 def render_dataframe_section(result: "ExecutionResult", has_visualization: bool) -> None:
     """Render the dataframe section."""
@@ -64,12 +57,10 @@ def render_dataframe_section(result: "ExecutionResult", has_visualization: bool)
     if df is None:
         return
 
-    # Expanded if no visualization
     expanded = not has_visualization
 
     with st.expander(f"📊 Data ({len(df)} rows)", expanded=expanded):
         st.dataframe(df, width="stretch")
-
 
 def render_visualization_section(
     thread: "Thread", visualization_data: dict[str, Any] | None = None
@@ -87,7 +78,6 @@ def render_visualization_section(
     """
     vis_result = thread._visualization_result
 
-    # If we have persisted visualization_data with spec/spec_df, render directly
     if vis_result is None and visualization_data is not None:
         spec = visualization_data.get("spec")
         spec_df = visualization_data.get("spec_df")
@@ -113,8 +103,6 @@ def render_visualization_section(
 
         plot_type = type(plot).__name__
 
-        # First: Try Vega-Lite chart (preferred for VegaChatResult)
-        # Use st.vega_lite_chart directly with the spec and DataFrame
         if hasattr(vis_result, "spec") and hasattr(vis_result, "spec_df"):
             spec = vis_result.spec
             spec_df = vis_result.spec_df
@@ -125,7 +113,6 @@ def render_visualization_section(
                 except Exception:
                     logger.debug("Failed to render Vega-Lite chart from spec, trying other methods", exc_info=True)
 
-        # Second: Try Altair chart directly
         if "altair" in plot_type.lower() or "Chart" in plot_type:
             try:
                 st.altair_chart(plot, width="stretch")
@@ -133,10 +120,8 @@ def render_visualization_section(
             except Exception:
                 logger.debug("Failed to render Altair chart, trying other methods", exc_info=True)
 
-        # Third: Try HTML embedding for other interactive objects
         html_content = None
 
-        # Try _repr_mimebundle_ (Vega-Embed compatible objects)
         if hasattr(plot, "_repr_mimebundle_"):
             try:
                 bundle = plot._repr_mimebundle_()
@@ -149,26 +134,22 @@ def render_visualization_section(
             except Exception:
                 logger.debug("Failed to extract HTML from _repr_mimebundle_", exc_info=True)
 
-        # Try _repr_html_
         if html_content is None and hasattr(plot, "_repr_html_"):
             try:
                 html_content = plot._repr_html_()
             except Exception:
                 logger.debug("Failed to get HTML from _repr_html_", exc_info=True)
 
-        # Try vis_result._get_plot_html()
         if html_content is None and hasattr(vis_result, "_get_plot_html"):
             try:
                 html_content = vis_result._get_plot_html()
             except Exception:
                 logger.debug("Failed to get HTML from _get_plot_html()", exc_info=True)
 
-        # Render HTML if we got it
         if html_content:
             st.components.v1.html(html_content, height=500, scrolling=False)
             return
 
-        # Fourth: Check if it's a PIL Image (fallback for static images)
         if "Image" in plot_type or hasattr(plot, "_repr_png_"):
             try:
                 st.image(plot)
@@ -178,7 +159,6 @@ def render_visualization_section(
 
         st.warning(f"Could not render visualization: {plot_type}")
 
-
 def _get_current_chat() -> "ChatSession | None":
     """Get the current chat session from session state."""
     current_chat_id = st.session_state.get("current_chat_id")
@@ -186,7 +166,6 @@ def _get_current_chat() -> "ChatSession | None":
     if current_chat_id and current_chat_id in chats:
         return chats[current_chat_id]
     return None
-
 
 @st.fragment
 def render_visualization_and_actions(
@@ -204,7 +183,6 @@ def render_visualization_and_actions(
     The fragment reads has_visualization and visualization_data from chat.messages
     so it can see updates made by button click handlers on fragment rerun.
     """
-    # Get fresh chat reference in case it was updated
     current_chat = _get_current_chat()
     if current_chat is None:
         return
@@ -213,7 +191,6 @@ def render_visualization_and_actions(
     if thread is None:
         return
 
-    # Read current state from chat messages (may be updated by button clicks within this fragment)
     messages = current_chat.messages
     if message_index < len(messages):
         msg = messages[message_index]
@@ -223,14 +200,11 @@ def render_visualization_and_actions(
         has_visualization = False
         visualization_data = None
 
-    # Visualization section (if visualization exists or we have persisted data)
     if has_visualization or thread._visualization_result is not None or visualization_data is not None:
         render_visualization_section(thread, visualization_data)
 
-    # Action buttons (only for latest message)
     if is_latest:
         _render_and_handle_action_buttons(result, current_chat, message_index, has_visualization)
-
 
 def _render_and_handle_action_buttons(
     result: "ExecutionResult",
@@ -248,26 +222,20 @@ def _render_and_handle_action_buttons(
     if thread is None:
         return
 
-    # Check if we're processing a query - buttons will be disabled
     is_processing = is_query_running(chat)
 
     has_data = result.df is not None
 
-    # Plot button: only show if we have data to plot (plot requires dataframe)
-    # Also check thread._data_result exists - it may be None if we failed to restore
-    # the thread state from a persisted chat
     if not (has_data and not has_visualization and thread._data_result is not None):
         return
 
-    # Render button in columns (disabled while processing)
-    cols = st.columns(3)  # Extra columns for spacing
+    cols = st.columns(3)
 
     with cols[0]:
         button_key = f"action_generate_plot_{message_index}"
         clicked = st.button("📈 Generate Plot", key=button_key, width="stretch", disabled=is_processing)
         if clicked and not is_processing:
             _handle_generate_plot(chat, message_index)
-
 
 def _handle_generate_plot(chat: "ChatSession", message_index: int) -> None:
     """Handle Generate Plot button click.
@@ -288,11 +256,9 @@ def _handle_generate_plot(chat: "ChatSession", message_index: int) -> None:
                 messages[message_index].visualization_data = _extract_visualization_data(thread)
                 save_current_chat()
 
-            # Fragment-scoped rerun to show new visualization
             st.rerun()
         except Exception as e:
             st.error(f"Failed to generate visualization: {e}")
-
 
 def render_execution_result(
     result: "ExecutionResult",
@@ -304,18 +270,13 @@ def render_execution_result(
     visualization_data: dict[str, Any] | None = None,
 ) -> None:
     """Render the complete execution result with all sections."""
-    # Response section (always present)
     if result.text:
         render_response_section(result.text, has_visualization)
 
-    # Code section (if code exists)
     if result.code:
         render_code_section(result.code)
 
-    # DataFrame section (if df exists)
     if result.df is not None:
         render_dataframe_section(result, has_visualization)
 
-    # Visualization and action buttons are rendered together in a fragment
-    # This allows "Generate Plot" to update the visualization with a fragment-scoped rerun
     render_visualization_and_actions(result, chat, message_index, is_latest=is_latest)

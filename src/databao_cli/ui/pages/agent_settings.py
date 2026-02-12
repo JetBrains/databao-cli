@@ -5,12 +5,10 @@ import streamlit as st
 from databao_cli.ui.app import _clear_all_chat_threads
 from databao_cli.ui.components.status import AppStatus, set_status
 
-# Available executor types
 EXECUTOR_TYPES = {
     "lighthouse": "LighthouseExecutor (recommended)",
     "react_duckdb": "ReactDuckDBExecutor (experimental)",
 }
-
 
 def render_agent_settings_page() -> None:
     """Render the Agent Settings page."""
@@ -19,7 +17,6 @@ def render_agent_settings_page() -> None:
 
     st.markdown("---")
 
-    # Executor selection
     st.subheader("⚙️ Execution Engine")
 
     st.markdown(
@@ -38,7 +35,6 @@ def render_agent_settings_page() -> None:
         help="Choose the execution engine for queries",
     )
 
-    # Show executor description
     if selected == "lighthouse":
         st.info(
             """
@@ -58,10 +54,8 @@ def render_agent_settings_page() -> None:
             icon="⚠️",
         )
 
-    # Apply button (only shown when selection differs from current)
     if selected != current and st.button("✓ Apply Changes", type="primary"):
         st.session_state.executor_type = selected
-        # Reset agent to reinitialize with new executor
         st.session_state.agent = None
         _clear_all_chat_threads()
         set_status(AppStatus.INITIALIZING, "Applying executor change...")
@@ -70,7 +64,6 @@ def render_agent_settings_page() -> None:
 
     st.markdown("---")
 
-    # LLM Configuration (placeholder for future)
     st.subheader("🤖 Language Model")
 
     st.info(
@@ -81,7 +74,6 @@ def render_agent_settings_page() -> None:
         icon="🔮",
     )
 
-    # Show current LLM info if agent exists
     agent = st.session_state.get("agent")
     if agent:
         st.markdown("**Current Configuration:**")
