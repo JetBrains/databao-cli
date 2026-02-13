@@ -34,7 +34,7 @@ def run_databao_cmd(run_dir: Path, args: list[str] = None, answers: list[str] = 
         yield runner.invoke(cli=cli, args=args, input=inputs, catch_exceptions=False)
 
 
-def desribe_result(result: Result) -> str:
+def describe_result(result: Result) -> str:
     return f"""
     stdout: {result.stdout}
     stderr: {result.stderr}
