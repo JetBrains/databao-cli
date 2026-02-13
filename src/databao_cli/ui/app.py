@@ -109,9 +109,13 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
 
         from databao.api import agent as create_agent
 
+        from databao_cli.ui.pages.agent_settings import create_executor
+
+        executor = create_executor(executor_type)
+
         _agent = create_agent(
             context=context,
-            executor_type=executor_type,
+            data_executor=executor,
             cache=cache,
         )
 

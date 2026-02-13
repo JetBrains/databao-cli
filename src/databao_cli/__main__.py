@@ -122,9 +122,8 @@ def build(ctx: Context, domain: str) -> None:
     help="Temperature 0.0-1.0 (default: 0.0)",
 )
 @click.option(
-    "--show-thinking",
-    is_flag=True,
-    default=False,
+    "--show-thinking/--no-show-thinking",
+    default=True,
     help="Display reasoning/thinking output (streaming is implicit when enabled)",
 )
 @click.pass_context
@@ -145,7 +144,7 @@ def ask(
         databao ask                                          # Interactive mode
         databao ask --one-shot "What tables exist?"          # One-shot mode
         databao ask --model anthropic:claude-3-5-sonnet      # With custom model
-        databao ask --show-thinking                          # Show reasoning
+        databao ask --no-show-thinking                       # Hide reasoning
     """
     ask_impl(ctx, question, one_shot, model, temperature, show_thinking)
 
