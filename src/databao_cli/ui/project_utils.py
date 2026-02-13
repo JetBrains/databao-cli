@@ -26,7 +26,7 @@ def dce_status(project: ProjectLayout) -> DCEProjectStatus:
     if not configured:
         return DCEProjectStatus.NO_DATASOURCES
 
-    prepared = dce_project.get_prepared_datasource_list()
+    prepared = dce_project.get_introspected_datasource_list()
     if not prepared:
         return DCEProjectStatus.NO_BUILD
 

@@ -506,8 +506,8 @@ wheels = [
 
 [[package]]
 name = "databao"
-version = "0.1.4.dev55+3c236d4"
-source = { git = "https://github.com/JetBrains/databao-agent.git?rev=ykhudyakov%2Fui#3c236d4de72f935c43e1391109d0d822d759cf0f" }
+version = "0.1.4.dev58+da909dd"
+source = { git = "https://github.com/JetBrains/databao-agent.git?rev=ykhudyakov%2Fui#da909dd27666dcffb2764037b81938856722df5f" }
 dependencies = [
     { name = "databao-context-engine" },
     { name = "diskcache" },
