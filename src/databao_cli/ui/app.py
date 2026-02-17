@@ -10,10 +10,10 @@ from databao import Context
 from databao.caches.disk_cache import DiskCache, DiskCacheConfig
 from databao.core.agent import Agent
 
-from databao_cli.project.layout import ProjectLayout
+from databao_cli.project.layout import ProjectLayout, find_project
 from databao_cli.ui.components.status import AppStatus, set_status, status_context
 from databao_cli.ui.models.chat_session import ChatSession
-from databao_cli.ui.project_utils import DCEProjectStatus, dce_status
+from databao_cli.ui.project_utils import DatabaoProjectStatus, databao_project_status
 from databao_cli.ui.services.storage import get_cache_dir
 
 logger = logging.getLogger(__name__)
@@ -76,18 +76,22 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
     if st.session_state.get("agent") is not None:
         return cast(Agent, st.session_state.agent)
 
-    status = dce_status(project)
-    if status == DCEProjectStatus.NO_DATASOURCES:
+    status = databao_project_status(project)
+    if status == DatabaoProjectStatus.NOT_INITIALIZED:
+        set_status(AppStatus.INITIALIZING, "Project not initialized.")
+        return None
+
+    if status == DatabaoProjectStatus.NO_DATASOURCES:
         set_status(
             AppStatus.INITIALIZING,
             "No datasources configured. Add datasources to your project first.",
         )
         return None
 
-    if status == DCEProjectStatus.NO_BUILD:
+    if status == DatabaoProjectStatus.NO_BUILD:
         set_status(
             AppStatus.INITIALIZING,
-            "DCE project found but no build output. Run 'databao build' first.",
+            "Project found but no build output. Build the context first.",
         )
         return None
 
@@ -104,7 +108,7 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
             context = st.session_state.context
 
         if not context.sources.dbs and not context.sources.dfs:
-            set_status(AppStatus.ERROR, "No datasource connections found in DCE project.")
+            set_status(AppStatus.ERROR, "No datasource connections found in project.")
             return None
 
         from databao.api import agent as create_agent
@@ -140,7 +144,16 @@ def _clear_all_chat_threads() -> None:
         chat.thread = None
 
 
-def _initialize_app(project_dir: str):
+def _is_project_ready(project_dir: Path) -> bool:
+    """Check if the Databao project is fully set up and ready for normal use."""
+    project = find_project(project_dir)
+    if project is None:
+        return False
+    status = databao_project_status(project)
+    return status == DatabaoProjectStatus.VALID
+
+
+def _initialize_app(project_dir: Path) -> None:
     """Initialize app-level resources: project and agent.
 
     This is called on every rerun but returns early if already initialized.
@@ -148,12 +161,16 @@ def _initialize_app(project_dir: str):
 
     project = _get_current_project(project_dir)
 
-    status = dce_status(project)
-    if status == DCEProjectStatus.NO_DATASOURCES:
+    status = databao_project_status(project)
+    if status == DatabaoProjectStatus.NOT_INITIALIZED:
+        set_status(AppStatus.INITIALIZING, "Project not initialized")
+        return
+
+    if status == DatabaoProjectStatus.NO_DATASOURCES:
         set_status(AppStatus.INITIALIZING, "No datasources configured")
         return
 
-    if status == DCEProjectStatus.NO_BUILD:
+    if status == DatabaoProjectStatus.NO_BUILD:
         set_status(AppStatus.INITIALIZING, "Project needs build")
         return
 
@@ -201,6 +218,15 @@ def init_session_state() -> None:
     if "title_futures" not in st.session_state:
         st.session_state.title_futures = {}
 
+    if "build_status" not in st.session_state:
+        st.session_state.build_status = "not_started"
+    if "build_future" not in st.session_state:
+        st.session_state.build_future = None
+    if "build_result" not in st.session_state:
+        st.session_state.build_result = None
+    if "build_error" not in st.session_state:
+        st.session_state.build_error = None
+
 
 def _create_new_chat() -> None:
     """Create a new chat and navigate to it."""
@@ -227,7 +253,7 @@ def _create_new_chat() -> None:
 
 
 def build_navigation() -> None:
-    """Build the multipage navigation structure."""
+    """Build the full multipage navigation structure (normal mode)."""
     from databao_cli.ui.pages.agent_settings import render_agent_settings_page
     from databao_cli.ui.pages.chat import render_chat_page
     from databao_cli.ui.pages.context_settings import render_context_settings_page
@@ -332,15 +358,31 @@ def build_navigation() -> None:
     pg.run()
 
 
-def _get_current_project(project_dir: str) -> ProjectLayout:
-    """Get the current DCE project, auto-detecting if needed.
+def build_setup_navigation() -> None:
+    """Build navigation for setup mode -- only the setup wizard page, no sidebar."""
+    from databao_cli.ui.pages.welcome import render_setup_wizard_page
+
+    setup_page = st.Page(
+        render_setup_wizard_page,
+        title="Setup",
+        icon="🎋",
+        url_path="setup",
+        default=True,
+    )
+
+    pg = st.navigation({"": [setup_page]})
+    pg.run()
+
+
+def _get_current_project(project_dir: Path) -> ProjectLayout:
+    """Get the current Databao project, creating a ProjectLayout from the path.
 
     This is called at app level to determine project status for all pages.
     """
     if st.session_state.get("databao_project") is not None:
         return st.session_state.databao_project
 
-    project = ProjectLayout(Path(project_dir))
+    project = ProjectLayout(project_dir)
     st.session_state.databao_project = project
 
     return project
@@ -371,21 +413,39 @@ def main() -> None:
     )
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-p", "--project-dir", type=str, required=True, help="Location of your Databao project")
+    parser.add_argument(
+        "-p",
+        "--project-dir",
+        type=str,
+        required=False,
+        default=None,
+        help="Location of your Databao project (defaults to current directory)",
+    )
     try:
         args = parser.parse_args()
     except SystemExit:
-        st.warning("Please provide a valid project directory using -p/--project-dir CLI argument")
-        st.stop()
+        st.warning("Failed to parse arguments. Using current directory as project directory.")
+        args = argparse.Namespace(project_dir=None)
 
-    project_dir = args.project_dir
+    project_dir = Path(args.project_dir) if args.project_dir else Path.cwd()
 
     init_session_state()
-    _initialize_app(project_dir)
-    _render_global_sidebar()
-    build_navigation()
 
-    _save_settings_if_changed()
+    if "_setup_mode_active" not in st.session_state:
+        st.session_state._setup_mode_active = not _is_project_ready(project_dir)
+
+    is_setup_mode = st.session_state._setup_mode_active and not st.session_state.get("welcome_completed", False)
+
+    st.session_state._project_dir = project_dir
+
+    if is_setup_mode:
+        _get_current_project(project_dir)
+        build_setup_navigation()
+    else:
+        _initialize_app(project_dir)
+        _render_global_sidebar()
+        build_navigation()
+        _save_settings_if_changed()
 
 
 if __name__ == "__main__":

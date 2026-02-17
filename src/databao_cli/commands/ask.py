@@ -12,7 +12,7 @@ from databao.core.thread import Thread
 from prettytable import PrettyTable
 
 from databao_cli.project.layout import ProjectLayout
-from databao_cli.ui.project_utils import DCEProjectStatus, dce_status
+from databao_cli.ui.project_utils import DatabaoProjectStatus, databao_project_status
 from databao_cli.ui.streaming import StreamingWriter
 
 # Default maximum number of rows to display in dataframe output
@@ -38,17 +38,24 @@ def initialize_agent_from_dce(project_path: Path, model: str | None, temperature
     # Validate DCE project
     project = ProjectLayout(project_path)
 
-    status = dce_status(project)
-    if status == DCEProjectStatus.NO_DATASOURCES:
+    status = databao_project_status(project)
+    if status == DatabaoProjectStatus.NOT_INITIALIZED:
+        click.echo(
+            f"No Databao project found at {project.project_dir}. Run 'databao init' first.",
+            err=True,
+        )
+        sys.exit(1)
+
+    if status == DatabaoProjectStatus.NO_DATASOURCES:
         click.echo(
             f"No datasources configured in project at {project.project_dir}. Add datasources first.",
             err=True,
         )
         sys.exit(1)
 
-    if status == DCEProjectStatus.NO_BUILD:
+    if status == DatabaoProjectStatus.NO_BUILD:
         click.echo(
-            f"DCE project found at {project.project_dir} but no build output. Run 'databao build' first.",
+            f"Project found at {project.project_dir} but no build output. Run 'databao build' first.",
             err=True,
         )
         sys.exit(1)
