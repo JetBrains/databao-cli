@@ -546,8 +546,8 @@ wheels = [
 
 [[package]]
 name = "databao"
-version = "0.1.4.dev64+417bd6c"
-source = { git = "https://github.com/JetBrains/databao-agent.git?rev=ykhudyakov%2Fui#417bd6cb0d3b151c9a7244e32852fd5080e93a39" }
+version = "0.1.4.dev79+591d0e4"
+source = { git = "https://github.com/JetBrains/databao-agent.git?rev=ykhudyakov%2Fui#591d0e48b4145aba545fb7f33c66fe483364a0b9" }
 dependencies = [
     { name = "databao-context-engine", extra = ["mysql", "postgresql", "snowflake"] },
     { name = "diskcache" },
