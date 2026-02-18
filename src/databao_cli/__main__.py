@@ -223,5 +223,6 @@ def _get_project_or_exit(project_dir: Path) -> ProjectLayout:
         exit(1)
     return project_layout
 
+
 if __name__ == "__main__":
     cli()
