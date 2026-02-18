@@ -11,6 +11,10 @@ class ProjectLayout:
     project_dir: Path
 
     @property
+    def name(self) -> str:
+        return self.project_dir.name
+
+    @property
     def databao_dir(self) -> Path:
         return get_databao_project_dir(self.project_dir)
 
@@ -31,7 +35,7 @@ class ProjectLayout:
 
 
 def find_project(initial_dir: Path) -> ProjectLayout | None:
-    dirs_to_check = [initial_dir] + list(initial_dir.parents)
+    dirs_to_check = [initial_dir, *list(initial_dir.parents)]
     for project_dir_candidate in dirs_to_check:
         databao_project_dir = get_databao_project_dir(project_dir_candidate)
         if databao_project_dir.exists():

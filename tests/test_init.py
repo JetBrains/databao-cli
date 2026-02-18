@@ -79,7 +79,7 @@ def test_init_project_with_snowflake(tmp_path: Path):
         }
 
 
-def assert_created_project_is_valid(project_dir: Path | str, additional_expected_files: list[str] = None) -> None:
+def assert_created_project_is_valid(project_dir: Path | str, additional_expected_files: list[str] | None = None) -> None:
     expected_directories = {
         "databao/agents",
         "databao/domains/root/src",

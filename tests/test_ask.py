@@ -3,10 +3,10 @@ from click.testing import CliRunner
 from databao_cli.__main__ import cli
 
 
-def test_app_help():
-    """Test that the app command shows help."""
+def test_ask_help():
+    """Test that the ask command shows help."""
     runner = CliRunner()
-    result = runner.invoke(cli, ["app", "--help"])
+    result = runner.invoke(cli, ["ask", "--help"])
 
     assert result.exit_code == 0
-    assert "Launch the Databao Streamlit web interface" in result.output
+    assert "Chat with the Databao agent" in result.output

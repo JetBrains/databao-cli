@@ -12,7 +12,10 @@ dependencies = [
     "click>=8.2.1,<9.0.0",
     "databao-context-engine[snowflake]>=0.1.6",
     "prettytable>=3.10.0",
-    "databao[ui] @ git+https://github.com/JetBrains/databao-agent.git@main",
+    "databao @ git+https://github.com/JetBrains/databao-agent.git@main",
+    "streamlit>=1.53.0",
+    "uuid6>=2024.7.10",
+    "pyyaml>=6.0",
 ]
 
 [project.scripts]
@@ -30,7 +33,7 @@ packages = ["src/databao_cli"]
 
 [dependency-groups]
 dev = [
-    "pyyaml>=6.0.3",
+    "pre-commit>=4.5.1",
     "pytest>=9.0.2,<10.0.0",
     "ruff>=0.9.0,<1.0.0",
 ]
@@ -40,4 +43,27 @@ line-length = 127
 target-version = "py312"
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "W"]
+select = [
+    # pycodestyle
+    "E",
+    # pycodestyle warnings
+    "W",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+    # ruff-specific
+    "RUF",
+    # Prefer absolute imports over relative ones
+    "TID252",
+]
+ignore = ["S301"]  # pickle usage is needed; suppressed inline at call sites
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101"]  # assert is standard in pytest

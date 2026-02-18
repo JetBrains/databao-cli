@@ -1,0 +1,110 @@
+"""Agent Settings page - Executor and LLM configuration."""
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+import streamlit as st
+
+from databao_cli.ui.app import _clear_all_chat_threads
+from databao_cli.ui.components.status import AppStatus, set_status
+
+if TYPE_CHECKING:
+    from databao.core import Executor
+
+EXECUTOR_TYPES = {
+    "lighthouse": "LighthouseExecutor (recommended)",
+    "react_duckdb": "ReactDuckDBExecutor (experimental)",
+}
+
+
+def create_executor(executor_type: str) -> Executor:
+    """Create a data executor instance from its type name.
+
+    Supported types are defined in EXECUTOR_TYPES.
+    """
+    from databao.executors.lighthouse.executor import LighthouseExecutor
+    from databao.executors.react_duckdb.executor import ReactDuckDBExecutor
+
+    match executor_type:
+        case "lighthouse":
+            return LighthouseExecutor()
+        case "react_duckdb":
+            return ReactDuckDBExecutor()
+        case _:
+            raise ValueError(f"Unknown executor type: {executor_type!r}. Supported types: {', '.join(EXECUTOR_TYPES)}")
+
+
+def render_agent_settings_page() -> None:
+    """Render the Agent Settings page."""
+    st.title("Agent Settings")
+    st.markdown("Configure the AI agent behavior and execution engine.")
+
+    st.markdown("---")
+
+    st.subheader("⚙️ Execution Engine")
+
+    st.markdown(
+        """
+        The executor determines how queries are processed and executed against your data sources.
+        """
+    )
+
+    current = st.session_state.get("executor_type", "lighthouse")
+
+    selected = st.selectbox(
+        "Executor type",
+        options=list(EXECUTOR_TYPES.keys()),
+        index=list(EXECUTOR_TYPES.keys()).index(current),
+        format_func=lambda x: EXECUTOR_TYPES[x],
+        help="Choose the execution engine for queries",
+    )
+
+    if selected == "lighthouse":
+        st.info(
+            """
+            **LighthouseExecutor** is the default and recommended executor.
+            It uses a sophisticated graph-based approach with planning and validation steps.
+            Best for complex queries requiring multiple steps.
+            """,
+            icon="💡",
+        )
+    elif selected == "react_duckdb":
+        st.warning(
+            """
+            **ReactDuckDBExecutor** is experimental.
+            It uses a ReAct-style loop optimized for DuckDB queries.
+            May be faster for simple queries but less reliable for complex ones.
+            """,
+            icon="⚠️",
+        )
+
+    if selected != current and st.button("✓ Apply Changes", type="primary"):
+        st.session_state.executor_type = selected
+        st.session_state.agent = None
+        _clear_all_chat_threads()
+        set_status(AppStatus.INITIALIZING, "Applying executor change...")
+        st.success(f"Executor changed to {EXECUTOR_TYPES[selected]}")
+        st.rerun()
+
+    st.markdown("---")
+
+    st.subheader("🤖 Language Model")
+
+    st.info(
+        """
+        LLM configuration will be available in a future update.
+        Currently using the default model configuration.
+        """,
+        icon="🔮",
+    )
+
+    agent = st.session_state.get("agent")
+    if agent:
+        st.markdown("**Current Configuration:**")
+        try:
+            llm = agent.llm
+            model_name = getattr(llm, "model_name", None) or getattr(llm, "model", "Unknown")
+            st.code(f"Model: {model_name}")
+        except Exception:
+            st.caption("Could not retrieve model information.")

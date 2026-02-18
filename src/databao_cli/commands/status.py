@@ -24,7 +24,7 @@ def _generate_info_string(command_info: DceInfo) -> str:
 
     if command_info.project_info.is_initialized:
         info_lines.append(f"Project dir: {command_info.project_info.project_path.resolve()}")
-        info_lines.append(f"Project ID: {str(command_info.project_info.project_id)}")
+        info_lines.append(f"Project ID: {command_info.project_info.project_id!s}")
     else:
         info_lines.append(f"Project not initialized at {command_info.project_info.project_path.resolve()}")
 

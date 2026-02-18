@@ -1,7 +1,7 @@
 import os
+from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Iterator
 
 from click.testing import CliRunner, Result
 
@@ -9,7 +9,7 @@ from databao_cli.__main__ import cli
 
 
 @contextmanager
-def run_init(run_dir: Path, args: list[str] = None, answers: list[str] = None) -> Iterator[Result]:
+def run_init(run_dir: Path, args: list[str] | None = None, answers: list[str] | None = None) -> Iterator[Result]:
     if args is None:
         args = ["init"]
     if answers is None:
@@ -19,7 +19,7 @@ def run_init(run_dir: Path, args: list[str] = None, answers: list[str] = None) -
 
 
 @contextmanager
-def run_build(run_dir: Path, args: list[str] = None, answers: list[str] = None) -> Iterator[Result]:
+def run_build(run_dir: Path, args: list[str] | None = None, answers: list[str] | None = None) -> Iterator[Result]:
     if args is None:
         args = ["build"]
     with run_databao_cmd(run_dir=run_dir, args=args, answers=answers) as result:
@@ -27,7 +27,7 @@ def run_build(run_dir: Path, args: list[str] = None, answers: list[str] = None) 
 
 
 @contextmanager
-def run_databao_cmd(run_dir: Path, args: list[str] = None, answers: list[str] = None) -> Iterator[Result]:
+def run_databao_cmd(run_dir: Path, args: list[str] | None = None, answers: list[str] | None = None) -> Iterator[Result]:
     runner = CliRunner()
     inputs = os.linesep.join(answers) if answers else ""
     with within_dir(run_dir):

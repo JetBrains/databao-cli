@@ -1,39 +1,27 @@
 """databao ask command - Interactive CLI chat with the Databao agent."""
 
-import io
 import sys
 from pathlib import Path
 
 import click
 import pandas as pd
-from databao import Agent
+from databao import Agent, Context
+from databao.api import agent as create_agent
+from databao.configs.llm import LLMConfig, LLMConfigDirectory
 from databao.core.thread import Thread
 from prettytable import PrettyTable
+
+from databao_cli.project.layout import ProjectLayout
+from databao_cli.ui.project_utils import DCEProjectStatus, dce_status
+from databao_cli.ui.streaming import StreamingWriter
 
 # Default maximum number of rows to display in dataframe output
 DEFAULT_MAX_DISPLAY_ROWS = 10
 
 
-class CLIStreamingWriter(io.StringIO):
-    """A writer that streams output to CLI in real-time.
-
-    Extends StringIO to capture all output while simultaneously echoing
-    every write to stdout immediately for real-time display.
-    """
-
-    def __init__(self) -> None:
-        super().__init__()
-
-    def write(self, text: str) -> int:
-        """Write text to buffer and echo to stdout."""
-        result = super().write(text)
-        click.echo(text, nl=False)
-        return result
-
-    def clear(self) -> None:
-        """Clear the buffer."""
-        self.seek(0)
-        self.truncate(0)
+def _create_cli_writer() -> StreamingWriter:
+    """Create a StreamingWriter that echoes output to the CLI in real-time."""
+    return StreamingWriter(on_write=lambda text: click.echo(text, nl=False))
 
 
 def dataframe_to_prettytable(df: pd.DataFrame, max_rows: int = DEFAULT_MAX_DISPLAY_ROWS) -> str:
@@ -47,27 +35,32 @@ def dataframe_to_prettytable(df: pd.DataFrame, max_rows: int = DEFAULT_MAX_DISPL
 
 def initialize_agent_from_dce(project_path: Path, model: str | None, temperature: float) -> Agent:
     """Initialize the Databao agent using DCE project at the given path."""
-    import databao
-    from databao.configs.llm import LLMConfig, LLMConfigDirectory
-    from databao.dce import (
-        DCEProjectStatus,
-        create_all_connections,
-        get_all_context,
-    )
-    from databao.dce.project import validate_project
-
     # Validate DCE project
-    project = validate_project(project_path)
+    project = ProjectLayout(project_path)
 
-    if project.status == DCEProjectStatus.NOT_FOUND:
-        click.echo(f"No DCE project found at {project_path}. Run 'databao init' first.", err=True)
+    status = dce_status(project)
+    if status == DCEProjectStatus.NO_DATASOURCES:
+        click.echo(
+            f"No datasources configured in project at {project.project_dir}. Add datasources first.",
+            err=True,
+        )
         sys.exit(1)
 
-    if project.status == DCEProjectStatus.NO_BUILD:
-        click.echo(f"DCE project found at {project.path} but no build output. Run 'databao build' first.", err=True)
+    if status == DCEProjectStatus.NO_BUILD:
+        click.echo(
+            f"DCE project found at {project.project_dir} but no build output. Run 'databao build' first.",
+            err=True,
+        )
         sys.exit(1)
 
-    click.echo(f"Using DCE project: {project.path}")
+    click.echo(f"Using DCE project: {project.project_dir}")
+
+    # Load context from DCE project
+    context = Context.load(project.root_domain_dir)
+
+    if not context.sources.dbs and not context.sources.dfs:
+        click.echo("No datasource connections found in DCE project.", err=True)
+        sys.exit(1)
 
     # Create LLM config
     if model:
@@ -83,32 +76,10 @@ def initialize_agent_from_dce(project_path: Path, model: str | None, temperature
             llm_config = LLMConfigDirectory.DEFAULT
 
     # Create agent
-    agent = databao.new_agent(llm_config=llm_config)
+    agent = create_agent(context=context, llm_config=llm_config)
 
-    # Connect to databases
-    connections = create_all_connections(project.path)
-    if not connections:
-        click.echo("No datasource connections found in DCE project.", err=True)
-        sys.exit(1)
-
-    # Load context
-    db_contexts: list[databao.dce.DatabaseContext] = []
-    file_contexts: list[databao.dce.FileContext] = []
-    if project.latest_run_dir:
-        db_contexts, file_contexts = get_all_context(project.latest_run_dir)
-
-    db_context_map = {ctx.database_id: ctx.context_text for ctx in db_contexts}
-
-    # Add databases to agent
-    for conn_info in connections:
-        context = db_context_map.get(conn_info.name) or db_context_map.get(conn_info.db_type)
-        agent.add_db(conn_info.connection, name=conn_info.name, context=context)
-
-    # Add file contexts
-    for file_ctx in file_contexts:
-        agent.add_context(file_ctx.context_text)
-
-    click.echo(f"Connected to {len(connections)} data source(s)")
+    num_sources = len(context.sources.dbs) + len(context.sources.dfs)
+    click.echo(f"Connected to {num_sources} data source(s)")
     return agent
 
 
@@ -147,10 +118,7 @@ def run_interactive_mode(agent: Agent, show_thinking: bool) -> None:
     click.echo("\nDatabao REPL")
     click.echo("\nType \\help for available commands.\n")
 
-    if show_thinking:
-        writer = CLIStreamingWriter()
-    else:
-        writer = None
+    writer = _create_cli_writer() if show_thinking else None
 
     # Create thread with writer for streaming
     thread = agent.thread(
@@ -216,10 +184,7 @@ def run_interactive_mode(agent: Agent, show_thinking: bool) -> None:
 def run_one_shot_mode(agent: Agent, question: str, show_thinking: bool) -> None:
     """Run a single question and exit."""
 
-    if show_thinking:
-        writer = CLIStreamingWriter()
-    else:
-        writer = None
+    writer = _create_cli_writer() if show_thinking else None
 
     # Create thread with writer for streaming
     thread = agent.thread(

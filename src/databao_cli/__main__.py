@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 
 import click
@@ -23,10 +24,7 @@ from databao_cli.project.layout import ProjectLayout
 @click.pass_context
 def cli(ctx: Context, project_dir: Path | None):
     """Databao Common CLI"""
-    if project_dir is None:
-        project_path = Path.cwd()
-    else:
-        project_path = project_dir.expanduser().resolve()
+    project_path = Path.cwd() if project_dir is None else project_dir.expanduser().resolve()
 
     configure_logging()
 
@@ -61,7 +59,7 @@ def init(ctx: Context) -> None:
             return
     except InitDatabaoProjectError as e:
         click.echo(e.message, err=True)
-        exit(1)
+        sys.exit(1)
 
     click.echo(f"Project initialized successfully at {project_dir.resolve()}")
 
@@ -124,9 +122,8 @@ def build(ctx: Context, domain: str) -> None:
     help="Temperature 0.0-1.0 (default: 0.0)",
 )
 @click.option(
-    "--show-thinking",
-    is_flag=True,
-    default=False,
+    "--show-thinking/--no-show-thinking",
+    default=True,
     help="Display reasoning/thinking output (streaming is implicit when enabled)",
 )
 @click.pass_context
@@ -147,7 +144,7 @@ def ask(
         databao ask                                          # Interactive mode
         databao ask --one-shot "What tables exist?"          # One-shot mode
         databao ask --model anthropic:claude-3-5-sonnet      # With custom model
-        databao ask --show-thinking                          # Show reasoning
+        databao ask --no-show-thinking                       # Hide reasoning
     """
     ask_impl(ctx, question, one_shot, model, temperature, show_thinking)
 
