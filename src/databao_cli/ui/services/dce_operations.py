@@ -6,26 +6,22 @@ using direct Python API calls (no subprocess/shell).
 
 import logging
 import os
-import sys
 from pathlib import Path
 from typing import Any
 
 from databao_context_engine import (
-    BuildContextResult,
+    BuildDatasourceResult,
     CheckDatasourceConnectionResult,
     ConfiguredDatasource,
     DatabaoContextPluginLoader,
     DatabaoContextProjectManager,
     DatasourceId,
     DatasourceType,
-    get_databao_context_engine_info,
-    get_databao_context_engine_project_info,
 )
 from databao_context_engine.datasources.check_config import DatasourceConnectionStatus
 from databao_context_engine.pluginlib.build_plugin import BuildDatasourcePlugin
 from databao_context_engine.pluginlib.config import ConfigPropertyDefinition
 from databao_context_engine.pluginlib.plugin_utils import check_connection_for_datasource
-from databao_context_engine.plugins.plugin_loader import load_plugins
 
 from databao_cli.commands.init import init_impl
 from databao_cli.project.layout import ProjectLayout
@@ -121,8 +117,8 @@ def verify_datasource_config(ds_type_str: str, ds_name: str, config: dict[str, A
     ds_type = DatasourceType(full_type=ds_type_str)
     full_config = {"type": ds_type_str, "name": ds_name, **config}
 
-    plugins = load_plugins(exclude_file_plugins=True)
-    plugin = plugins.get(ds_type)
+    loader = DatabaoContextPluginLoader()
+    plugin = loader.get_plugin_for_datasource_type(ds_type)
 
     if plugin is None:
         return CheckDatasourceConnectionResult(
@@ -166,31 +162,17 @@ def verify_datasource_config(ds_type_str: str, ds_name: str, config: dict[str, A
         )
 
 
-def build_context(project_dir: Path) -> list[BuildContextResult]:
+def build_context(project_dir: Path) -> list[BuildDatasourceResult]:
     """Build context for all datasources in the DCE project. This is a long-running operation."""
     manager = DatabaoContextProjectManager(project_dir=project_dir)
     return manager.build_context()
 
 
 def get_status_info(project_dir: Path) -> str:
-    """Return formatted status info string for display."""
-    dce_info = get_databao_context_engine_info()
-    project_info = get_databao_context_engine_project_info(project_dir)
+    """Return formatted status info string for display.
 
-    lines = [
-        f"Databao context engine version: {dce_info.version}",
-        f"Databao context engine storage dir: {dce_info.dce_path}",
-        f"Databao context engine plugins: {dce_info.plugin_ids}",
-        "",
-        f"OS name: {sys.platform}",
-        f"OS architecture: {os.uname().machine if hasattr(os, 'uname') else 'unknown'}",
-        "",
-    ]
+    Delegates to the CLI's status_impl which handles multi-domain iteration.
+    """
+    from databao_cli.commands.status import status_impl
 
-    if project_info.is_initialized:
-        lines.append(f"Project dir: {project_info.project_path.resolve()}")
-        lines.append(f"Project ID: {project_info.project_id!s}")
-    else:
-        lines.append(f"Project not initialized at {project_info.project_path.resolve()}")
-
-    return os.linesep.join(lines)
+    return status_impl(project_dir)

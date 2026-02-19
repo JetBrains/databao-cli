@@ -1,3 +1,4 @@
+import os
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -32,6 +33,14 @@ class ProjectLayout:
         Root domain is the domain which is used by default unless domain parameter is specified
         """
         return self.domains_dir / "root"
+
+    def get_domain_dirs(self) -> list[Path]:
+        domains_dir = self.domains_dir
+        return [domains_dir / domain for domain in os.listdir(domains_dir) if (domains_dir / domain).is_dir()]
+
+    def get_domain_names(self) -> list[str]:
+        domains_dir = self.domains_dir
+        return [domain for domain in os.listdir(domains_dir) if (domains_dir / domain).is_dir()]
 
 
 def find_project(initial_dir: Path) -> ProjectLayout | None:

@@ -1,31 +1,46 @@
 import os
 import sys
+from importlib.metadata import version
 from pathlib import Path
 
-from databao_context_engine import DceInfo, get_databao_context_engine_info
+from databao_context_engine import (
+    DceInfo,
+    DceProjectInfo,
+    get_databao_context_engine_info,
+    get_databao_context_engine_project_info,
+)
+
+from databao_cli.project.layout import find_project
 
 
 def status_impl(project_dir: Path) -> str:
-    return _generate_info_string(get_databao_context_engine_info(project_dir=project_dir))
+    project_layout = find_project(project_dir)
+
+    dce_info = get_databao_context_engine_info()
+
+    return _generate_info_string(
+        dce_info,
+        [get_databao_context_engine_project_info(domain) for domain in project_layout.get_domain_dirs()]
+        if project_layout
+        else [],
+    )
 
 
-def _generate_info_string(command_info: DceInfo) -> str:
-    info_lines = []
-    info_lines.append(f"Databao context engine version: {command_info.version}")
-    info_lines.append(f"Databao context engine storage dir: {command_info.dce_path}")
-    info_lines.append(f"Databao context engine plugins: {command_info.plugin_ids}")
+def _generate_info_string(command_info: DceInfo, domain_infos: list[DceProjectInfo]) -> str:
+    info_lines = [
+        f"Databao context engine version: {command_info.version}",
+        f"Databao agent version: {version('databao')}",
+        f"Databao context engine storage dir: {command_info.dce_path}",
+        f"Databao context engine plugins: {command_info.plugin_ids}",
+        "",
+        f"OS name: {sys.platform}",
+        f"OS architecture: {os.uname().machine if hasattr(os, 'uname') else 'unknown'}",
+        "",
+    ]
 
-    info_lines.append("")
-
-    info_lines.append(f"OS name: {sys.platform}")
-    info_lines.append(f"OS architecture: {os.uname().machine if hasattr(os, 'uname') else 'unknown'}")
-
-    info_lines.append("")
-
-    if command_info.project_info.is_initialized:
-        info_lines.append(f"Project dir: {command_info.project_info.project_path.resolve()}")
-        info_lines.append(f"Project ID: {command_info.project_info.project_id!s}")
-    else:
-        info_lines.append(f"Project not initialized at {command_info.project_info.project_path.resolve()}")
+    for domain_info in domain_infos:
+        if domain_info.is_initialized:
+            info_lines.append(f"Databao Domain dir: {domain_info.project_path.resolve()}")
+            info_lines.append(f"Databao Domain ID: {domain_info.project_id!s}")
 
     return os.linesep.join(info_lines)

@@ -10,13 +10,13 @@ from concurrent.futures import TimeoutError as FuturesTimeoutError
 from pathlib import Path
 
 import streamlit as st
-from databao_context_engine import BuildContextResult
+from databao_context_engine import BuildDatasourceResult
 
 from databao_cli.ui.services.dce_operations import build_context
 
 logger = logging.getLogger(__name__)
 
-BuildResult = list[BuildContextResult]
+BuildResult = list[BuildDatasourceResult]
 
 
 @st.cache_resource
