@@ -2,9 +2,12 @@
 
 Runs DCE build_context in a background thread so the user can switch pages.
 Follows the same pattern as suggestions.py (ThreadPoolExecutor + session state).
+Build log output from DCE is captured via a custom logging handler and displayed live.
 """
 
+import io
 import logging
+import threading
 from concurrent.futures import Future, ThreadPoolExecutor
 from concurrent.futures import TimeoutError as FuturesTimeoutError
 from pathlib import Path
@@ -18,6 +21,31 @@ logger = logging.getLogger(__name__)
 
 BuildResult = list[BuildDatasourceResult]
 
+DCE_LOGGER_NAME = "databao_context_engine"
+
+
+class BuildLogCapture(logging.Handler):
+    """Captures log records from DCE into a thread-safe StringIO buffer for UI display."""
+
+    def __init__(self) -> None:
+        super().__init__(level=logging.DEBUG)
+        self._buffer = io.StringIO()
+        self._lock = threading.Lock()
+        self.setFormatter(logging.Formatter("%(asctime)s %(levelname)s: %(message)s", datefmt="%H:%M:%S"))
+
+    def emit(self, record: logging.LogRecord) -> None:
+        msg = self.format(record)
+        with self._lock:
+            self._buffer.write(msg + "\n")
+
+    def getvalue(self) -> str:
+        with self._lock:
+            return self._buffer.getvalue()
+
+    def close(self) -> None:
+        super().close()
+        self._buffer.close()
+
 
 @st.cache_resource
 def _get_build_executor() -> ThreadPoolExecutor:
@@ -25,13 +53,20 @@ def _get_build_executor() -> ThreadPoolExecutor:
     return ThreadPoolExecutor(max_workers=1, thread_name_prefix="build")
 
 
-def _build_task(project_dir: Path) -> BuildResult:
-    """Background task that runs the build."""
+def _build_task(project_dir: Path, log_capture: BuildLogCapture) -> BuildResult:
+    """Background task that runs the build with log capture."""
+    dce_logger = logging.getLogger(DCE_LOGGER_NAME)
+    dce_logger.addHandler(log_capture)
+    original_level = dce_logger.level
+    dce_logger.setLevel(logging.DEBUG)
     try:
         return build_context(project_dir)
     except Exception:
         logger.exception("Background build failed")
         raise
+    finally:
+        dce_logger.removeHandler(log_capture)
+        dce_logger.setLevel(original_level)
 
 
 def start_build(project_dir: Path) -> bool:
@@ -43,8 +78,11 @@ def start_build(project_dir: Path) -> bool:
     if status == "running":
         return False
 
+    log_capture = BuildLogCapture()
+    st.session_state.build_log_capture = log_capture
+
     executor = _get_build_executor()
-    future: Future[BuildResult] = executor.submit(_build_task, project_dir)
+    future: Future[BuildResult] = executor.submit(_build_task, project_dir, log_capture)
 
     st.session_state.build_future = future
     st.session_state.build_status = "running"
@@ -112,12 +150,21 @@ def get_build_error() -> str | None:
     return st.session_state.get("build_error")
 
 
+def get_build_log() -> str:
+    """Return the current build log text."""
+    capture: BuildLogCapture | None = st.session_state.get("build_log_capture")
+    if capture is None:
+        return ""
+    return capture.getvalue()
+
+
 def reset_build_state() -> None:
     """Reset build state to allow re-building."""
     st.session_state.build_future = None
     st.session_state.build_status = "not_started"
     st.session_state.build_result = None
     st.session_state.build_error = None
+    st.session_state.build_log_capture = None
     logger.info("Reset build state")
 
 
@@ -160,5 +207,11 @@ def render_build_section(project_dir: Path) -> None:
                 reset_build_state()
                 start_build(project_dir)
                 st.rerun(scope="fragment")
+
+        log_text = get_build_log()
+        if log_text:
+            expanded = build_status == "running"
+            with st.expander("Build log", expanded=expanded):
+                st.code(log_text, language="log")
 
     _build_fragment()
