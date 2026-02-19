@@ -49,7 +49,7 @@ def _confirm_reset_settings() -> None:
             delete_settings()
             st.session_state.executor_type = "lighthouse"
             st.session_state.databao_project = None
-            st.session_state.context = None
+            st.session_state.domain = None
             st.session_state.agent = None
             _clear_all_chat_threads()
             st.session_state.app_settings = None

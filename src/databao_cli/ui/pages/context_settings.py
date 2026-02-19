@@ -29,7 +29,7 @@ def render_context_settings_page() -> None:
 
     if reload_clicked:
         st.session_state.databao_project = None
-        st.session_state.context = None
+        st.session_state.domain = None
         st.session_state.agent = None
         _clear_all_chat_threads()
         set_status(AppStatus.INITIALIZING, "Reloading project...")
@@ -92,7 +92,7 @@ def _render_sources(agent: Agent) -> None:
     if dbs:
         st.markdown("**Databases:**")
         for name, source in dbs.items():
-            db_type, icon = get_db_type_and_icon(source.db_connection)
+            db_type, icon = get_db_type_and_icon(source.config)
 
             with st.container():
                 col1, col2 = st.columns([3, 1])
