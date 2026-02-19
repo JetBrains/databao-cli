@@ -96,12 +96,8 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
 
         cache = _get_or_create_disk_cache()
 
-        if "domain" not in st.session_state or st.session_state.domain is None:
-            with status_context(AppStatus.INITIALIZING, "Loading domain..."):
-                _domain = create_domain(project.root_domain_dir)
-                st.session_state.domain = _domain
-        else:
-            _domain = st.session_state.domain
+        with status_context(AppStatus.INITIALIZING, "Loading domain..."):
+            _domain = create_domain(project.root_domain_dir)
 
         from databao.api import agent as create_agent
 
@@ -172,8 +168,6 @@ def init_session_state() -> None:
 
     if "databao_project" not in st.session_state:
         st.session_state.databao_project = None
-    if "databao_domain" not in st.session_state:
-        st.session_state.databao_domain = None
     if "agent" not in st.session_state:
         st.session_state.agent = None
     if "app_status" not in st.session_state:

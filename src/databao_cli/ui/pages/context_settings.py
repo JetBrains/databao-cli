@@ -29,7 +29,6 @@ def render_context_settings_page() -> None:
 
     if reload_clicked:
         st.session_state.databao_project = None
-        st.session_state.domain = None
         st.session_state.agent = None
         _clear_all_chat_threads()
         set_status(AppStatus.INITIALIZING, "Reloading project...")

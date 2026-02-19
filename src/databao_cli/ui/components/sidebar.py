@@ -46,7 +46,6 @@ def render_project_info(project: ProjectLayout | None) -> None:
         st.caption("No project selected")
         if st.button("🔄 Reload", width="stretch", help="Reload DCE project"):
             st.session_state.databao_project = None
-            st.session_state.domain = None
             st.session_state.agent = None
             _clear_all_chat_threads()
             set_status(AppStatus.INITIALIZING, "Reloading...")
@@ -67,7 +66,6 @@ def render_project_info(project: ProjectLayout | None) -> None:
 
     if st.button("🔄 Reload", width="stretch", help="Reload DCE project"):
         st.session_state.databao_project = None
-        st.session_state.domain = None
         st.session_state.agent = None
         _clear_all_chat_threads()
         set_status(AppStatus.INITIALIZING, "Reloading project...")
