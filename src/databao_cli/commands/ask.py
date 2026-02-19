@@ -5,7 +5,8 @@ from pathlib import Path
 
 import click
 import pandas as pd
-from databao import Agent, Context
+from databao import Agent
+from databao import domain as create_domain
 from databao.api import agent as create_agent
 from databao.configs.llm import LLMConfig, LLMConfigDirectory
 from databao.core.thread import Thread
@@ -62,12 +63,7 @@ def initialize_agent_from_dce(project_path: Path, model: str | None, temperature
 
     click.echo(f"Using DCE project: {project.project_dir}")
 
-    # Load context from DCE project
-    context = Context.load(project.root_domain_dir)
-
-    if not context.sources.dbs and not context.sources.dfs:
-        click.echo("No datasource connections found in DCE project.", err=True)
-        sys.exit(1)
+    _domain = create_domain(project.root_domain_dir)
 
     # Create LLM config
     if model:
@@ -82,10 +78,9 @@ def initialize_agent_from_dce(project_path: Path, model: str | None, temperature
         else:
             llm_config = LLMConfigDirectory.DEFAULT
 
-    # Create agent
-    agent = create_agent(context=context, llm_config=llm_config)
+    agent = create_agent(domain=_domain, llm_config=llm_config)
 
-    num_sources = len(context.sources.dbs) + len(context.sources.dfs)
+    num_sources = len(agent.sources.dbs) + len(agent.sources.dfs)
     click.echo(f"Connected to {num_sources} data source(s)")
     return agent
 

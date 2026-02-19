@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import cast
 
 import streamlit as st
-from databao import Context
+from databao import domain as create_domain
 from databao.caches.disk_cache import DiskCache, DiskCacheConfig
 from databao.core.agent import Agent
 
@@ -100,16 +100,8 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
 
         cache = _get_or_create_disk_cache()
 
-        if "context" not in st.session_state or st.session_state.context is None:
-            with status_context(AppStatus.INITIALIZING, "Loading context..."):
-                context = Context.load(project.root_domain_dir)
-                st.session_state.context = context
-        else:
-            context = st.session_state.context
-
-        if not context.sources.dbs and not context.sources.dfs:
-            set_status(AppStatus.ERROR, "No datasource connections found in project.")
-            return None
+        with status_context(AppStatus.INITIALIZING, "Loading domain..."):
+            _domain = create_domain(project.root_domain_dir)
 
         from databao.api import agent as create_agent
 
@@ -118,7 +110,7 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
         executor = create_executor(executor_type)
 
         _agent = create_agent(
-            context=context,
+            domain=_domain,
             data_executor=executor,
             cache=cache,
         )
@@ -193,8 +185,6 @@ def init_session_state() -> None:
 
     if "databao_project" not in st.session_state:
         st.session_state.databao_project = None
-    if "databao_context" not in st.session_state:
-        st.session_state.databao_context = None
     if "agent" not in st.session_state:
         st.session_state.agent = None
     if "app_status" not in st.session_state:
