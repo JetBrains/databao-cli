@@ -10,10 +10,10 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "click>=8.2.1,<9.0.0",
-    "databao-context-engine[snowflake] @ git+https://github.com/JetBrains/databao-context-engine.git@main",
+    "databao-context-engine[snowflake]==0.3.0.dev2",
     "prettytable>=3.10.0",
-    "databao @ git+https://github.com/JetBrains/databao-agent.git@ykhudyakov/relax-to-py3.11",
-    "streamlit>=1.53.0",
+    "databao==0.1.4.dev2",
+    "streamlit[snowflake]>=1.53.0",
     "uuid6>=2024.7.10",
     "pyyaml>=6.0",
 ]
@@ -25,8 +25,9 @@ databao = "databao_cli.__main__:cli"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.hatch.metadata]
-allow-direct-references = true
+[[tool.uv.index]]
+name = "jetbrains-databao-dev"
+url = "https://packages.jetbrains.team/pypi/p/ai-debugger/pypi-databao-dev/simple"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/databao_cli"]
