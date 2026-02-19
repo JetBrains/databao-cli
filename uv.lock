@@ -648,8 +648,8 @@ wheels = [
 
 [[package]]
 name = "databao"
-version = "0.1.4.dev37+cdce730"
-source = { git = "https://github.com/JetBrains/databao-agent.git?rev=ykhudyakov%2Frelax-to-py3.11#cdce73085e74140ee78ab0233ff40d5637eeee50" }
+version = "0.1.4.dev2"
+source = { registry = "https://packages.jetbrains.team/pypi/p/ai-debugger/pypi-databao-dev/simple" }
 dependencies = [
     { name = "databao-context-engine", extra = ["mysql", "postgresql", "snowflake"] },
     { name = "dbt-core" },
@@ -672,6 +672,10 @@ dependencies = [
     { name = "sqlalchemy" },
     { name = "tabulate" },
     { name = "watchdog" },
+]
+sdist = { url = "https://packages.jetbrains.team/pypi/p/ai-debugger/pypi-databao-dev/download/databao/0.1.4.dev2/databao-0.1.4.dev2.tar.gz", hash = "sha256:ed9d87378a71282ff06ccafb14eb2624dc445678e14a6884db475475b5fd604d" }
+wheels = [
+    { url = "https://packages.jetbrains.team/pypi/p/ai-debugger/pypi-databao-dev/download/databao/0.1.4.dev2/databao-0.1.4.dev2-py3-none-any.whl", hash = "sha256:1e181ad211c8d1fc42c5def4f24d9027788833e7152c8a94f355c0464b8cd3fc" },
 ]
 
 [[package]]
@@ -698,8 +702,8 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "click", specifier = ">=8.2.1,<9.0.0" },
-    { name = "databao", git = "https://github.com/JetBrains/databao-agent.git?rev=ykhudyakov%2Frelax-to-py3.11" },
-    { name = "databao-context-engine", extras = ["snowflake"], git = "https://github.com/JetBrains/databao-context-engine.git?rev=main" },
+    { name = "databao", specifier = "==0.1.4.dev2" },
+    { name = "databao-context-engine", extras = ["snowflake"], specifier = "==0.3.0.dev2" },
     { name = "prettytable", specifier = ">=3.10.0" },
     { name = "pyyaml", specifier = ">=6.0" },
     { name = "streamlit", specifier = ">=1.53.0" },
@@ -715,8 +719,8 @@ dev = [
 
 [[package]]
 name = "databao-context-engine"
-version = "0.3.0"
-source = { git = "https://github.com/JetBrains/databao-context-engine.git?rev=main#d1533d4c780bc6384e36f9f4132386b1d36f3de7" }
+version = "0.3.0.dev2"
+source = { registry = "https://packages.jetbrains.team/pypi/p/ai-debugger/pypi-databao-dev/simple" }
 dependencies = [
     { name = "click" },
     { name = "duckdb" },
@@ -727,6 +731,10 @@ dependencies = [
     { name = "pyyaml" },
     { name = "requests" },
     { name = "sqlparse" },
+]
+sdist = { url = "https://packages.jetbrains.team/pypi/p/ai-debugger/pypi-databao-dev/download/databao-context-engine/0.3.0.dev2/databao_context_engine-0.3.0.dev2.tar.gz", hash = "sha256:f4ec754138275190f9a089a88f769ebde2c7394d735f3f7d6996994e7d1d2540" }
+wheels = [
+    { url = "https://packages.jetbrains.team/pypi/p/ai-debugger/pypi-databao-dev/download/databao-context-engine/0.3.0.dev2/databao_context_engine-0.3.0.dev2-py3-none-any.whl", hash = "sha256:00b1cb796c9ea6abc87b9ec299767c1fcbafd33b4a08a7076e735cbfbb352d41" },
 ]
 
 [package.optional-dependencies]
