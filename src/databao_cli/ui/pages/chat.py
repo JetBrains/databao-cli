@@ -60,11 +60,6 @@ def render_chat_page() -> None:
         _render_no_datasources_state(project)
         return
 
-    if status == DatabaoProjectStatus.NO_BUILD:
-        _render_chat_sidebar(project)
-        _render_no_build_state(project)
-        return
-
     agent: Agent | None = st.session_state.get("agent")
 
     if agent is None:
@@ -232,32 +227,6 @@ def _render_no_datasources_state(project: ProjectLayout) -> None:
         Add datasources to your project before using Databao.
 
         See the documentation for how to configure datasources.
-        """
-    )
-
-    if st.button("🔄 Check Again"):
-        st.session_state.databao_project = None
-        st.rerun()
-
-
-def _render_no_build_state(project: ProjectLayout) -> None:
-    """Render state when DCE project has no build output."""
-    st.title("💬 Chat")
-    st.markdown("---")
-
-    st.warning(f"DCE project found at `{project.project_dir}` but no build output exists.")
-
-    st.markdown(
-        """
-
-        The DCE project needs to be built before Databao can use it.
-
-        Run the following command:
-        ```bash
-        databao build
-        ```
-
-        Then reload this page.
         """
     )
 

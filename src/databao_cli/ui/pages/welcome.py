@@ -126,8 +126,11 @@ def render_setup_wizard_page() -> None:
     2. Configure Datasources
     3. Build Context
     4. Ready
+
+    When read-only-domain mode is active, editing sections are disabled with
+    an explanation banner.
     """
-    from databao_cli.ui.app import _create_new_chat
+    from databao_cli.ui.app import _create_new_chat, is_read_only_domain
     from databao_cli.ui.components.datasource_manager import render_datasource_manager
     from databao_cli.ui.services.build_service import (
         get_build_status,
@@ -136,6 +139,7 @@ def render_setup_wizard_page() -> None:
     from databao_cli.ui.services.dce_operations import init_project, list_datasources
 
     project_dir: Path = st.session_state.get("_project_dir", Path.cwd())
+    read_only = is_read_only_domain()
 
     _col1, col2, _col3 = st.columns([1, 3, 1])
 
@@ -152,6 +156,12 @@ def render_setup_wizard_page() -> None:
             """,
             unsafe_allow_html=True,
         )
+
+        if read_only:
+            st.info(
+                "Domain is in read-only mode. "
+                "Project initialization, datasource configuration, and context building are disabled."
+            )
 
         project = find_project(project_dir)
         project_initialized = project is not None
@@ -174,6 +184,8 @@ def render_setup_wizard_page() -> None:
 
         if project_initialized:
             st.success(f"Project initialized at `{project.project_dir}`", icon="✅")
+        elif read_only:
+            st.caption("Project initialization is disabled in read-only mode.")
         else:
             st.markdown(
                 "Databao needs a project directory to store configuration, datasources, "
@@ -203,6 +215,8 @@ def render_setup_wizard_page() -> None:
 
         if not project_initialized:
             st.caption("Complete step 1 to configure datasources.")
+        elif read_only:
+            render_datasource_manager(project.root_domain_dir, read_only=True)
         else:
             st.markdown(
                 "Datasources connect Databao to your data. Add at least one datasource "
@@ -213,21 +227,24 @@ def render_setup_wizard_page() -> None:
 
         st.markdown("---")
 
-        # ---- Section 3: Build Context ----
+        # ---- Section 3: Build Context (Optional) ----
         _render_section_header(
             "3",
-            "Build Context",
+            "Build Context (Optional)",
             completed=build_started_or_done,
             enabled=has_datasources,
         )
 
         if not has_datasources:
             st.caption("Add at least one datasource first.")
+        elif read_only:
+            render_build_section(project.root_domain_dir, read_only=True)
         else:
             st.markdown(
-                "Building the context indexes your datasources so Databao can understand "
-                "your data structure and answer questions about it. This may take a moment "
-                "depending on the size of your data."
+                "Building the context indexes your datasources so Databao can better understand "
+                "your data structure and provide higher-quality answers. "
+                "You can skip this step and start using Databao right away, but building "
+                "is recommended for the best experience."
             )
             render_build_section(project.root_domain_dir)
 
@@ -238,22 +255,28 @@ def render_setup_wizard_page() -> None:
             "4",
             "Start Using Databao",
             completed=False,
-            enabled=build_started_or_done,
+            enabled=has_datasources,
         )
 
-        if not build_started_or_done:
-            st.caption("Build the context first.")
+        if not has_datasources:
+            st.caption("Add at least one datasource first.")
         else:
             if build_status == "running":
                 st.info(
                     "The build is still in progress, but you can start exploring Databao. "
                     "Some features may not work until the build completes."
                 )
+            elif not build_started_or_done:
+                st.markdown(
+                    "You're ready to start using Databao! Consider building the context above for the best experience."
+                )
             else:
                 st.markdown("All configured! You're ready to start using Databao.")
 
             if st.button("Start New Chat", key="setup_start_chat", type="primary"):
-                st.session_state.welcome_completed = True
+                from databao_cli.ui.app import mark_welcome_completed
+
+                mark_welcome_completed()
                 _create_new_chat()
                 st.rerun()
 

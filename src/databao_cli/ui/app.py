@@ -13,7 +13,7 @@ from databao.core.agent import Agent
 from databao_cli.project.layout import ProjectLayout, find_project
 from databao_cli.ui.components.status import AppStatus, set_status, status_context
 from databao_cli.ui.models.chat_session import ChatSession
-from databao_cli.ui.project_utils import DatabaoProjectStatus, databao_project_status
+from databao_cli.ui.project_utils import DatabaoProjectStatus, databao_project_status, has_build_output
 from databao_cli.ui.services.storage import get_cache_dir
 
 logger = logging.getLogger(__name__)
@@ -88,13 +88,6 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
         )
         return None
 
-    if status == DatabaoProjectStatus.NO_BUILD:
-        set_status(
-            AppStatus.INITIALIZING,
-            "Project found but no build output. Build the context first.",
-        )
-        return None
-
     try:
         executor_type = st.session_state.get("executor_type", "lighthouse")
 
@@ -136,6 +129,11 @@ def _clear_all_chat_threads() -> None:
         chat.thread = None
 
 
+def is_read_only_domain() -> bool:
+    """Check whether domain-editing operations are disabled."""
+    return st.session_state.get("_read_only_domain", False)
+
+
 def _is_project_ready(project_dir: Path) -> bool:
     """Check if the Databao project is fully set up and ready for normal use."""
     project = find_project(project_dir)
@@ -143,6 +141,41 @@ def _is_project_ready(project_dir: Path) -> bool:
         return False
     status = databao_project_status(project)
     return status == DatabaoProjectStatus.VALID
+
+
+def _load_welcome_completed(project: ProjectLayout | None) -> bool:
+    """Read the welcome_completed flag from the on-disk settings file.
+
+    This is called early (before full settings load) to decide whether to
+    show the setup wizard. Returns False if the project doesn't exist or
+    the settings file can't be read.
+    """
+    if project is None:
+        return False
+    settings_path = project.databao_dir / "ui" / "settings.yaml"
+    if not settings_path.exists():
+        return False
+    try:
+        from databao_cli.ui.models.settings import Settings
+
+        yaml_content = settings_path.read_text()
+        settings = Settings.from_yaml(yaml_content)
+        return settings.welcome_completed
+    except Exception:
+        return False
+
+
+def mark_welcome_completed() -> None:
+    """Persist the welcome_completed flag to settings on disk.
+
+    Called when the user finishes the setup wizard.
+    """
+    from databao_cli.ui.services.settings_persistence import get_or_create_settings, save_settings
+
+    settings = get_or_create_settings()
+    settings.welcome_completed = True
+    save_settings(settings)
+    st.session_state.welcome_completed = True
 
 
 def _initialize_app(project_dir: Path) -> None:
@@ -160,10 +193,6 @@ def _initialize_app(project_dir: Path) -> None:
 
     if status == DatabaoProjectStatus.NO_DATASOURCES:
         set_status(AppStatus.INITIALIZING, "No datasources configured")
-        return
-
-    if status == DatabaoProjectStatus.NO_BUILD:
-        set_status(AppStatus.INITIALIZING, "Project needs build")
         return
 
     with status_context(AppStatus.INITIALIZING, "Loading app data from disk..."):
@@ -411,18 +440,31 @@ def main() -> None:
         default=None,
         help="Location of your Databao project (defaults to current directory)",
     )
+    parser.add_argument(
+        "--read-only-domain",
+        action="store_true",
+        default=False,
+        help="Disable all domain-editing operations (init, datasources, build)",
+    )
     try:
         args = parser.parse_args()
     except SystemExit:
         st.warning("Failed to parse arguments. Using current directory as project directory.")
-        args = argparse.Namespace(project_dir=None)
+        args = argparse.Namespace(project_dir=None, read_only_domain=False)
 
     project_dir = Path(args.project_dir) if args.project_dir else Path.cwd()
 
     init_session_state()
 
+    if "_read_only_domain" not in st.session_state:
+        st.session_state._read_only_domain = args.read_only_domain
+
     if "_setup_mode_active" not in st.session_state:
-        st.session_state._setup_mode_active = not _is_project_ready(project_dir)
+        project = find_project(project_dir)
+        welcome_completed = _load_welcome_completed(project)
+        st.session_state._setup_mode_active = not welcome_completed and (
+            not _is_project_ready(project_dir) or (project is not None and not has_build_output(project))
+        )
 
     is_setup_mode = st.session_state._setup_mode_active and not st.session_state.get("welcome_completed", False)
 

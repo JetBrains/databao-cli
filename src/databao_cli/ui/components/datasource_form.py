@@ -22,6 +22,7 @@ def render_datasource_config_form(
     existing_values: dict[str, Any] | None = None,
     key_prefix: str = "",
     is_top_level: bool = True,
+    disabled: bool = False,
 ) -> dict[str, Any]:
     """Render form fields for a datasource config and return collected values.
 
@@ -30,6 +31,7 @@ def render_datasource_config_form(
         existing_values: Existing config dict to pre-fill fields (for editing).
         key_prefix: Prefix for Streamlit widget keys (for uniqueness).
         is_top_level: Whether this is the top-level call (to skip type/name fields).
+        disabled: If True, all form fields are rendered as non-editable.
 
     Returns:
         Dictionary of field values collected from the form.
@@ -44,7 +46,7 @@ def render_datasource_config_form(
             continue
 
         if isinstance(prop, ConfigUnionPropertyDefinition):
-            union_values = _render_union_property(prop, existing_values, key_prefix)
+            union_values = _render_union_property(prop, existing_values, key_prefix, disabled=disabled)
             if union_values is not None:
                 result[prop.property_key] = union_values
 
@@ -58,11 +60,12 @@ def render_datasource_config_form(
                     existing_values=nested_existing,
                     key_prefix=f"{key_prefix}{prop.property_key}.",
                     is_top_level=False,
+                    disabled=disabled,
                 )
                 if nested_values:
                     result[prop.property_key] = nested_values
             else:
-                value = _render_single_property(prop, existing_values, key_prefix)
+                value = _render_single_property(prop, existing_values, key_prefix, disabled=disabled)
                 if value is not None and str(value).strip():
                     result[prop.property_key] = value
 
@@ -73,6 +76,7 @@ def _render_single_property(
     prop: ConfigSinglePropertyDefinition,
     existing_values: dict[str, Any],
     key_prefix: str,
+    disabled: bool = False,
 ) -> Any:
     """Render a single (leaf) property as a Streamlit text input."""
     existing_value = existing_values.get(prop.property_key, "")
@@ -96,12 +100,14 @@ def _render_single_property(
             value=display_value,
             type="password",
             key=widget_key,
+            disabled=disabled,
         )
     else:
         value = st.text_input(
             label,
             value=display_value,
             key=widget_key,
+            disabled=disabled,
         )
 
     return value
@@ -140,6 +146,7 @@ def _render_union_property(
     prop: ConfigUnionPropertyDefinition,
     existing_values: dict[str, Any],
     key_prefix: str,
+    disabled: bool = False,
 ) -> dict[str, Any] | None:
     """Render a union property: a type selector followed by the selected type's fields."""
     type_choices = {t.__name__: t for t in prop.types}
@@ -166,6 +173,7 @@ def _render_union_property(
         options=choice_names,
         index=default_index,
         key=widget_key,
+        disabled=disabled,
     )
 
     if chosen_name is None:
@@ -179,6 +187,7 @@ def _render_union_property(
         existing_values=existing_union,
         key_prefix=f"{key_prefix}{prop.property_key}.",
         is_top_level=False,
+        disabled=disabled,
     )
 
     return nested_values

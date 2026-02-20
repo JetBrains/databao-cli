@@ -168,13 +168,20 @@ def reset_build_state() -> None:
     logger.info("Reset build state")
 
 
-def render_build_section(project_dir: Path) -> None:
+def render_build_section(project_dir: Path, *, read_only: bool = False) -> None:
     """Render the build UI section with button, progress, and results.
 
     Reusable component used by both the welcome wizard and context settings.
     The entire section is a fragment so that build actions only rerun this
     section, not the full page (which would exit setup mode prematurely).
+
+    When *read_only* is True, only the current build status is shown
+    (built / not built) without any action buttons.
     """
+    if read_only:
+        _render_build_status_readonly(project_dir)
+        return
+
     from datetime import timedelta
 
     @st.fragment(run_every=timedelta(seconds=2))
@@ -215,3 +222,19 @@ def render_build_section(project_dir: Path) -> None:
                 st.code(log_text, language="log")
 
     _build_fragment()
+
+
+def _render_build_status_readonly(project_dir: Path) -> None:
+    """Show whether the project has been built, without any action buttons."""
+    from databao.integrations.dce import DatabaoContextApi
+
+    try:
+        dce_project = DatabaoContextApi.get_dce_project(project_dir)
+        has_build = len(dce_project.get_introspected_datasource_list()) > 0
+    except Exception:
+        has_build = False
+
+    if has_build:
+        st.success("Context has been built.", icon="✅")
+    else:
+        st.caption("Context has not been built yet.")

@@ -25,19 +25,22 @@ from databao_cli.ui.services.dce_operations import (
 logger = logging.getLogger(__name__)
 
 
-def render_datasource_manager(project_dir: Path) -> None:
+def render_datasource_manager(project_dir: Path, *, read_only: bool = False) -> None:
     """Render the full datasource management UI.
 
     Shows:
-    - "Add New Datasource" section at top
+    - "Add New Datasource" section at top (hidden in read-only mode)
     - List of existing datasources below, each with Save/Verify/Remove buttons
+      (buttons hidden in read-only mode, fields disabled)
 
     Args:
         project_dir: Path to the DCE project directory (e.g. root_domain_dir).
+        read_only: If True, show existing datasources as non-editable and hide
+            the add section and action buttons.
     """
-    _render_add_datasource_section(project_dir)
-
-    st.markdown("---")
+    if not read_only:
+        _render_add_datasource_section(project_dir)
+        st.markdown("---")
 
     configured = list_datasources(project_dir)
 
@@ -48,7 +51,7 @@ def render_datasource_manager(project_dir: Path) -> None:
     st.subheader("Configured Datasources")
 
     for idx, ds in enumerate(configured):
-        _render_existing_datasource(project_dir, ds, idx)
+        _render_existing_datasource(project_dir, ds, idx, read_only=read_only)
 
 
 def _get_form_version() -> int:
@@ -134,7 +137,7 @@ def _render_add_datasource_section(project_dir: Path) -> None:
                     logger.exception("Failed to verify new datasource")
 
 
-def _render_existing_datasource(project_dir: Path, ds, idx: int) -> None:
+def _render_existing_datasource(project_dir: Path, ds, idx: int, *, read_only: bool = False) -> None:
     """Render a single existing datasource with its config fields and action buttons."""
     ds_id = ds.datasource.id
     ds_type = ds.datasource.type.full_type
@@ -156,67 +159,69 @@ def _render_existing_datasource(project_dir: Path, ds, idx: int) -> None:
                 config_fields=config_fields,
                 existing_values=ds_config,
                 key_prefix=f"ds_{idx}_",
+                disabled=read_only,
             )
 
-        _original_config = {k: v for k, v in ds_config.items() if k not in ("type", "name")}
-        has_changes = edited_values != _original_config
+        if not read_only:
+            _original_config = {k: v for k, v in ds_config.items() if k not in ("type", "name")}
+            has_changes = edited_values != _original_config
 
-        col_save, col_verify, col_remove = st.columns(3)
+            col_save, col_verify, col_remove = st.columns(3)
 
-        with col_save:
-            if st.button(
-                "Save",
-                key=f"save_ds_{idx}",
-                disabled=not has_changes,
-                use_container_width=True,
-            ):
-                try:
-                    save_datasource(project_dir, ds_type, ds_name, edited_values)
-                    st.success("Saved.")
-                    st.rerun()
-                except Exception as e:
-                    st.error(f"Save failed: {e}")
-
-        with col_verify:
-            if st.button("Verify", key=f"verify_ds_{idx}", use_container_width=True):
-                try:
-                    result = verify_datasource(project_dir, ds_id)
-                    if result.connection_status == DatasourceConnectionStatus.VALID:
-                        st.success("Connection valid.")
-                    elif result.connection_status == DatasourceConnectionStatus.UNKNOWN:
-                        st.warning(f"Unknown: {result.summary or 'Plugin does not support verification.'}")
-                    else:
-                        st.error(f"Invalid: {result.summary or 'Connection failed.'}")
-                        if result.full_message:
-                            with st.expander("Details"):
-                                st.code(result.full_message)
-                except Exception as e:
-                    st.error(f"Verification failed: {e}")
-
-        with col_remove:
-            if st.button(
-                "Remove",
-                key=f"remove_ds_{idx}",
-                type="primary",
-                use_container_width=True,
-            ):
-                st.session_state[f"_confirm_remove_{idx}"] = True
-
-        if st.session_state.get(f"_confirm_remove_{idx}"):
-            st.warning(f"Are you sure you want to remove **{ds_name}**?")
-            col_yes, col_no = st.columns(2)
-            with col_yes:
-                if st.button("Yes, remove", key=f"confirm_remove_{idx}", type="primary", use_container_width=True):
+            with col_save:
+                if st.button(
+                    "Save",
+                    key=f"save_ds_{idx}",
+                    disabled=not has_changes,
+                    use_container_width=True,
+                ):
                     try:
-                        remove_datasource(project_dir, ds_id)
-                        st.session_state.pop(f"_confirm_remove_{idx}", None)
+                        save_datasource(project_dir, ds_type, ds_name, edited_values)
+                        st.success("Saved.")
                         st.rerun()
                     except Exception as e:
-                        st.error(f"Remove failed: {e}")
-            with col_no:
-                if st.button("Cancel", key=f"cancel_remove_{idx}", use_container_width=True):
-                    st.session_state.pop(f"_confirm_remove_{idx}", None)
-                    st.rerun()
+                        st.error(f"Save failed: {e}")
+
+            with col_verify:
+                if st.button("Verify", key=f"verify_ds_{idx}", use_container_width=True):
+                    try:
+                        result = verify_datasource(project_dir, ds_id)
+                        if result.connection_status == DatasourceConnectionStatus.VALID:
+                            st.success("Connection valid.")
+                        elif result.connection_status == DatasourceConnectionStatus.UNKNOWN:
+                            st.warning(f"Unknown: {result.summary or 'Plugin does not support verification.'}")
+                        else:
+                            st.error(f"Invalid: {result.summary or 'Connection failed.'}")
+                            if result.full_message:
+                                with st.expander("Details"):
+                                    st.code(result.full_message)
+                    except Exception as e:
+                        st.error(f"Verification failed: {e}")
+
+            with col_remove:
+                if st.button(
+                    "Remove",
+                    key=f"remove_ds_{idx}",
+                    type="primary",
+                    use_container_width=True,
+                ):
+                    st.session_state[f"_confirm_remove_{idx}"] = True
+
+            if st.session_state.get(f"_confirm_remove_{idx}"):
+                st.warning(f"Are you sure you want to remove **{ds_name}**?")
+                col_yes, col_no = st.columns(2)
+                with col_yes:
+                    if st.button("Yes, remove", key=f"confirm_remove_{idx}", type="primary", use_container_width=True):
+                        try:
+                            remove_datasource(project_dir, ds_id)
+                            st.session_state.pop(f"_confirm_remove_{idx}", None)
+                            st.rerun()
+                        except Exception as e:
+                            st.error(f"Remove failed: {e}")
+                with col_no:
+                    if st.button("Cancel", key=f"cancel_remove_{idx}", use_container_width=True):
+                        st.session_state.pop(f"_confirm_remove_{idx}", None)
+                        st.rerun()
 
         st.markdown("---")
 

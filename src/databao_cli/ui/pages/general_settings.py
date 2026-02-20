@@ -52,6 +52,8 @@ def _confirm_reset_settings() -> None:
             st.session_state.agent = None
             _clear_all_chat_threads()
             st.session_state.app_settings = None
+            st.session_state.pop("welcome_completed", None)
+            st.session_state.pop("_setup_mode_active", None)
             st.success("Settings reset to defaults")
             st.rerun()
 

@@ -54,13 +54,6 @@ def initialize_agent_from_dce(project_path: Path, model: str | None, temperature
         )
         sys.exit(1)
 
-    if status == DatabaoProjectStatus.NO_BUILD:
-        click.echo(
-            f"Project found at {project.project_dir} but no build output. Run 'databao build' first.",
-            err=True,
-        )
-        sys.exit(1)
-
     click.echo(f"Using DCE project: {project.project_dir}")
 
     _domain = create_domain(project.root_domain_dir)
