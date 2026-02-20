@@ -1,13 +1,13 @@
-import pytest
 from click.testing import CliRunner
 
 from databao_cli.__main__ import cli
+from tests.utils.project import within_dir
 
 
-@pytest.mark.skip(reason="Status is broken for now")
-def test_databao_status():
+def test_databao_status(tmp_path):
     runner = CliRunner()
-    result = runner.invoke(cli, ["status"], catch_exceptions=False)
+    with within_dir(tmp_path):
+        result = runner.invoke(cli, ["status"], catch_exceptions=False)
 
     assert result.exit_code == 0, result
     plugins = ["'jetbrains/parquet'", "'jetbrains/duckdb'", "'jetbrains/snowflake'"]
