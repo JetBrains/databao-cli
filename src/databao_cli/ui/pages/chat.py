@@ -232,7 +232,6 @@ def _render_no_datasources_state(project: ProjectLayout) -> None:
 
     if st.button("🔄 Check Again"):
         st.session_state.databao_project = None
-        st.session_state.context = None
         st.rerun()
 
 
@@ -259,7 +258,6 @@ def _render_no_build_state(project: ProjectLayout) -> None:
 
     if st.button("🔄 Check Again"):
         st.session_state.databao_project = None
-        st.session_state.context = None
         st.rerun()
 
 
