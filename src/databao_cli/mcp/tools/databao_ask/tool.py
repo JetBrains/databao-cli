@@ -8,7 +8,7 @@ from databao.caches.in_mem_cache import InMemCache
 from langchain_core.messages import AIMessage, HumanMessage
 from pydantic import BaseModel, Field
 
-from databao_cli.mcp.tools._agent_factory import create_agent_for_tool
+from databao_cli.mcp.tools.databao_ask.agent_factory import create_agent_for_tool
 
 if TYPE_CHECKING:
     from fastmcp import FastMCP

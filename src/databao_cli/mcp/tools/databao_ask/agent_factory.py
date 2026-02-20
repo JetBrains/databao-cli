@@ -1,4 +1,4 @@
-"""Shared agent creation logic for MCP tools."""
+"""Agent creation logic for the databao_ask tool."""
 
 from pathlib import Path
 
