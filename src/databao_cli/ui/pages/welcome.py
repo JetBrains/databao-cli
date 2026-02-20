@@ -213,10 +213,10 @@ def render_setup_wizard_page() -> None:
 
         st.markdown("---")
 
-        # ---- Section 3: Build Context ----
+        # ---- Section 3: Build Context (Optional) ----
         _render_section_header(
             "3",
-            "Build Context",
+            "Build Context (Optional)",
             completed=build_started_or_done,
             enabled=has_datasources,
         )
@@ -225,9 +225,10 @@ def render_setup_wizard_page() -> None:
             st.caption("Add at least one datasource first.")
         else:
             st.markdown(
-                "Building the context indexes your datasources so Databao can understand "
-                "your data structure and answer questions about it. This may take a moment "
-                "depending on the size of your data."
+                "Building the context indexes your datasources so Databao can better understand "
+                "your data structure and provide higher-quality answers. "
+                "You can skip this step and start using Databao right away, but building "
+                "is recommended for the best experience."
             )
             render_build_section(project.root_domain_dir)
 
@@ -238,16 +239,20 @@ def render_setup_wizard_page() -> None:
             "4",
             "Start Using Databao",
             completed=False,
-            enabled=build_started_or_done,
+            enabled=has_datasources,
         )
 
-        if not build_started_or_done:
-            st.caption("Build the context first.")
+        if not has_datasources:
+            st.caption("Add at least one datasource first.")
         else:
             if build_status == "running":
                 st.info(
                     "The build is still in progress, but you can start exploring Databao. "
                     "Some features may not work until the build completes."
+                )
+            elif not build_started_or_done:
+                st.markdown(
+                    "You're ready to start using Databao! Consider building the context above for the best experience."
                 )
             else:
                 st.markdown("All configured! You're ready to start using Databao.")

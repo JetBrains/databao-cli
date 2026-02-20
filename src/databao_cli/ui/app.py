@@ -13,7 +13,7 @@ from databao.core.agent import Agent
 from databao_cli.project.layout import ProjectLayout, find_project
 from databao_cli.ui.components.status import AppStatus, set_status, status_context
 from databao_cli.ui.models.chat_session import ChatSession
-from databao_cli.ui.project_utils import DatabaoProjectStatus, databao_project_status
+from databao_cli.ui.project_utils import DatabaoProjectStatus, databao_project_status, has_build_output
 from databao_cli.ui.services.storage import get_cache_dir
 
 logger = logging.getLogger(__name__)
@@ -88,13 +88,6 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
         )
         return None
 
-    if status == DatabaoProjectStatus.NO_BUILD:
-        set_status(
-            AppStatus.INITIALIZING,
-            "Project found but no build output. Build the context first.",
-        )
-        return None
-
     try:
         executor_type = st.session_state.get("executor_type", "lighthouse")
 
@@ -160,10 +153,6 @@ def _initialize_app(project_dir: Path) -> None:
 
     if status == DatabaoProjectStatus.NO_DATASOURCES:
         set_status(AppStatus.INITIALIZING, "No datasources configured")
-        return
-
-    if status == DatabaoProjectStatus.NO_BUILD:
-        set_status(AppStatus.INITIALIZING, "Project needs build")
         return
 
     with status_context(AppStatus.INITIALIZING, "Loading app data from disk..."):
@@ -422,7 +411,10 @@ def main() -> None:
     init_session_state()
 
     if "_setup_mode_active" not in st.session_state:
-        st.session_state._setup_mode_active = not _is_project_ready(project_dir)
+        project = find_project(project_dir)
+        st.session_state._setup_mode_active = not _is_project_ready(project_dir) or (
+            project is not None and not has_build_output(project)
+        )
 
     is_setup_mode = st.session_state._setup_mode_active and not st.session_state.get("welcome_completed", False)
 

@@ -112,8 +112,6 @@ def _render_project_info(project: ProjectLayout) -> bool:
         st.error("Project not initialized", icon="❌")
     elif status == DatabaoProjectStatus.NO_DATASOURCES:
         st.warning("No datasources configured", icon="⚠️")
-    elif status == DatabaoProjectStatus.NO_BUILD:
-        st.warning("Build required", icon="⚠️")
 
     reload_clicked = st.button("🔄 Reload")
 
