@@ -1,0 +1,4 @@
+type: duckdb
+name: myduck
+connection:
+  database_path: {{ env_var('TEST_DUCK_DB_PATH') }}
