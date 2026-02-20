@@ -126,8 +126,11 @@ def render_setup_wizard_page() -> None:
     2. Configure Datasources
     3. Build Context
     4. Ready
+
+    When read-only-domain mode is active, editing sections are disabled with
+    an explanation banner.
     """
-    from databao_cli.ui.app import _create_new_chat
+    from databao_cli.ui.app import _create_new_chat, is_read_only_domain
     from databao_cli.ui.components.datasource_manager import render_datasource_manager
     from databao_cli.ui.services.build_service import (
         get_build_status,
@@ -136,6 +139,7 @@ def render_setup_wizard_page() -> None:
     from databao_cli.ui.services.dce_operations import init_project, list_datasources
 
     project_dir: Path = st.session_state.get("_project_dir", Path.cwd())
+    read_only = is_read_only_domain()
 
     _col1, col2, _col3 = st.columns([1, 3, 1])
 
@@ -152,6 +156,12 @@ def render_setup_wizard_page() -> None:
             """,
             unsafe_allow_html=True,
         )
+
+        if read_only:
+            st.info(
+                "Domain is in read-only mode. "
+                "Project initialization, datasource configuration, and context building are disabled."
+            )
 
         project = find_project(project_dir)
         project_initialized = project is not None
@@ -174,6 +184,8 @@ def render_setup_wizard_page() -> None:
 
         if project_initialized:
             st.success(f"Project initialized at `{project.project_dir}`", icon="✅")
+        elif read_only:
+            st.caption("Project initialization is disabled in read-only mode.")
         else:
             st.markdown(
                 "Databao needs a project directory to store configuration, datasources, "
@@ -203,6 +215,8 @@ def render_setup_wizard_page() -> None:
 
         if not project_initialized:
             st.caption("Complete step 1 to configure datasources.")
+        elif read_only:
+            render_datasource_manager(project.root_domain_dir, read_only=True)
         else:
             st.markdown(
                 "Datasources connect Databao to your data. Add at least one datasource "
@@ -223,6 +237,8 @@ def render_setup_wizard_page() -> None:
 
         if not has_datasources:
             st.caption("Add at least one datasource first.")
+        elif read_only:
+            render_build_section(project.root_domain_dir, read_only=True)
         else:
             st.markdown(
                 "Building the context indexes your datasources so Databao can better understand "

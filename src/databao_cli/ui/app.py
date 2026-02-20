@@ -129,6 +129,11 @@ def _clear_all_chat_threads() -> None:
         chat.thread = None
 
 
+def is_read_only_domain() -> bool:
+    """Check whether domain-editing operations are disabled."""
+    return st.session_state.get("_read_only_domain", False)
+
+
 def _is_project_ready(project_dir: Path) -> bool:
     """Check if the Databao project is fully set up and ready for normal use."""
     project = find_project(project_dir)
@@ -435,15 +440,24 @@ def main() -> None:
         default=None,
         help="Location of your Databao project (defaults to current directory)",
     )
+    parser.add_argument(
+        "--read-only-domain",
+        action="store_true",
+        default=False,
+        help="Disable all domain-editing operations (init, datasources, build)",
+    )
     try:
         args = parser.parse_args()
     except SystemExit:
         st.warning("Failed to parse arguments. Using current directory as project directory.")
-        args = argparse.Namespace(project_dir=None)
+        args = argparse.Namespace(project_dir=None, read_only_domain=False)
 
     project_dir = Path(args.project_dir) if args.project_dir else Path.cwd()
 
     init_session_state()
+
+    if "_read_only_domain" not in st.session_state:
+        st.session_state._read_only_domain = args.read_only_domain
 
     if "_setup_mode_active" not in st.session_state:
         project = find_project(project_dir)

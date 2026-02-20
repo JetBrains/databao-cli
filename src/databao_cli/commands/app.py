@@ -12,7 +12,11 @@ def app_impl(ctx: click.Context) -> None:
     click.echo("Starting Databao UI...")
 
     try:
-        bootstrap_streamlit_app(ctx.obj["project_dir"], ctx.args)
+        bootstrap_streamlit_app(
+            ctx.obj["project_dir"],
+            ctx.args,
+            read_only_domain=ctx.obj.get("read_only_domain", False),
+        )
     except subprocess.CalledProcessError as e:
         click.echo(f"Error running Streamlit: {e}", err=True)
         sys.exit(1)

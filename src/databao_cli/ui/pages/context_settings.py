@@ -6,7 +6,7 @@ import streamlit as st
 from databao import Agent
 
 from databao_cli.project.layout import ProjectLayout
-from databao_cli.ui.app import _clear_all_chat_threads
+from databao_cli.ui.app import _clear_all_chat_threads, is_read_only_domain
 from databao_cli.ui.components.datasource_manager import render_datasource_manager
 from databao_cli.ui.components.icons import get_db_type_and_icon
 from databao_cli.ui.components.status import AppStatus, set_status
@@ -65,7 +65,7 @@ def render_context_settings_page() -> None:
         if status == DatabaoProjectStatus.NOT_INITIALIZED:
             st.warning("Project is not initialized. Initialize it first.")
         else:
-            render_datasource_manager(project.root_domain_dir)
+            render_datasource_manager(project.root_domain_dir, read_only=is_read_only_domain())
     else:
         st.caption("Configure a project to manage datasources.")
 
@@ -78,10 +78,12 @@ def render_context_settings_page() -> None:
         if status in (DatabaoProjectStatus.NOT_INITIALIZED, DatabaoProjectStatus.NO_DATASOURCES):
             st.caption("Add at least one datasource before building.")
         else:
-            st.markdown(
-                "Build indexes your datasources so Databao can understand your data structure and answer questions about it."
-            )
-            render_build_section(project.root_domain_dir)
+            if not is_read_only_domain():
+                st.markdown(
+                    "Build indexes your datasources so Databao can understand your data "
+                    "structure and answer questions about it."
+                )
+            render_build_section(project.root_domain_dir, read_only=is_read_only_domain())
     else:
         st.caption("Configure a project to build context.")
 
