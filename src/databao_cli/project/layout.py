@@ -2,6 +2,8 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
+ROOT_DOMAIN = "root"
+
 
 def get_databao_project_dir(project_dir: Path) -> Path:
     return project_dir / "databao"
@@ -32,7 +34,7 @@ class ProjectLayout:
         """
         Root domain is the domain which is used by default unless domain parameter is specified
         """
-        return self.domains_dir / "root"
+        return self.domains_dir / ROOT_DOMAIN
 
     def get_domain_dirs(self) -> list[Path]:
         domains_dir = self.domains_dir

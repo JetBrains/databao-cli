@@ -1,11 +1,10 @@
-from pathlib import Path
-
 from databao_context_engine import BuildDatasourceResult, DatabaoContextProjectManager
 
-from databao_cli.project.layout import find_project
+from databao_cli.project.layout import ProjectLayout
 
 
-def build_impl(project_dir: Path, domain: str) -> list[BuildDatasourceResult]:
-    project_layout = find_project(project_dir)
+def build_impl(project_layout: ProjectLayout, domain: str, should_index: bool) -> list[BuildDatasourceResult]:
     dce_project_dir = project_layout.domains_dir / domain
-    return DatabaoContextProjectManager(project_dir=dce_project_dir).build_context(datasource_ids=None)
+    return DatabaoContextProjectManager(project_dir=dce_project_dir).build_context(
+        datasource_ids=None, should_index=should_index
+    )
