@@ -690,7 +690,7 @@ wheels = [
 
 [[package]]
 name = "databao-cli"
-version = "0.1.0"
+version = "0.1.0.dev2"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
