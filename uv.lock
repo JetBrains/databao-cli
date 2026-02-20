@@ -547,7 +547,7 @@ wheels = [
 [[package]]
 name = "databao"
 version = "0.1.4.dev33+5e9190f"
-source = { git = "https://github.com/JetBrains/databao-agent.git?rev=main#5e9190f665c338c34dd4fef26b37a21c0f3004cf" }
+source = { git = "https://github.com/JetBrains/databao-agent.git?rev=5e9190f665c338c34dd4fef26b37a21c0f3004cf#5e9190f665c338c34dd4fef26b37a21c0f3004cf" }
 dependencies = [
     { name = "databao-context-engine", extra = ["mysql", "postgresql", "snowflake"] },
     { name = "diskcache" },
@@ -594,7 +594,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "click", specifier = ">=8.2.1,<9.0.0" },
-    { name = "databao", git = "https://github.com/JetBrains/databao-agent.git?rev=main" },
+    { name = "databao", git = "https://github.com/JetBrains/databao-agent.git?rev=5e9190f665c338c34dd4fef26b37a21c0f3004cf" },
     { name = "databao-context-engine", extras = ["snowflake"], specifier = "~=0.3.0" },
     { name = "prettytable", specifier = ">=3.10.0" },
     { name = "pyyaml", specifier = ">=6.0" },
