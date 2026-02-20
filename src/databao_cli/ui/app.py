@@ -138,6 +138,41 @@ def _is_project_ready(project_dir: Path) -> bool:
     return status == DatabaoProjectStatus.VALID
 
 
+def _load_welcome_completed(project: ProjectLayout | None) -> bool:
+    """Read the welcome_completed flag from the on-disk settings file.
+
+    This is called early (before full settings load) to decide whether to
+    show the setup wizard. Returns False if the project doesn't exist or
+    the settings file can't be read.
+    """
+    if project is None:
+        return False
+    settings_path = project.databao_dir / "ui" / "settings.yaml"
+    if not settings_path.exists():
+        return False
+    try:
+        from databao_cli.ui.models.settings import Settings
+
+        yaml_content = settings_path.read_text()
+        settings = Settings.from_yaml(yaml_content)
+        return settings.welcome_completed
+    except Exception:
+        return False
+
+
+def mark_welcome_completed() -> None:
+    """Persist the welcome_completed flag to settings on disk.
+
+    Called when the user finishes the setup wizard.
+    """
+    from databao_cli.ui.services.settings_persistence import get_or_create_settings, save_settings
+
+    settings = get_or_create_settings()
+    settings.welcome_completed = True
+    save_settings(settings)
+    st.session_state.welcome_completed = True
+
+
 def _initialize_app(project_dir: Path) -> None:
     """Initialize app-level resources: project and agent.
 
@@ -412,8 +447,9 @@ def main() -> None:
 
     if "_setup_mode_active" not in st.session_state:
         project = find_project(project_dir)
-        st.session_state._setup_mode_active = not _is_project_ready(project_dir) or (
-            project is not None and not has_build_output(project)
+        welcome_completed = _load_welcome_completed(project)
+        st.session_state._setup_mode_active = not welcome_completed and (
+            not _is_project_ready(project_dir) or (project is not None and not has_build_output(project))
         )
 
     is_setup_mode = st.session_state._setup_mode_active and not st.session_state.get("welcome_completed", False)

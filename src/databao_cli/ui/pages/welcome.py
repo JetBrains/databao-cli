@@ -258,7 +258,9 @@ def render_setup_wizard_page() -> None:
                 st.markdown("All configured! You're ready to start using Databao.")
 
             if st.button("Start New Chat", key="setup_start_chat", type="primary"):
-                st.session_state.welcome_completed = True
+                from databao_cli.ui.app import mark_welcome_completed
+
+                mark_welcome_completed()
                 _create_new_chat()
                 st.rerun()
 
