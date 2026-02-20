@@ -107,6 +107,35 @@ def _render_single_property(
     return value
 
 
+def _infer_union_type(
+    existing_union: dict[str, Any],
+    type_choices: dict[str, type],
+    type_properties: dict[type, list[ConfigPropertyDefinition]],
+) -> str | None:
+    """Infer which union variant best matches the existing config keys.
+
+    YAML configs for union fields don't store a ``type`` discriminator, so we
+    compare the keys present in the loaded dict against each variant's expected
+    property keys and pick the variant with the highest overlap.
+    """
+    if not existing_union:
+        return None
+
+    existing_keys = set(existing_union.keys()) - {"type"}
+    best_match: str | None = None
+    best_score = 0
+
+    for name, typ in type_choices.items():
+        props = type_properties.get(typ, [])
+        expected_keys = {p.property_key for p in props}
+        overlap = len(existing_keys & expected_keys)
+        if overlap > best_score:
+            best_score = overlap
+            best_match = name
+
+    return best_match
+
+
 def _render_union_property(
     prop: ConfigUnionPropertyDefinition,
     existing_values: dict[str, Any],
@@ -124,6 +153,9 @@ def _render_union_property(
         existing_union = {}
 
     existing_type_name = existing_union.get("type", "")
+    if existing_type_name not in choice_names:
+        existing_type_name = _infer_union_type(existing_union, type_choices, prop.type_properties) or ""
+
     default_index = 0
     if existing_type_name in choice_names:
         default_index = choice_names.index(existing_type_name)
