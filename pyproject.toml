@@ -1,6 +1,6 @@
 [project]
 name = "databao-cli"
-version = "0.1.0.dev2"
+version = "0.1.0.dev4"
 description = ""
 authors = [
     {name = "Maryia Lapatsina", email = "maryia.lapatsina@jetbrains.com"},

@@ -231,9 +231,9 @@ def render_thinking_section(chat: "ChatSession") -> None:
         _thinking_stream_fragment(chat)
 
 
-@st.fragment(run_every=0.1)
+@st.fragment(run_every=1.0)
 def _thinking_stream_fragment(chat: "ChatSession") -> None:
-    """Fragment that streams thinking updates at 100ms intervals.
+    """Fragment that streams thinking updates at 1s intervals.
 
     This is the Streamlit-recommended pattern for streaming updates from
     background tasks. The fragment polls the writer's buffer rapidly.

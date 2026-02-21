@@ -35,11 +35,11 @@ def _ensure_status_state() -> None:
         st.session_state.status_message = None
 
 
-@st.fragment(run_every=timedelta(milliseconds=500))
+@st.fragment(run_every=timedelta(seconds=1))
 def render_status_fragment() -> None:
     """Render status as an independent fragment.
 
-    This fragment polls session state every 500ms and updates the display
+    This fragment polls session state every 1s and updates the display
     without triggering a full app rerun. Call this once in the sidebar.
     """
     _ensure_status_state()
