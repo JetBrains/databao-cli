@@ -24,9 +24,9 @@ def create_executor(executor_type: str) -> Executor:
 
     Supported types are defined in EXECUTOR_TYPES.
     """
+    from databao.executors.dbt.executor import DbtProjectExecutor
     from databao.executors.lighthouse.executor import LighthouseExecutor
     from databao.executors.react_duckdb.executor import ReactDuckDBExecutor
-    from databao.executors.dbt.executor import DbtProjectExecutor
 
     match executor_type:
         case "lighthouse":
@@ -89,7 +89,7 @@ def render_agent_settings_page() -> None:
             """
             **DbtProjectExecutor** is experimental.
             It relies on initialized dbt project and a connected warehouse.
-            Should be used in case you need to automate dbt project changes.  
+            Should be used in case you need to automate dbt project changes.
             """,
             icon="⚠️",
         )
