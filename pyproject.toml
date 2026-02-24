@@ -10,9 +10,9 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "click>=8.2.1,<9.0.0",
-    "databao-context-engine[snowflake]==0.3.0.dev2",
+    "databao-context-engine[snowflake]>=0.4.0",
     "prettytable>=3.10.0",
-    "databao==0.1.4.dev2",
+    "databao==0.1.4.dev3",
     "streamlit[snowflake]>=1.53.0",
     "uuid6>=2024.7.10",
     "pyyaml>=6.0",
@@ -68,3 +68,6 @@ ignore = ["S301"]  # pickle usage is needed; suppressed inline at call sites
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101"]  # assert is standard in pytest
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

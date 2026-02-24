@@ -1,0 +1,19 @@
+[project]
+name = "databao-e2e-tests"
+version = "0.1.0"
+description = "E2E tests for databao-cli"
+authors = [
+    {name = "Ruslan Golov", email = "ruslan.golov@jetbrains.com"},
+]
+requires-python = ">=3.12"
+dependencies = [
+    "pytest>=9.0.2",
+    "pexpect>=4.9.0",
+    "pyyaml>=6.0.3",
+    "deepdiff>=8.6.1",
+    "python-dotenv>=1.2.1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests/domains"]
+pythonpath = ["src"]

@@ -16,39 +16,79 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12", "3.13", "3.14"]
+        python-version: [ "3.11", "3.12", "3.13", "3.14" ]
 
     steps:
-    - uses: actions/checkout@v5
+      - uses: actions/checkout@v5
 
-    - name: Install uv
-      uses: astral-sh/setup-uv@v7
-      with:
-        enable-cache: true
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: "24.5.0"
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24.5.0"
 
-    - name: Install pnpm
-      uses: pnpm/action-setup@v4
-      with:
-        version: 10.14.0
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.14.0
 
-    - name: Set up Python ${{ matrix.python-version }}
-      run: uv python install ${{ matrix.python-version }}
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
 
-    - name: Install dependencies
-      run: uv sync --python ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: uv sync --python ${{ matrix.python-version }}
 
-    - name: Lint with ruff
-      run: |
-        uv run ruff check src/ tests/
-        uv run ruff format --check src/ tests/
+      - name: Lint with ruff
+        run: |
+          uv run ruff check src/ tests/ e2e-tests/
+          uv run ruff format --check src/ tests/ e2e-tests/
 
-    - name: Test with pytest
-      run: uv run pytest
+      - name: Test with pytest
+        run: uv run pytest
 
-    - name: CLI smoke test
-      run: uv run databao --help
+      - name: CLI smoke test
+        run: uv run databao --help
+
+  e2e-tests-ubuntu:
+    name: "Run e2e tests on ubuntu"
+    runs-on: sre-eqx-kata
+    env:
+      SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+      SNOWFLAKE_TEST_USER: ${{ secrets.SNOWFLAKE_TEST_USER }}
+      SNOWFLAKE_TEST_USER_PROGRAM_TOKEN: ${{ secrets.SNOWFLAKE_TEST_USER_PROGRAM_TOKEN }}
+    permissions:
+      contents: write
+    needs: build
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24.5.0"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.14.0
+
+      - name: Set up Python 3.12
+        run: uv python install 3.12
+
+      - name: Install dependencies
+        run: uv sync --python 3.12
+
+      - name: install cli app
+        run: uv tool install .
+
+      - name: Run e2e tests
+        run: uv run pytest e2e-tests
