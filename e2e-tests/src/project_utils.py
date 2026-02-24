@@ -2,7 +2,6 @@ from pathlib import Path
 
 import pexpect
 from database_utils import DatabaseBase
-from pexpect.popen_spawn import PopenSpawn
 
 
 def execute_init(project_dir: Path, db: DatabaseBase | None = None):
@@ -24,6 +23,7 @@ def execute_init(project_dir: Path, db: DatabaseBase | None = None):
 
 def execute_build(project_dir: Path):
     with open(project_dir / "cli.log", "w") as logfile:
-        child = PopenSpawn("databao build", cwd=project_dir, encoding="utf-8", timeout=30)
+        # child = PopenSpawn(
+        child = pexpect.spawn("databao build", cwd=project_dir, encoding="utf-8", timeout=30, logfile=logfile)
         child.logfile = logfile
         child.expect(pexpect.EOF)
