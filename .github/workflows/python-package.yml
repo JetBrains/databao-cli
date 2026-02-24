@@ -57,10 +57,6 @@ jobs:
     name: "Run e2e tests on ubuntu"
     runs-on: sre-eqx-kata
     continue-on-error: true
-    env:
-      SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
-      SNOWFLAKE_TEST_USER: ${{ secrets.SNOWFLAKE_TEST_USER }}
-      SNOWFLAKE_TEST_USER_PROGRAM_TOKEN: ${{ secrets.SNOWFLAKE_TEST_USER_PROGRAM_TOKEN }}
     permissions:
       contents: write
     needs: build
@@ -89,7 +85,15 @@ jobs:
         run: uv sync --python 3.12
 
       - name: Run e2e tests
+        env:
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_TEST_USER: ${{ secrets.SNOWFLAKE_TEST_USER }}
+          SNOWFLAKE_TEST_USER_PROGRAM_TOKEN: ${{ secrets.SNOWFLAKE_TEST_USER_PROGRAM_TOKEN }}
         run: uv run pytest e2e-tests
+
+      - name: Run e2e tests
+        shell: bash
+        run: ls -R e2e-tests
 
       - name: Upload Tests artifacts
         if: always()
