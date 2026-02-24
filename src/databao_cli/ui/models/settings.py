@@ -18,6 +18,7 @@ class Settings:
     """Unified settings object combining all setting categories."""
 
     agent: AgentSettings = field(default_factory=AgentSettings)
+    welcome_completed: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         """Convert settings to a dictionary for serialization."""
@@ -25,6 +26,7 @@ class Settings:
             "agent": {
                 "executor_type": self.agent.executor_type,
             },
+            "welcome_completed": self.welcome_completed,
         }
 
     @classmethod
@@ -36,6 +38,7 @@ class Settings:
             agent=AgentSettings(
                 executor_type=agent_data.get("executor_type", "lighthouse"),
             ),
+            welcome_completed=data.get("welcome_completed", False),
         )
 
     def to_yaml(self) -> str:

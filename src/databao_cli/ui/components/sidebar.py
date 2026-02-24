@@ -7,7 +7,7 @@ from databao_cli.ui.app import _clear_all_chat_threads
 from databao_cli.ui.components.icons import get_db_type_and_icon
 from databao_cli.ui.components.status import AppStatus, render_status_fragment, set_status
 from databao_cli.ui.pages.agent_settings import EXECUTOR_TYPES
-from databao_cli.ui.project_utils import DCEProjectStatus, dce_status
+from databao_cli.ui.project_utils import DatabaoProjectStatus, databao_project_status
 from databao_cli.ui.suggestions import reset_suggestions_state
 
 
@@ -56,13 +56,13 @@ def render_project_info(project: ProjectLayout | None) -> None:
     st.markdown(f"**{project.name}**")
     st.caption(str(project.project_dir))
 
-    status = dce_status(project)
-    if status == DCEProjectStatus.VALID:
+    status = databao_project_status(project)
+    if status == DatabaoProjectStatus.VALID:
         st.success("✓ Ready", icon="✅")
-    elif status == DCEProjectStatus.NO_DATASOURCES:
+    elif status == DatabaoProjectStatus.NOT_INITIALIZED:
+        st.error("Not initialized", icon="❌")
+    elif status == DatabaoProjectStatus.NO_DATASOURCES:
         st.warning("No datasources", icon="⚠️")
-    elif status == DCEProjectStatus.NO_BUILD:
-        st.warning("Build required", icon="⚠️")
 
     if st.button("🔄 Reload", width="stretch", help="Reload DCE project"):
         st.session_state.databao_project = None
