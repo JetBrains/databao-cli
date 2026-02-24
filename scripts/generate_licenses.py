@@ -10,7 +10,7 @@ Usage:
     python generate_licenses.py -y           # Skip confirmation prompt
 
 Requirements:
-    - Python 3.12+
+    - Python 3.11+
     - uv (Python package manager)
     - pip-licenses (installed automatically via uv --with flag)
 

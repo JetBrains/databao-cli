@@ -4,7 +4,7 @@ A command-line interface tool for managing Databao Agents and Context Engine (DC
 
 ## Requirements
 
-- Python >= 3.12
+- Python >= 3.11
 - [uv](https://docs.astral.sh/uv/)
 
 ## Installation
