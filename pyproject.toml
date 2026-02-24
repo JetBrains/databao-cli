@@ -46,6 +46,33 @@ e2e-tests = [
     "python-dotenv>=1.2.1",
 ]
 
+postgresql = [
+    "databao-context-engine[postgresql]>=0.4.0",
+]
+
+mysql = [
+    "databao-context-engine[mysql]>=0.4.0",
+]
+
+mssql = [
+    "databao-context-engine[mssql]>=0.4.0",
+]
+
+clickhouse = [
+    "databao-context-engine[clickhouse]>=0.4.0",
+]
+
+athena = [
+    "databao-context-engine[athena]>=0.4.0",
+]
+
+bigquery = [
+    "databao-context-engine[bigquery]>=0.4.0",
+]
+
+[tool.uv]
+default-groups = ["dev", "postgresql", "mysql"]
+
 [tool.ruff]
 line-length = 127
 target-version = "py311"
