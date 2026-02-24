@@ -648,8 +648,8 @@ wheels = [
 
 [[package]]
 name = "databao"
-version = "0.1.4.dev37+cdce730"
-source = { git = "https://github.com/JetBrains/databao-agent.git?rev=ykhudyakov%2Frelax-to-py3.11#cdce73085e74140ee78ab0233ff40d5637eeee50" }
+version = "0.1.4.dev41+7bdc4b8"
+source = { git = "https://github.com/JetBrains/databao-agent.git?rev=main#7bdc4b86c1f36278f29d27257fc0e22844d719af" }
 dependencies = [
     { name = "databao-context-engine", extra = ["mysql", "postgresql", "snowflake"] },
     { name = "dbt-core" },
@@ -664,6 +664,7 @@ dependencies = [
     { name = "langchain-openai" },
     { name = "langgraph" },
     { name = "matplotlib" },
+    { name = "mcp" },
     { name = "pandas" },
     { name = "pandas-stubs" },
     { name = "psycopg2-binary" },
@@ -698,8 +699,8 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "click", specifier = ">=8.2.1,<9.0.0" },
-    { name = "databao", git = "https://github.com/JetBrains/databao-agent.git?rev=ykhudyakov%2Frelax-to-py3.11" },
-    { name = "databao-context-engine", extras = ["snowflake"], git = "https://github.com/JetBrains/databao-context-engine.git?rev=main" },
+    { name = "databao", git = "https://github.com/JetBrains/databao-agent.git?rev=main" },
+    { name = "databao-context-engine", extras = ["snowflake"], specifier = ">=0.4.0" },
     { name = "prettytable", specifier = ">=3.10.0" },
     { name = "pyyaml", specifier = ">=6.0" },
     { name = "streamlit", specifier = ">=1.53.0" },
@@ -715,8 +716,8 @@ dev = [
 
 [[package]]
 name = "databao-context-engine"
-version = "0.3.0"
-source = { git = "https://github.com/JetBrains/databao-context-engine.git?rev=main#d1533d4c780bc6384e36f9f4132386b1d36f3de7" }
+version = "0.4.0"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
     { name = "duckdb" },
@@ -727,6 +728,10 @@ dependencies = [
     { name = "pyyaml" },
     { name = "requests" },
     { name = "sqlparse" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/6c/37/b75bd3f1f45716d9313eba04f0e149234910f1eb2b523990b6de3046a30f/databao_context_engine-0.4.0.tar.gz", hash = "sha256:b18cd9ec53ca16c13ecd6d36ce9bd3583eb8717d23f368584428bca1d172c438", size = 97825 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d4/74/7e9b0e1825f534ddc68e687637b56e9682b36cc597a31481f895f5eaa849/databao_context_engine-0.4.0-py3-none-any.whl", hash = "sha256:22c71bb9798b65f42b8b4bd4b8ec496f2741fb3bec34a60709fc31560f4051af", size = 164524 },
 ]
 
 [package.optional-dependencies]
