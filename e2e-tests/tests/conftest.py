@@ -3,7 +3,6 @@ import tempfile
 from pathlib import Path
 
 import pytest
-
 from utils.path_utils import ARTIFACT_DIR
 
 
