@@ -61,11 +61,19 @@ This project uses pytest for testing:
 uv run pytest
 ```
 
+### Running E2E Tests
+
+E2E tests are located in a separate project under `e2e-tests/`. To run them:
+
+```bash
+uv run pytest e2e-tests
+```
+
 ### Linting
 
 Run ruff to check and format code:
 
 ```bash
-uv run ruff check src tests
-uv run ruff format src tests
+uv run ruff check src tests e2e-tests
+uv run ruff format src tests e2e-tests
 ```
