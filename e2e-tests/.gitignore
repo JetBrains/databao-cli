@@ -1,0 +1,30 @@
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# dotenv
+.env
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+build/
+
+# Pytest
+.pytest_cache/
+
+# IDE
+.idea/
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store
+
+# Test artifacts
+artifact/
