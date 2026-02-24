@@ -6,7 +6,6 @@ import yaml
 from dotenv import load_dotenv
 from pexpect import spawn
 from pexpect.popen_spawn import PopenSpawn
-
 from utils.path_utils import get_src_folder
 from utils.pexpect_utils import child_answer, child_answer_safe
 

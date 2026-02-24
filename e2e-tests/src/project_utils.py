@@ -1,9 +1,8 @@
 from pathlib import Path
 
 import pexpect
-from pexpect.popen_spawn import PopenSpawn
-
 from database_utils import DatabaseBase
+from pexpect.popen_spawn import PopenSpawn
 
 
 def execute_init(project_dir: Path, db: DatabaseBase | None = None):

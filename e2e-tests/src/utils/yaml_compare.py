@@ -2,7 +2,6 @@ from pathlib import Path
 
 import yaml
 from deepdiff import DeepDiff
-
 from utils.path_utils import TEST_RESOURCES_DIR
 
 
