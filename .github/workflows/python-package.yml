@@ -88,9 +88,6 @@ jobs:
       - name: Install dependencies
         run: uv sync --python 3.12
 
-      - name: install cli app
-        run: uv tool install .
-
       - name: Run e2e tests
         run: uv run pytest e2e-tests
 

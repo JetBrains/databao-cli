@@ -14,6 +14,6 @@ def prepare_artifacts_dir():
 
 
 @pytest.fixture(autouse=True)
-def project_folder(tmp_path: Path) -> Path:
-    tmp = Path(tempfile.mkdtemp(dir=ARTIFACT_DIR))
+def project_folder(request, tmp_path: Path) -> Path:
+    tmp = Path(tempfile.mkdtemp(suffix=request.node.name, dir=ARTIFACT_DIR))
     return tmp
