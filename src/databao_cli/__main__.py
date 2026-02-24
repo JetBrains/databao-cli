@@ -3,15 +3,16 @@ from pathlib import Path
 
 import click
 from click import Context
-from databao_context_engine.cli.datasources import add_datasource_config_cli
 
 from databao_cli.commands.app import app_impl
 from databao_cli.commands.ask import ask_impl
 from databao_cli.commands.build import build_impl
+from databao_cli.commands.datasource.add_datasource_config import add_datasource_config_interactive_impl
+from databao_cli.commands.datasource.check_datasource_connection import check_datasource_connection_impl
 from databao_cli.commands.init import InitDatabaoProjectError, ProjectDirDoesnotExistError, init_impl
 from databao_cli.commands.status import status_impl
 from databao_cli.logging import configure_logging
-from databao_cli.project.layout import ProjectLayout
+from databao_cli.project.layout import ROOT_DOMAIN, ProjectLayout, find_project
 
 
 @click.group()
@@ -72,11 +73,53 @@ def init(ctx: Context) -> None:
     if not click.confirm("\nDo you want to configure a domain now?"):
         return
 
-    root_domain_dir = project_layout.root_domain_dir
-    add_datasource_config_cli(root_domain_dir)
+    add_datasource_config_interactive_impl(project_layout, ROOT_DOMAIN)
 
     while click.confirm("\nDo you want to add more datasources?"):
-        add_datasource_config_cli(root_domain_dir)
+        add_datasource_config_interactive_impl(project_layout, ROOT_DOMAIN)
+
+
+@cli.group()
+def datasource() -> None:
+    """Manage datasource configurations."""
+    pass
+
+
+@datasource.command(name="add")
+@click.option(
+    "-d",
+    "--domain",
+    type=click.STRING,
+    default="root",
+    help="Databao domain name",
+)
+@click.pass_context
+def add_datasource_config(ctx: Context, domain: str | None) -> None:
+    """Add a new datasource configuration.
+
+    The command will ask all relevant information for that datasource and save it in a chosen Databao domain
+    """
+    project_layout = _get_project_or_exit(ctx.obj["project_dir"])
+    add_datasource_config_interactive_impl(project_layout, domain)
+
+
+@datasource.command(name="check")
+@click.argument(
+    "domains",
+    type=click.STRING,
+    nargs=-1,
+)
+@click.pass_context
+def check_datasource_config(ctx: Context, domains: list[str] | None) -> None:
+    """Check whether a datasource configuration is valid.
+
+    The configuration is considered as valid if a connection with the datasource can be established.
+
+    By default, all declared datasources across all domains in the project will be checked.
+    You can explicitely list which domains to validate by using the [DOMAINS] argument.
+    """
+    project_layout = _get_project_or_exit(ctx.obj["project_dir"])
+    check_datasource_connection_impl(project_layout, requested_domains=domains if domains else None)
 
 
 @cli.command()
@@ -87,15 +130,22 @@ def init(ctx: Context) -> None:
     default="root",
     help="Databao domain name",
 )
+@click.option(
+    "--should-index/--should-not-index",
+    default=True,
+    show_default=True,
+    help="Whether to index the context. If disabled, the context will be built but not indexed.",
+)
 @click.pass_context
-def build(ctx: Context, domain: str) -> None:
+def build(ctx: Context, domain: str, should_index: bool) -> None:
     """Build context for all domain's datasources.
 
     The output of the build command will be saved in the domain's output directory.
 
     Internally, this indexes the context to be used by the MCP server and the "retrieve" command.
     """
-    results = build_impl(ctx.obj["project_dir"], domain)
+    project_layout = _get_project_or_exit(ctx.obj["project_dir"])
+    results = build_impl(project_layout, domain, should_index)
     click.echo(f"Build complete. Processed {len(results)} datasources.")
 
 
@@ -164,6 +214,14 @@ def app(ctx: click.Context) -> None:
         databao app --server.headless true
     """
     app_impl(ctx)
+
+
+def _get_project_or_exit(project_dir: Path) -> ProjectLayout:
+    project_layout = find_project(project_dir)
+    if not project_layout:
+        click.echo("No project found.")
+        exit(1)
+    return project_layout
 
 
 if __name__ == "__main__":

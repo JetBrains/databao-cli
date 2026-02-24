@@ -46,7 +46,6 @@ def render_project_info(project: ProjectLayout | None) -> None:
         st.caption("No project selected")
         if st.button("🔄 Reload", width="stretch", help="Reload DCE project"):
             st.session_state.databao_project = None
-            st.session_state.context = None
             st.session_state.agent = None
             _clear_all_chat_threads()
             set_status(AppStatus.INITIALIZING, "Reloading...")
@@ -67,7 +66,6 @@ def render_project_info(project: ProjectLayout | None) -> None:
 
     if st.button("🔄 Reload", width="stretch", help="Reload DCE project"):
         st.session_state.databao_project = None
-        st.session_state.context = None
         st.session_state.agent = None
         _clear_all_chat_threads()
         set_status(AppStatus.INITIALIZING, "Reloading project...")
@@ -92,7 +90,7 @@ def render_sources_info() -> None:
         return
 
     for name, source in dbs.items():
-        db_type, icon = get_db_type_and_icon(source.db_connection)
+        db_type, icon = get_db_type_and_icon(source.config)
         st.markdown(f"{icon} **{name}** ({db_type})")
 
     for name in dfs:
