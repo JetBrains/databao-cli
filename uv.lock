@@ -721,7 +721,7 @@ wheels = [
 
 [[package]]
 name = "databao"
-version = "0.2.0b2"
+version = "0.2.0b3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "databao-context-engine", extra = ["mysql", "postgresql", "snowflake"] },
@@ -748,9 +748,9 @@ dependencies = [
     { name = "tabulate" },
     { name = "watchdog" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d8/1e/be31a379781503072866f511974941073fd789a7aef842f9d42abc32032b/databao-0.2.0b2.tar.gz", hash = "sha256:6dd8f49735b35d4dafb322868429071c1aaa139c80f1ef5a1f0b372284d4bd46", size = 1016533, upload-time = "2026-02-25T17:31:21.95Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d7/c3/974db6b41678c598be81613c0c0087499aec430477cdb1e0b509af81265c/databao-0.2.0b3.tar.gz", hash = "sha256:14e5365c071df12e9396d2ac85e6ae3f960aecae5d80228ac08680b107e99e3e", size = 1016533, upload-time = "2026-02-25T18:13:34.985Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/cb/5d/0cacb64c83c5ec54baa85ce4f683de5971293365d47a94fdaa59117768ae/databao-0.2.0b2-py3-none-any.whl", hash = "sha256:63ded526f85cdd73b7e86a2c2b67c6714b83b57d58755f21537571cda1ab42c3", size = 1052571, upload-time = "2026-02-25T17:31:20.269Z" },
+    { url = "https://files.pythonhosted.org/packages/e3/2f/8fe0fc68a6ecbdbd4af2755c140d3ba02293b38ec53fcb5b8044194de6f5/databao-0.2.0b3-py3-none-any.whl", hash = "sha256:8e99df949dd0f1c9fc95ec6e6c721b272c5bc148ce045a781c58aa616933e60b", size = 1052570, upload-time = "2026-02-25T18:13:33.642Z" },
 ]
 
 [[package]]
@@ -781,7 +781,7 @@ requires-dist = [
     { name = "adbc-driver-manager", specifier = ">=1.10.0" },
     { name = "adbc-driver-snowflake", specifier = ">=1.10.0" },
     { name = "click", specifier = ">=8.2.1,<9.0.0" },
-    { name = "databao", specifier = "~=0.2.0b2" },
+    { name = "databao", specifier = "~=0.2.0b3" },
     { name = "databao-context-engine", extras = ["snowflake"], specifier = ">=0.4.0" },
     { name = "prettytable", specifier = ">=3.10.0" },
     { name = "pyyaml", specifier = ">=6.0" },
