@@ -721,8 +721,8 @@ wheels = [
 
 [[package]]
 name = "databao"
-version = "0.1.4.dev3"
-source = { registry = "https://packages.jetbrains.team/pypi/p/ai-debugger/pypi-databao-dev/simple" }
+version = "0.2.0b1"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "databao-context-engine", extra = ["mysql", "postgresql", "snowflake"] },
     { name = "dbt-core" },
@@ -737,6 +737,7 @@ dependencies = [
     { name = "langchain-openai" },
     { name = "langgraph" },
     { name = "matplotlib" },
+    { name = "mcp" },
     { name = "pandas", version = "2.3.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "pandas", version = "2.3.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "pandas-stubs" },
@@ -747,14 +748,14 @@ dependencies = [
     { name = "tabulate" },
     { name = "watchdog" },
 ]
-sdist = { url = "https://packages.jetbrains.team/pypi/p/ai-debugger/pypi-databao-dev/download/databao/0.1.4.dev3/databao-0.1.4.dev3.tar.gz", hash = "sha256:d5a3956641943c42e39dc4cebcb950aee14cf0eaa86b68efab57f72d11537a5a" }
+sdist = { url = "https://files.pythonhosted.org/packages/5b/72/5393dd8002b9586c15d1f17a7162d93010aaaec84277a3b9becc2e21a0e9/databao-0.2.0b1.tar.gz", hash = "sha256:125c7cca371431c57db36e8f4dca6b66014c83bf373c2960f484675a9b1d0364", size = 1016507, upload-time = "2026-02-25T14:45:33.449Z" }
 wheels = [
-    { url = "https://packages.jetbrains.team/pypi/p/ai-debugger/pypi-databao-dev/download/databao/0.1.4.dev3/databao-0.1.4.dev3-py3-none-any.whl", hash = "sha256:a3f5ed16ca24d46ede40a36216b1680f2809f26ce595c878ab535b1a907a9fbb" },
+    { url = "https://files.pythonhosted.org/packages/58/c3/185222a5e47cdd427264091cf02f284c326afa965fa656af0b39e1803508/databao-0.2.0b1-py3-none-any.whl", hash = "sha256:76a7ef7d22a1502f54824ca634330b037f6e4762eca4b08d83411c525195bf6f", size = 1052556, upload-time = "2026-02-25T14:45:32.093Z" },
 ]
 
 [[package]]
 name = "databao-cli"
-version = "0.1.0.dev5"
+version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
@@ -776,7 +777,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "click", specifier = ">=8.2.1,<9.0.0" },
-    { name = "databao", specifier = "==0.1.4.dev3" },
+    { name = "databao", specifier = "~=0.2.0b1" },
     { name = "databao-context-engine", extras = ["snowflake"], specifier = ">=0.4.0" },
     { name = "prettytable", specifier = ">=3.10.0" },
     { name = "pyyaml", specifier = ">=6.0" },
