@@ -1,0 +1,33 @@
+name: Setup uv and project
+inputs:
+  python-version:
+    description: "python version to install"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
+      with:
+        version: "0.10.5"
+        enable-cache: true
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: "24.5.0"
+
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 10.14.0
+
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install dependencies
+      shell: bash
+      run: uv sync --python ${{ inputs.python-version }}

@@ -775,6 +775,13 @@ dev = [
     { name = "pytest" },
     { name = "ruff" },
 ]
+e2e-tests = [
+    { name = "deepdiff" },
+    { name = "pexpect" },
+    { name = "pytest" },
+    { name = "python-dotenv" },
+    { name = "pyyaml" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -782,7 +789,7 @@ requires-dist = [
     { name = "adbc-driver-snowflake", specifier = ">=1.10.0" },
     { name = "click", specifier = ">=8.2.1,<9.0.0" },
     { name = "databao", specifier = "~=0.2.0b3" },
-    { name = "databao-context-engine", extras = ["snowflake"], specifier = ">=0.4.0" },
+    { name = "databao-context-engine", extras = ["snowflake"], specifier = "~=0.4.0" },
     { name = "prettytable", specifier = ">=3.10.0" },
     { name = "pyyaml", specifier = ">=6.0" },
     { name = "streamlit", extras = ["snowflake"], specifier = ">=1.53.0" },
@@ -794,6 +801,13 @@ dev = [
     { name = "pre-commit", specifier = ">=4.5.1" },
     { name = "pytest", specifier = ">=9.0.2,<10.0.0" },
     { name = "ruff", specifier = ">=0.9.0,<1.0.0" },
+]
+e2e-tests = [
+    { name = "deepdiff", specifier = ">=8.6.1" },
+    { name = "pexpect", specifier = ">=4.9.0" },
+    { name = "pytest", specifier = ">=9.0.2" },
+    { name = "python-dotenv", specifier = ">=1.2.1" },
+    { name = "pyyaml", specifier = ">=6.0.3" },
 ]
 
 [[package]]

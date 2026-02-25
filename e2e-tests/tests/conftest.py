@@ -10,9 +10,10 @@ from utils.path_utils import ARTIFACT_DIR
 def prepare_artifacts_dir():
     shutil.rmtree(ARTIFACT_DIR, ignore_errors=True)
     ARTIFACT_DIR.mkdir(exist_ok=True)
+    ARTIFACT_DIR.is_dir()
 
 
 @pytest.fixture(autouse=True)
-def project_folder(tmp_path: Path) -> Path:
-    tmp = Path(tempfile.mkdtemp(dir=ARTIFACT_DIR))
+def project_folder(request, tmp_path: Path) -> Path:
+    tmp = Path(tempfile.mkdtemp(suffix=request.node.name, dir=ARTIFACT_DIR))
     return tmp

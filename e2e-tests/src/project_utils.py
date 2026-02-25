@@ -2,13 +2,12 @@ from pathlib import Path
 
 import pexpect
 from database_utils import DatabaseBase
-from pexpect.popen_spawn import PopenSpawn
 
 
 def execute_init(project_dir: Path, db: DatabaseBase | None = None):
     with open(project_dir / "cli.log", "w") as logfile:
         # child = PopenSpawn(
-        child = pexpect.spawn("databao init", cwd=project_dir, encoding="utf-8", timeout=5, logfile=logfile)
+        child = pexpect.spawn("uv run databao init", cwd=project_dir, encoding="utf-8", timeout=30, logfile=logfile)
 
         child.expect(r"Do you want to configure a domain now\? \[y/N\]:")
         if db:
@@ -24,6 +23,7 @@ def execute_init(project_dir: Path, db: DatabaseBase | None = None):
 
 def execute_build(project_dir: Path):
     with open(project_dir / "cli.log", "w") as logfile:
-        child = PopenSpawn("databao build", cwd=project_dir, encoding="utf-8", timeout=30)
-        child.logfile = logfile
+        # child = PopenSpawn(
+        child = pexpect.spawn("uv run databao build", cwd=project_dir, encoding="utf-8", timeout=140, logfile=logfile)
+        child.expect("Found datasource of type")
         child.expect(pexpect.EOF)

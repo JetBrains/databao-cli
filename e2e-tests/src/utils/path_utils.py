@@ -5,7 +5,7 @@ def get_root() -> Path:
     return Path(__file__).parent.parent.parent
 
 
-ARTIFACT_DIR = get_root() / "artifact"
+ARTIFACT_DIR = get_root() / "artifacts"
 TEST_RESOURCES_DIR = get_root() / "tests" / "resources"
 
 
