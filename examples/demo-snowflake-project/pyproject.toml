@@ -1,7 +1,7 @@
 [project]
 name = "databao-demo-snowflake-project"
 version = "0.1.0"
-description = "Databao demo project for snowflake_ds_password"
+description = "Databao demo project for Snowflake"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
