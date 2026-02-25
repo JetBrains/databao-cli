@@ -27,11 +27,6 @@ jobs:
           SNOWFLAKE_TEST_USER_PROGRAM_TOKEN: ${{ secrets.SNOWFLAKE_TEST_USER_PROGRAM_TOKEN }}
         run: uv run pytest e2e-tests
 
-      - name: Run e2e tests
-        shell: bash
-        if: always()
-        run: ls -R e2e-tests
-
       - name: Upload Tests artifacts
         if: always()
         uses: actions/upload-artifact@v4
