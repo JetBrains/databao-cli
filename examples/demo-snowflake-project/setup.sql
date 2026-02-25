@@ -15,6 +15,7 @@ SET sf_ds_password      = '<SNOWFLAKE_DATASOURCE_PASSWORD>';
 -- Git repository
 SET git_repo_origin     = 'https://github.com/JetBrains/databao-cli.git';
 SET git_repo_name       = 'databao-cli';
+SET git_branch          = 'main';
 
 -- Streamlit app
 SET streamlit_main_file = 'examples/demo-snowflake-project/src/databao_snowflake_demo/app.py';
@@ -197,15 +198,16 @@ def get_secret(secret_name):
 $$;
 
 DECLARE
-  _sql      VARCHAR;
-  _git_repo VARCHAR;
-  _main_file VARCHAR;
+  _sql        VARCHAR;
+  _git_repo   VARCHAR;
+  _git_branch VARCHAR;
+  _main_file  VARCHAR;
 BEGIN
-  SELECT $git_repo_name, $streamlit_main_file
-    INTO :_git_repo, :_main_file;
+  SELECT $git_repo_name, $git_branch, $streamlit_main_file
+    INTO :_git_repo, :_git_branch, :_main_file;
 
   _sql := 'CREATE OR REPLACE STREAMLIT STREAMLIT_DATABAO.PUBLIC.STREAMLIT_DATABAO_DEMO_SNOWFLAKE'
-    || ' FROM ''@"STREAMLIT_DATABAO"."PUBLIC"."' || :_git_repo || '"/branches/"main"/'''
+    || ' FROM ''@"STREAMLIT_DATABAO"."PUBLIC"."' || :_git_repo || '"/branches/"' || :_git_branch || '"/'''
     || ' MAIN_FILE = ''' || :_main_file || ''''
     || ' QUERY_WAREHOUSE = ''STREAMLIT_DATABAO_WAREHOUSE'''
     || ' COMPUTE_POOL = ''STREAMLIT_DATABAO_COMPUTE_POOL'''

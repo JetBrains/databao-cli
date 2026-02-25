@@ -75,6 +75,9 @@ if _is_running_in_snowflake():
     _ensure_adbc_driver()
     _load_snowflake_secrets()
 
+if "--project-dir" not in sys.argv:
+    sys.argv.extend(["--project-dir", "examples/demo-snowflake-project"])
+
 if "--read-only-domain" not in sys.argv:
     sys.argv.append("--read-only-domain")
 
