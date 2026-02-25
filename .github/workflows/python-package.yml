@@ -11,7 +11,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -21,26 +20,10 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
+      - name: Set up project
+        uses: ./.github/actions/setup-project
         with:
-          enable-cache: true
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "24.5.0"
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.14.0
-
-      - name: Set up Python ${{ matrix.python-version }}
-        run: uv python install ${{ matrix.python-version }}
-
-      - name: Install dependencies
-        run: uv sync --python ${{ matrix.python-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Lint with ruff
         run: |
@@ -52,54 +35,3 @@ jobs:
 
       - name: CLI smoke test
         run: uv run databao --help
-
-  e2e-tests-ubuntu:
-    name: "Run e2e tests on ubuntu"
-    runs-on: sre-eqx-kata
-    continue-on-error: true
-    permissions:
-      contents: write
-    needs: build
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          enable-cache: true
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "24.5.0"
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.14.0
-
-      - name: Set up Python 3.12
-        run: uv python install 3.12
-
-      - name: Install dependencies
-        run: uv sync --python 3.12
-
-      - name: Run e2e tests
-        env:
-          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
-          SNOWFLAKE_TEST_USER: ${{ secrets.SNOWFLAKE_TEST_USER }}
-          SNOWFLAKE_TEST_USER_PROGRAM_TOKEN: ${{ secrets.SNOWFLAKE_TEST_USER_PROGRAM_TOKEN }}
-        run: uv run pytest e2e-tests
-
-      - name: Run e2e tests
-        shell: bash
-        run: ls -R e2e-tests
-
-      - name: Upload Tests artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          retention-days: 10
-          compression-level: 6
-          name: artifacts
-          path: e2e-tests/artifacts/

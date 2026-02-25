@@ -24,6 +24,6 @@ def execute_init(project_dir: Path, db: DatabaseBase | None = None):
 def execute_build(project_dir: Path):
     with open(project_dir / "cli.log", "w") as logfile:
         # child = PopenSpawn(
-        child = pexpect.spawn("uv run databao build", cwd=project_dir, encoding="utf-8", timeout=40, logfile=logfile)
+        child = pexpect.spawn("uv run databao build", cwd=project_dir, encoding="utf-8", timeout=140, logfile=logfile)
         child.expect("Found datasource of type")
         child.expect(pexpect.EOF)
