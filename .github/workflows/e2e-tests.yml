@@ -12,6 +12,8 @@ jobs:
     runs-on: sre-eqx-kata
     permissions:
       contents: write
+    env:
+      UV_LINK_MODE: copy
     steps:
       - uses: actions/checkout@v5
 
