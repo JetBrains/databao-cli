@@ -40,3 +40,6 @@ build/
 .cursor/plans/
 
 *.code-workspace
+
+# Databao domain build output
+**/databao/domains/*/output/

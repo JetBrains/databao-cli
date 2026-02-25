@@ -32,6 +32,9 @@ url = "https://packages.jetbrains.team/pypi/p/ai-debugger/pypi-databao-dev/simpl
 [tool.hatch.build.targets.wheel]
 packages = ["src/databao_cli"]
 
+[tool.uv.workspace]
+members = ["examples/*"]
+
 [dependency-groups]
 dev = [
     "pre-commit>=4.5.1",
