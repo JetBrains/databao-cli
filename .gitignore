@@ -41,5 +41,6 @@ build/
 
 *.code-workspace
 
-# Databao domain build output
+# Databao domain build output and UI
 **/databao/domains/*/output/
+**/databao/ui/

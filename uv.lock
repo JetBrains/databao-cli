@@ -721,7 +721,7 @@ wheels = [
 
 [[package]]
 name = "databao"
-version = "0.2.0b1"
+version = "0.2.0b2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "databao-context-engine", extra = ["mysql", "postgresql", "snowflake"] },
@@ -748,9 +748,9 @@ dependencies = [
     { name = "tabulate" },
     { name = "watchdog" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/5b/72/5393dd8002b9586c15d1f17a7162d93010aaaec84277a3b9becc2e21a0e9/databao-0.2.0b1.tar.gz", hash = "sha256:125c7cca371431c57db36e8f4dca6b66014c83bf373c2960f484675a9b1d0364", size = 1016507, upload-time = "2026-02-25T14:45:33.449Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d8/1e/be31a379781503072866f511974941073fd789a7aef842f9d42abc32032b/databao-0.2.0b2.tar.gz", hash = "sha256:6dd8f49735b35d4dafb322868429071c1aaa139c80f1ef5a1f0b372284d4bd46", size = 1016533, upload-time = "2026-02-25T17:31:21.95Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/58/c3/185222a5e47cdd427264091cf02f284c326afa965fa656af0b39e1803508/databao-0.2.0b1-py3-none-any.whl", hash = "sha256:76a7ef7d22a1502f54824ca634330b037f6e4762eca4b08d83411c525195bf6f", size = 1052556, upload-time = "2026-02-25T14:45:32.093Z" },
+    { url = "https://files.pythonhosted.org/packages/cb/5d/0cacb64c83c5ec54baa85ce4f683de5971293365d47a94fdaa59117768ae/databao-0.2.0b2-py3-none-any.whl", hash = "sha256:63ded526f85cdd73b7e86a2c2b67c6714b83b57d58755f21537571cda1ab42c3", size = 1052571, upload-time = "2026-02-25T17:31:20.269Z" },
 ]
 
 [[package]]
@@ -758,6 +758,8 @@ name = "databao-cli"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "adbc-driver-manager" },
+    { name = "adbc-driver-snowflake" },
     { name = "click" },
     { name = "databao" },
     { name = "databao-context-engine", extra = ["snowflake"] },
@@ -776,8 +778,10 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "adbc-driver-manager", specifier = ">=1.10.0" },
+    { name = "adbc-driver-snowflake", specifier = ">=1.10.0" },
     { name = "click", specifier = ">=8.2.1,<9.0.0" },
-    { name = "databao", specifier = "~=0.2.0b1" },
+    { name = "databao", specifier = "~=0.2.0b2" },
     { name = "databao-context-engine", extras = ["snowflake"], specifier = ">=0.4.0" },
     { name = "prettytable", specifier = ">=3.10.0" },
     { name = "pyyaml", specifier = ">=6.0" },
@@ -828,17 +832,11 @@ name = "databao-demo-snowflake-project"
 version = "0.1.0"
 source = { editable = "examples/demo-snowflake-project" }
 dependencies = [
-    { name = "adbc-driver-manager" },
-    { name = "adbc-driver-snowflake" },
     { name = "databao-cli" },
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "adbc-driver-manager", specifier = ">=1.10.0" },
-    { name = "adbc-driver-snowflake", specifier = ">=1.10.0" },
-    { name = "databao-cli", editable = "." },
-]
+requires-dist = [{ name = "databao-cli", editable = "." }]
 
 [[package]]
 name = "dbt-adapters"

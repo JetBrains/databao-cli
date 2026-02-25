@@ -45,14 +45,14 @@ def _build_context_from_sources(agent: "Agent") -> str:
     context_parts: list[str] = []
 
     for name, db_source in agent.dbs.items():
-        if db_source.context:
-            context_parts.append(f"Database '{name}':\n{db_source.context}")
+        if db_source.description:
+            context_parts.append(f"Database '{name}':\n{db_source.description}")
 
     for name, df_source in agent.dfs.items():
-        if df_source.context:
-            context_parts.append(f"DataFrame '{name}':\n{df_source.context}")
+        if df_source.description:
+            context_parts.append(f"DataFrame '{name}':\n{df_source.description}")
 
-    for ctx in agent.additional_context:
+    for ctx in agent.additional_description:
         context_parts.append(ctx)
 
     if not context_parts:

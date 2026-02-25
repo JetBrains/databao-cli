@@ -141,9 +141,9 @@ def _render_sources(agent: Agent) -> None:
                 with col2:
                     st.caption(db_type)
 
-                if source.context:
+                if source.description:
                     with st.expander("View context", expanded=False):
-                        st.code(source.context[:500] + "..." if len(source.context) > 500 else source.context)
+                        st.code(source.description[:500] + "..." if len(source.description) > 500 else source.description)
 
     if dfs:
         st.markdown("**DataFrames:**")

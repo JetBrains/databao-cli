@@ -39,12 +39,12 @@ def _ensure_adbc_driver() -> None:
 
     spec = importlib.util.find_spec("adbc_driver_snowflake")
     if not spec or not spec.origin:
-        logger.warning("adbc_driver_snowflake package not installed, skipping driver setup")
+        logger.error("adbc_driver_snowflake package not installed, skipping driver setup")
         return
 
     so_file = Path(spec.origin).parent / ADBC_LIB
     if not so_file.exists():
-        logger.warning("ADBC .so not found at %s", so_file)
+        logger.error("ADBC .so not found at %s", so_file)
         return
 
     abs_path = str(so_file.resolve())
@@ -71,8 +71,8 @@ def _load_snowflake_secrets() -> None:
             logger.warning("Failed to load secret '%s'", secret_name, exc_info=True)
 
 
+_ensure_adbc_driver()
 if _is_running_in_snowflake():
-    _ensure_adbc_driver()
     _load_snowflake_secrets()
 
 if "--project-dir" not in sys.argv:

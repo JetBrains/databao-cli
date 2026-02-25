@@ -16,7 +16,7 @@ class StreamingWriter(io.StringIO):
 
     Usage:
         writer = StreamingWriter()
-        agent = databao.new_agent()
+        agent = databao.agent(domain)
         thread = agent.thread(writer=writer)
         result = thread.ask("...")
         thinking_text = writer.getvalue()
