@@ -18,7 +18,7 @@ def remove_keys(data, keys):
     return data
 
 
-def compare_yaml(current_yaml: str, expected_yaml: str):
+def compare_yaml(current_yaml: str, expected_yaml: dict):
     diff = DeepDiff(current_yaml, expected_yaml)
     assert not diff, diff
 

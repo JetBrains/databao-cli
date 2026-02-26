@@ -1,12 +1,9 @@
+from asyncio import Protocol
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Protocol
 
-import yaml
+from databases.database_utils import create_and_save_database_creds_file
 from dotenv import load_dotenv
-from pexpect import spawn
-from pexpect.popen_spawn import PopenSpawn
-from utils.path_utils import get_src_folder
 from utils.pexpect_utils import child_answer, child_answer_safe
 
 load_dotenv()
@@ -63,56 +60,20 @@ class SnowflakeSSOAuth:
 
 
 @dataclass(frozen=True)
-class DatabaseBase:
+class SnowflakeDB:
     datasource_name: str
-
-    @property
-    def datasource_type(self) -> str:
-        """Each DB subclass defines its own type."""
-        raise NotImplementedError
-
-    def run_interactive_flow(self, child: spawn | PopenSpawn) -> None:
-        raise NotImplementedError("Must be implemented by subclasses")
-
-
-@dataclass(frozen=True)
-class SnowflakeDB(DatabaseBase):
+    datasource_type = "snowflake"
     account: str
     warehouse: str | None = None
     database: str | None = None
     user: str | None = None
     role: str | None = None
-
-    auth: SnowflakeAuth = SnowflakePasswordAuth()
+    auth: SnowflakePasswordAuth | SnowflakeKeyPairAuth | SnowflakeSSOAuth = SnowflakePasswordAuth()
     check_connection: bool = False
-
-    @property
-    def datasource_type(self) -> str:
-        return "snowflake"
-
-    def run_interactive_flow(self, child) -> None:
-        """
-        child: PopenSpawn(...)
-        Executes the whole interactive flow for creating Snowflake datasource.
-        """
-
-        child_answer(child, r"What type of datasource do you want to add\?", self.datasource_type)
-        child_answer(child, r"Datasource name\?:", self.datasource_name)
-        (child_answer_safe(child, r"connection\.account\? :", self.account),)
-        child_answer(child, r"connection\.warehouse\? \(Optional\):", self.warehouse)
-        child_answer(child, r"connection\.database\? \(Optional\):", self.database)
-        child_answer_safe(child, r"connection\.user\? \(Optional\):", self.user)
-        child_answer(child, r"connection\.role\? \(Optional\):", self.role)
-        self.auth.apply(child)
-        child_answer(
-            child,
-            r"Do you want to check the connection to this new datasource\? \[y/N\]:",
-            "y" if self.check_connection else "N",
-        )
-        child.expect(rf"{self.datasource_name}\.yaml\: Valid")
+    check_connection_succeed: bool = True
 
 
-def create_snowflake_creds_file():
+def create_snowflake_creds_file() -> dict[str, str | None]:
     return {
         "type": "snowflake",
         "name": "my_test_snowflake",
@@ -130,6 +91,4 @@ def create_snowflake_creds_file():
 
 
 def create_and_save_snowflake_creds_file(project_path: Path, name: str):
-    get_src_folder(project_path).joinpath(name).write_text(
-        yaml.safe_dump(create_snowflake_creds_file(), sort_keys=False, indent=2)
-    )
+    create_and_save_database_creds_file(project_path, name, create_snowflake_creds_file())

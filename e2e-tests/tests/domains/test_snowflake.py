@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from database_utils import (
+from databases.snowflake_utils import (
     SN_ACCOUNT,
     SN_PASSWORD,
     SN_USER,
