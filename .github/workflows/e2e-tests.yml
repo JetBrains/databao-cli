@@ -21,6 +21,7 @@ jobs:
         uses: ./.github/actions/setup-project
         with:
           python-version: 3.12
+          extra-dependencies: "--group e2e-tests"
 
       - name: Run e2e tests
         env:

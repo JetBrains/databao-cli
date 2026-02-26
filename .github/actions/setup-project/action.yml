@@ -3,6 +3,9 @@ inputs:
   python-version:
     description: "python version to install"
     required: true
+  extra-dependencies:
+    description: "extra dependencies to install"
+    required: false
 
 runs:
   using: "composite"
@@ -30,4 +33,4 @@ runs:
 
     - name: Install dependencies
       shell: bash
-      run: uv sync --python ${{ inputs.python-version }}
+      run: uv sync --python ${{ inputs.python-version }} ${{ inputs.extra-dependencies }}
