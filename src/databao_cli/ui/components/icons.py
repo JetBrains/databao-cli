@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from databao.databases import DBConnectionConfig
+from databao.agent.databases import DBConnectionConfig
 
 DB_ICONS = {
     "duckdb": "🦆",

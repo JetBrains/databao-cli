@@ -213,7 +213,7 @@ def _delete_cache_scope(cache_scope: str) -> None:
     Args:
         cache_scope: The cache scope identifier (e.g., "agent_name/uuid")
     """
-    from databao.caches.disk_cache import DiskCache, DiskCacheConfig
+    from databao.agent.caches.disk_cache import DiskCache, DiskCacheConfig
 
     cache_dir = get_cache_dir()
     config = DiskCacheConfig(db_dir=cache_dir / "diskcache")

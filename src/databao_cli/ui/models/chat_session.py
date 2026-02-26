@@ -5,10 +5,10 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
-from databao import ExecutionResult
+from databao.agent import ExecutionResult
 
 if TYPE_CHECKING:
-    from databao.core.thread import Thread
+    from databao.agent.core.thread import Thread
 
     from databao_cli.ui.streaming import StreamingWriter
 

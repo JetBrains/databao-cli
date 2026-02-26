@@ -14,7 +14,7 @@ from streamlit.runtime.scriptrunner import add_script_run_ctx, get_script_run_ct
 from databao_cli.ui.components.results import _extract_visualization_data
 
 if TYPE_CHECKING:
-    from databao.core.thread import Thread
+    from databao.agent.core.thread import Thread
 
     from databao_cli.ui.models.chat_session import ChatSession
     from databao_cli.ui.streaming import StreamingWriter

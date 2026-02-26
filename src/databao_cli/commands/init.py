@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from databao_context_engine import InitProjectError, init_dce_project
+from databao_context_engine import InitDomainError, init_dce_domain
 
 from databao_cli.project.layout import ProjectLayout, find_project
 
@@ -53,8 +53,8 @@ class _ProjectCreator:
         project_layout.agents_dir.mkdir(parents=True, exist_ok=True)
 
         try:
-            init_dce_project(project_layout.root_domain_dir)
-        except InitProjectError as e:
+            init_dce_domain(project_layout.root_domain_dir)
+        except InitDomainError as e:
             raise DatabaoContextEngineProjectInitError() from e
 
         return project_layout

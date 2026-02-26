@@ -226,7 +226,7 @@ def render_build_section(project_dir: Path, *, read_only: bool = False) -> None:
 
 def _render_build_status_readonly(project_dir: Path) -> None:
     """Show whether the project has been built, without any action buttons."""
-    from databao.integrations.dce import DatabaoContextApi
+    from databao.agent.integrations.dce import DatabaoContextApi
 
     try:
         dce_project = DatabaoContextApi.get_dce_project(project_dir)

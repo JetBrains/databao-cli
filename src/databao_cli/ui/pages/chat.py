@@ -4,8 +4,8 @@ import logging
 from typing import cast
 
 import streamlit as st
-from databao.core.agent import Agent
-from databao.core.thread import Thread
+from databao.agent.core.agent import Agent
+from databao.agent.core.thread import Thread
 
 from databao_cli.project.layout import ProjectLayout
 from databao_cli.ui.app import _clear_all_chat_threads

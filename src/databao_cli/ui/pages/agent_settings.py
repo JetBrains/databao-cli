@@ -10,7 +10,7 @@ from databao_cli.ui.app import _clear_all_chat_threads
 from databao_cli.ui.components.status import AppStatus, set_status
 
 if TYPE_CHECKING:
-    from databao.core import Executor
+    from databao.agent.core import Executor
 
 EXECUTOR_TYPES = {
     "lighthouse": "LighthouseExecutor (recommended)",
@@ -24,9 +24,9 @@ def create_executor(executor_type: str) -> Executor:
 
     Supported types are defined in EXECUTOR_TYPES.
     """
-    from databao.executors.dbt.executor import DbtProjectExecutor
-    from databao.executors.lighthouse.executor import LighthouseExecutor
-    from databao.executors.react_duckdb.executor import ReactDuckDBExecutor
+    from databao.agent.executors.dbt.executor import DbtProjectExecutor
+    from databao.agent.executors.lighthouse.executor import LighthouseExecutor
+    from databao.agent.executors.react_duckdb.executor import ReactDuckDBExecutor
 
     match executor_type:
         case "lighthouse":

@@ -3,7 +3,7 @@
 import logging
 
 import streamlit as st
-from databao import Agent
+from databao.agent import Agent
 
 from databao_cli.project.layout import ProjectLayout
 from databao_cli.ui.app import _clear_all_chat_threads, is_read_only_domain
