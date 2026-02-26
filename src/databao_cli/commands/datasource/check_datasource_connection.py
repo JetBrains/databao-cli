@@ -9,7 +9,7 @@ from databao_context_engine import (
 from databao_cli.project.layout import ProjectLayout
 
 
-def print_connection_check_results(domain: str, datasource_results: list[CheckDatasourceConnectionResult]):
+def print_connection_check_results(domain: str, datasource_results: list[CheckDatasourceConnectionResult]) -> None:
     for result in datasource_results:
         fq_datasource_name = domain + os.pathsep + str(result.datasource_id)
         status = str(result.connection_status.value)

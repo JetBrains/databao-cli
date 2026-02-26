@@ -12,27 +12,27 @@ class InitDatabaoProjectError(ValueError):
 
 
 class DatabaoProjectDirAlreadyExistsError(InitDatabaoProjectError):
-    def __init__(self, message) -> None:
+    def __init__(self, message: str) -> None:
         super().__init__(message)
 
 
 class ParentDatabaoProjectAlreadyExistsError(InitDatabaoProjectError):
-    def __init__(self, message) -> None:
+    def __init__(self, message: str) -> None:
         super().__init__(message)
 
 
 class ProjectDirDoesnotExistError(InitDatabaoProjectError):
-    def __init__(self, message) -> None:
+    def __init__(self, message: str) -> None:
         super().__init__(message)
 
 
 class ProjectDirNotDirError(InitDatabaoProjectError):
-    def __init__(self, message) -> None:
+    def __init__(self, message: str) -> None:
         super().__init__(message)
 
 
 class DatabaoContextEngineProjectInitError(InitDatabaoProjectError):
-    def __init__(self, message) -> None:
+    def __init__(self, message: str) -> None:
         super().__init__(message)
 
 
@@ -55,7 +55,7 @@ class _ProjectCreator:
         try:
             init_dce_project(project_layout.root_domain_dir)
         except InitProjectError as e:
-            raise DatabaoContextEngineProjectInitError() from e
+            raise DatabaoContextEngineProjectInitError(str(e)) from e
 
         return project_layout
 

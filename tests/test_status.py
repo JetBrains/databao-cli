@@ -1,10 +1,12 @@
+from pathlib import Path
+
 from click.testing import CliRunner
 
 from databao_cli.__main__ import cli
 from tests.utils.project import within_dir
 
 
-def test_databao_status(tmp_path):
+def test_databao_status(tmp_path: Path) -> None:
     runner = CliRunner()
     with within_dir(tmp_path):
         result = runner.invoke(cli, ["status"], catch_exceptions=False)

@@ -3,6 +3,7 @@
 import logging
 import re
 from pathlib import Path
+from typing import cast
 
 import streamlit as st
 
@@ -39,7 +40,7 @@ def get_storage_base_path() -> Path:
     databao_project = st.session_state.databao_project
     if databao_project is None:
         raise RuntimeError("Databao project path not set")
-    return databao_project.databao_dir / _UI_SUBDIR
+    return cast(Path, databao_project.databao_dir / _UI_SUBDIR)
 
 
 def get_settings_path() -> Path:

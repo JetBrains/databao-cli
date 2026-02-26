@@ -1,4 +1,5 @@
 import importlib
+import importlib.util
 import subprocess
 import sys
 from pathlib import Path
@@ -20,7 +21,7 @@ def bootstrap_streamlit_app(
     streamlit_args: list[str] | None = None,
     *,
     read_only_domain: bool = False,
-):
+) -> None:
     """Bootstrap the UI."""
 
     if streamlit_args is None:

@@ -169,7 +169,7 @@ def render_setup_wizard_page() -> None:
         status = databao_project_status(project) if project else DatabaoProjectStatus.NOT_INITIALIZED
 
         has_datasources = False
-        if project_initialized and status != DatabaoProjectStatus.NOT_INITIALIZED:
+        if project is not None and status != DatabaoProjectStatus.NOT_INITIALIZED:
             try:
                 configured = list_datasources(project.root_domain_dir)
                 has_datasources = len(configured) > 0
@@ -182,7 +182,7 @@ def render_setup_wizard_page() -> None:
         # ---- Section 1: Initialize Project ----
         _render_section_header("1", "Initialize Project", completed=project_initialized)
 
-        if project_initialized:
+        if project is not None:
             st.success(f"Project initialized at `{project.project_dir}`", icon="✅")
         elif read_only:
             st.caption("Project initialization is disabled in read-only mode.")
@@ -213,7 +213,7 @@ def render_setup_wizard_page() -> None:
             enabled=project_initialized,
         )
 
-        if not project_initialized:
+        if project is None:
             st.caption("Complete step 1 to configure datasources.")
         elif read_only:
             render_datasource_manager(project.root_domain_dir, read_only=True)
@@ -235,7 +235,7 @@ def render_setup_wizard_page() -> None:
             enabled=has_datasources,
         )
 
-        if not has_datasources:
+        if not has_datasources or project is None:
             st.caption("Add at least one datasource first.")
         elif read_only:
             render_build_section(project.root_domain_dir, read_only=True)

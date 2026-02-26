@@ -7,7 +7,7 @@ using direct Python API calls (no subprocess/shell).
 import logging
 import os
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from databao_context_engine import (
     BuildDatasourceResult,
@@ -53,7 +53,7 @@ def get_datasource_config_fields(ds_type_str: str) -> list[ConfigPropertyDefinit
     """Return the config field definitions for a given datasource type string."""
     loader = DatabaoContextPluginLoader()
     ds_type = DatasourceType(full_type=ds_type_str)
-    return loader.get_config_file_structure_for_datasource_type(ds_type)
+    return cast(list[ConfigPropertyDefinition], loader.get_config_file_structure_for_datasource_type(ds_type))
 
 
 def add_datasource(project_dir: Path, ds_type_str: str, ds_name: str, config: dict[str, Any]) -> ConfiguredDatasource:
@@ -92,7 +92,7 @@ def list_datasources(project_dir: Path) -> list[ConfiguredDatasource]:
     """List all configured datasources in the DCE project (reads from disk)."""
     try:
         manager = DatabaoContextProjectManager(project_dir=project_dir)
-        return manager.get_configured_datasource_list()
+        return cast(list[ConfiguredDatasource], manager.get_configured_datasource_list())
     except ValueError:
         return []
 
@@ -165,7 +165,7 @@ def verify_datasource_config(ds_type_str: str, ds_name: str, config: dict[str, A
 def build_context(project_dir: Path) -> list[BuildDatasourceResult]:
     """Build context for all datasources in the DCE project. This is a long-running operation."""
     manager = DatabaoContextProjectManager(project_dir=project_dir)
-    return manager.build_context()
+    return cast(list[BuildDatasourceResult], manager.build_context())
 
 
 def get_status_info(project_dir: Path) -> str:

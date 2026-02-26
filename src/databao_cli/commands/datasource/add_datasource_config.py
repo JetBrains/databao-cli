@@ -12,7 +12,7 @@ from databao_cli.commands.datasource.check_datasource_connection import print_co
 from databao_cli.project.layout import ProjectLayout
 
 
-def add_datasource_config_interactive_impl(project_layout: ProjectLayout, domain: str):
+def add_datasource_config_interactive_impl(project_layout: ProjectLayout, domain: str) -> None:
     domain_dir = project_layout.domains_dir / domain
     domain_manager = DatabaoContextProjectManager(project_dir=domain_dir)
     plugin_loader = DatabaoContextPluginLoader()

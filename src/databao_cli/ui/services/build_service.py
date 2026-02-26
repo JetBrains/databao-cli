@@ -11,6 +11,7 @@ import threading
 from concurrent.futures import Future, ThreadPoolExecutor
 from concurrent.futures import TimeoutError as FuturesTimeoutError
 from pathlib import Path
+from typing import cast
 
 import streamlit as st
 from databao_context_engine import BuildDatasourceResult
@@ -137,7 +138,7 @@ def is_build_running() -> bool:
 
 def get_build_status() -> str:
     """Return current build status string."""
-    return st.session_state.get("build_status", "not_started")
+    return cast(str, st.session_state.get("build_status", "not_started"))
 
 
 def get_build_result() -> BuildResult | None:
@@ -185,7 +186,7 @@ def render_build_section(project_dir: Path, *, read_only: bool = False) -> None:
     from datetime import timedelta
 
     @st.fragment(run_every=timedelta(seconds=2))
-    def _build_fragment():
+    def _build_fragment() -> None:
         just_finished = check_build_completion()
         if just_finished:
             st.rerun()
