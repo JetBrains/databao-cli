@@ -19,6 +19,7 @@ def save_settings(settings: Settings) -> None:
 
     yaml_content = settings.to_yaml()
     path.write_text(yaml_content)
+    path.chmod(0o600)
     logger.info(f"Settings saved to {path}")
 
 

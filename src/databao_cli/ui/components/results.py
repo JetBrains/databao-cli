@@ -3,6 +3,7 @@
 import logging
 from typing import TYPE_CHECKING, Any
 
+import nh3
 import streamlit as st
 
 from databao_cli.ui.services.chat_persistence import save_current_chat
@@ -14,6 +15,128 @@ if TYPE_CHECKING:
     from databao_cli.ui.models.chat_session import ChatSession
 
 logger = logging.getLogger(__name__)
+
+_ALLOWED_HTML_TAGS = {
+    "div",
+    "span",
+    "svg",
+    "g",
+    "path",
+    "rect",
+    "circle",
+    "line",
+    "ellipse",
+    "polygon",
+    "polyline",
+    "text",
+    "tspan",
+    "defs",
+    "clipPath",
+    "use",
+    "symbol",
+    "marker",
+    "pattern",
+    "linearGradient",
+    "radialGradient",
+    "stop",
+    "style",
+    "table",
+    "tr",
+    "td",
+    "th",
+    "thead",
+    "tbody",
+    "tfoot",
+    "caption",
+    "colgroup",
+    "col",
+    "p",
+    "br",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "ul",
+    "ol",
+    "li",
+    "a",
+    "img",
+    "figure",
+    "figcaption",
+    "strong",
+    "em",
+    "b",
+    "i",
+    "code",
+    "pre",
+    "blockquote",
+}
+
+_ALLOWED_HTML_ATTRIBUTES: dict[str, set[str]] = {
+    "*": {
+        "class",
+        "style",
+        "id",
+        "width",
+        "height",
+        "viewBox",
+        "xmlns",
+        "xmlns:xlink",
+        "d",
+        "fill",
+        "stroke",
+        "stroke-width",
+        "stroke-dasharray",
+        "stroke-linecap",
+        "stroke-linejoin",
+        "opacity",
+        "fill-opacity",
+        "stroke-opacity",
+        "transform",
+        "x",
+        "y",
+        "dx",
+        "dy",
+        "rx",
+        "ry",
+        "cx",
+        "cy",
+        "r",
+        "x1",
+        "y1",
+        "x2",
+        "y2",
+        "font-size",
+        "font-family",
+        "font-weight",
+        "text-anchor",
+        "dominant-baseline",
+        "clip-path",
+        "clip-rule",
+        "fill-rule",
+        "marker-end",
+        "marker-start",
+        "marker-mid",
+        "offset",
+        "stop-color",
+        "stop-opacity",
+        "gradientUnits",
+        "gradientTransform",
+        "patternUnits",
+        "patternTransform",
+        "points",
+        "preserveAspectRatio",
+    },
+    "a": {"href", "target", "rel"},
+    "img": {"src", "alt"},
+}
+
+
+def _sanitize_html(html: str) -> str:
+    """Sanitize HTML content to prevent XSS while preserving SVG chart rendering."""
+    return nh3.clean(html, tags=_ALLOWED_HTML_TAGS, attributes=_ALLOWED_HTML_ATTRIBUTES)
 
 
 def _extract_visualization_data(thread: "Thread") -> dict[str, Any] | None:
@@ -150,6 +273,7 @@ def render_visualization_section(thread: "Thread", visualization_data: dict[str,
                 logger.debug("Failed to get HTML from _get_plot_html()", exc_info=True)
 
         if html_content:
+            html_content = _sanitize_html(html_content)
             st.components.v1.html(html_content, height=500, scrolling=False)
             return
 
