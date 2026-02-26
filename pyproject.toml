@@ -3,8 +3,8 @@ name = "databao-cli"
 version = "0.1.0"
 description = ""
 authors = [
-    {name = "Maryia Lapatsina", email = "maryia.lapatsina@jetbrains.com"},
-    {name = "Yury Khudyakov", email = "yury.khudyakov@jetbrains.com"}
+    { name = "Maryia Lapatsina", email = "maryia.lapatsina@jetbrains.com" },
+    { name = "Yury Khudyakov", email = "yury.khudyakov@jetbrains.com" }
 ]
 readme = "README.md"
 requires-python = ">=3.11"
@@ -18,6 +18,23 @@ dependencies = [
     "pyyaml>=6.0",
     "adbc-driver-snowflake>=1.10.0",
     "adbc-driver-manager>=1.10.0",
+]
+
+[project.optional-dependencies]
+mssql = [
+    "databao-context-engine[mssql]"
+]
+clickhouse = [
+    "databao-context-engine[clickhouse]"
+]
+athena = [
+    "databao-context-engine[athena]"
+]
+bigquery = [
+    "databao-context-engine[bigquery]",
+]
+pdf = [
+    "databao-context-engine[pdf]"
 ]
 
 [project.scripts]
