@@ -32,14 +32,10 @@ jobs:
           SNOWFLAKE_TEST_USER_PROGRAM_TOKEN: ${{ secrets.SNOWFLAKE_TEST_USER_PROGRAM_TOKEN }}
         run: uv run pytest e2e-tests
 
-      - name: Build Allure report
-        uses: simple-elf/allure-report-action@v1.7
+      - name: Generate Allure report
         if: always()
-        continue-on-error: true
-        with:
-          allure_results: allure-results
-          allure_history: allure-history
-          keep_reports: 20
+        run: |
+          allure generate allure-results -o allure-report --clean
 
       - name: Run Allure Action
         uses: allure-framework/allure-action@v0
