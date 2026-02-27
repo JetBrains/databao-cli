@@ -69,5 +69,5 @@ jobs:
         with:
           retention-days: 10
           compression-level: 6
-          name: artifacts
+          name: allure-report
           path: allure-report
