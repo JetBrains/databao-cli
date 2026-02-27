@@ -1014,7 +1014,7 @@ dev = [
     { name = "ruff", specifier = ">=0.9.0,<1.0.0" },
 ]
 e2e-tests = [
-    { name = "allure-pytest", specifier = ">=2.13.5" },
+    { name = "allure-pytest", specifier = ">=2.15.3" },
     { name = "deepdiff", specifier = ">=8.6.1" },
     { name = "pexpect", specifier = ">=4.9.0" },
     { name = "pytest", specifier = ">=9.0.2" },
