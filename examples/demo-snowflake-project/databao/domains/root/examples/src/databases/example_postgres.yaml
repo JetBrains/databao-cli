@@ -1,7 +1,0 @@
-type: postgres
-connection:
-  # your database connection configurations
-  host: localhost
-  port: 5432
-  user: username
-  password: password
