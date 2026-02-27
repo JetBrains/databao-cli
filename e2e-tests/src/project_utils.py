@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pexpect
+from databases.duckdb_utils import DuckdbDB
 from databases.mysql_utils import MysqlDB
 from databases.postgres_utils import PostgresDB
 from databases.snowflake_utils import SnowflakeDB
@@ -32,19 +33,20 @@ def execute_build(project_dir: Path):
         child.expect(pexpect.EOF)
 
 
-def run_common_interactive_flow(child: spawn | PopenSpawn,
-                                database: PostgresDB | SnowflakeDB | MysqlDB | SqliteDB) -> None:
+def run_common_interactive_flow(
+    child: spawn | PopenSpawn, database: PostgresDB | SnowflakeDB | MysqlDB | SqliteDB | DuckdbDB
+) -> None:
     child_answer(child, r"What type of datasource do you want to add\?", database.datasource_type)
     child_answer(child, r"Datasource name\?:", database.datasource_name)
 
-    if type(database) is SnowflakeDB:
+    if isinstance(database, SnowflakeDB):
         (child_answer_safe(child, r"connection\.account\? :", database.account),)
         child_answer(child, r"connection\.warehouse\? \(Optional\):", database.warehouse)
         child_answer(child, r"connection\.database\? \(Optional\):", database.database)
         child_answer_safe(child, r"connection\.user\? \(Optional\):", database.user)
         child_answer(child, r"connection\.role\? \(Optional\):", database.role)
         database.auth.apply(child)
-    elif type(database) is SqliteDB:
+    elif isinstance(database, (SqliteDB, DuckdbDB)):
         (child_answer_safe(child, r"connection\.database_path\? :", database.database_path))
     else:
         child_answer(child, r"connection\.host\?  \[localhost\]:", database.host)

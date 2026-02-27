@@ -13,7 +13,7 @@ def temp_sqlite_file(tmp_path: Path):
     yield db_file
 
 
-def test_databao_build_postgres(project_folder: Path, temp_sqlite_file: Path):
+def test_databao_build_sqlite(project_folder: Path, temp_sqlite_file: Path):
     db = SqliteDB.prepare_database(temp_sqlite_file)
     execute_init(project_folder, db)
     execute_build(project_folder)

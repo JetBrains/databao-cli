@@ -88,7 +88,6 @@ class SqliteDB:
     def prepare_database(cls, db_file: Path):
         conn = sqlite3.connect(database=str(db_file))
         try:
-            conn.execute("PRAGMA foreign_keys = ON")
             with conn:
                 conn.execute(cls.create_table_sql)
                 conn.execute(cls.fill_table_sql)

@@ -16,7 +16,7 @@ def mysql_container():
     container.stop()
 
 
-def test_databao_build_postgres(project_folder: Path, mysql_container: MySqlContainer):
+def test_databao_build_mysql(project_folder: Path, mysql_container: MySqlContainer):
     db = MysqlDB.prepare_database(mysql_container)
     execute_init(project_folder, db)
     execute_build(project_folder)
