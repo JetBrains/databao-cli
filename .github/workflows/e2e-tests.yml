@@ -12,6 +12,8 @@ jobs:
     runs-on: sre-eqx-kata
     permissions:
       contents: write
+      pages: write
+      id-token: write
     env:
       UV_LINK_MODE: copy
     steps:
@@ -28,7 +30,32 @@ jobs:
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
           SNOWFLAKE_TEST_USER: ${{ secrets.SNOWFLAKE_TEST_USER }}
           SNOWFLAKE_TEST_USER_PROGRAM_TOKEN: ${{ secrets.SNOWFLAKE_TEST_USER_PROGRAM_TOKEN }}
-        run: uv run pytest e2e-tests
+        run: uv run pytest e2e-tests --alluredir=allure-results
+
+      - name: Get Allure history
+        uses: actions/checkout@v4
+        if: always()
+        continue-on-error: true
+        with:
+          ref: allure-gh-pages
+          path: allure-gh-pages
+
+      - name: Build Allure report
+        uses: simple-elf/allure-report-action@v1.7
+        if: always()
+        with:
+          gh_pages: allure-gh-pages
+          allure_results: allure-results
+          allure_history: allure-history
+          keep_reports: 20
+
+      - name: Deploy report to Github Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: allure-history
+          publish_branch: allure-gh-pages
 
       - name: Upload Tests artifacts
         if: always()
