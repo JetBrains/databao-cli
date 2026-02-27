@@ -162,7 +162,7 @@ def build(ctx: Context, domain: str, should_index: bool) -> None:
     "--model",
     type=str,
     default=None,
-    help="LLM model in format provider:name (e.g., openai:gpt-4o, anthropic:claude-3-5-sonnet)",
+    help="LLM model in format provider:name (e.g., openai:gpt-4o, anthropic:claude-sonnet-4-6)",
 )
 @click.option(
     "-t",
@@ -193,7 +193,7 @@ def ask(
     Examples:
         databao ask                                          # Interactive mode
         databao ask --one-shot "What tables exist?"          # One-shot mode
-        databao ask --model anthropic:claude-3-5-sonnet      # With custom model
+        databao ask --model anthropic:claude-sonnet-4-6      # With custom model
         databao ask --no-show-thinking                       # Hide reasoning
     """
     ask_impl(ctx, question, one_shot, model, temperature, show_thinking)
