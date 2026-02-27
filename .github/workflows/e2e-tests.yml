@@ -42,7 +42,7 @@ jobs:
         if: always()
         continue-on-error: true
         run: |
-          allure generate allure-results -o allure-report --clean
+          npx allure generate
 
       - name: Run Allure Action
         uses: allure-framework/allure-action@v0
