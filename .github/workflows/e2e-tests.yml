@@ -25,6 +25,12 @@ jobs:
           python-version: 3.12
           extra-dependencies: "--group e2e-tests"
 
+      - name: Download Allure
+        if: always()
+        continue-on-error: true
+        run: |
+          npm install allure
+
       - name: Run e2e tests
         env:
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
@@ -34,6 +40,7 @@ jobs:
 
       - name: Generate Allure report
         if: always()
+        continue-on-error: true
         run: |
           allure generate allure-results -o allure-report --clean
 
