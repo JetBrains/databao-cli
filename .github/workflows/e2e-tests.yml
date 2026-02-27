@@ -17,7 +17,7 @@ jobs:
     env:
       UV_LINK_MODE: copy
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Set up project
         uses: ./.github/actions/setup-project
@@ -42,14 +42,14 @@ jobs:
           name: artifacts
           path: ./e2e-tests/artifacts/
 
-      - name: Upload allure artifacts
+      - name: Upload Allure artifacts
         if: always()
         uses: actions/upload-artifact@v5
         with:
           retention-days: 10
           compression-level: 6
           name: allure-results-ubuntu
-          path: ./allure-results-ubuntu.zip
+          path: ./allure-results-ubuntu
 
   allure-report:
     needs: [ e2e-tests-ubuntu ]
