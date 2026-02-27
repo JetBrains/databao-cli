@@ -1,0 +1,181 @@
+# ===== test sqlite conn.yaml =====
+datasource_id: test sqlite conn.yaml
+datasource_type: sqlite
+context_built_at: 2026-02-27 16:15:31.010532
+context:
+  catalogs:
+  - name: default
+    schemas:
+    - name: main
+      tables:
+      - name: all_types_demo
+        columns:
+        - name: id
+          type: INTEGER
+          nullable: false
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: int_col
+          type: INTEGER
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: bigint_col
+          type: BIGINT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: smallint_col
+          type: SMALLINT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: tinyint_col
+          type: TINYINT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: boolean_col
+          type: BOOLEAN
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: real_col
+          type: REAL
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: double_col
+          type: DOUBLE
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: float_col
+          type: FLOAT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: numeric_col
+          type: NUMERIC
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: decimal_col
+          type: DECIMAL(10, 2)
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: char_col
+          type: CHAR(5)
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: varchar_col
+          type: VARCHAR(50)
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: text_col
+          type: TEXT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: clob_col
+          type: CLOB
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: date_col
+          type: DATE
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: datetime_col
+          type: DATETIME
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: blob_col
+          type: BLOB
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: no_type_col
+          type: ''
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        samples:
+        - id: 1
+          int_col: 42
+          bigint_col: 1234567890123
+          smallint_col: 123
+          tinyint_col: 1
+          boolean_col: 1
+          real_col: 3.14
+          double_col: 3.1415926535
+          float_col: 2.718
+          numeric_col: 999.99
+          decimal_col: 12345.67
+          char_col: ABCDE
+          varchar_col: Hello SQLite
+          text_col: This is a text column
+          clob_col: This is a CLOB column
+          date_col: '2025-01-01'
+          datetime_col: '2025-01-01 12:30:00'
+          blob_col: !!binary |
+            3q2+7w==
+          no_type_col: No declared type value
+        partition_info: null
+        description: null
+        kind: table
+        primary_key:
+          name: pk_all_types_demo
+          columns:
+          - id
+          validated: true
+        unique_constraints: []
+        checks: []
+        indexes: []
+        foreign_keys: []
+      description: null
+    description: null
+
