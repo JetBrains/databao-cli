@@ -78,10 +78,14 @@ jobs:
         run: |
           npm install -g allure
 
+      - name: Show structure
+        run: |
+          ls -R
+
       - name: Generate Allure report
         continue-on-error: true
         run: |
-          allure generate allure-results-ubuntu
+          allure generate ./allure-results-ubuntu
       
       - name: Run Allure Action
         uses: allure-framework/allure-action@v0
