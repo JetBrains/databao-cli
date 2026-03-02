@@ -24,7 +24,6 @@ jobs:
         uses: ./.github/actions/setup-project
         with:
           python-version: ${{ matrix.python-version }}
-          prune-cache: true
 
       - name: Lint with ruff
         run: |

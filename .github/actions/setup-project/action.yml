@@ -1,14 +1,20 @@
 name: Setup uv and project
 inputs:
+  uv-version:
+    description: "uv version"
+    required: false
+    default: "0.10.5"
   python-version:
     description: "python version to install"
-    required: true
+    required: false
+    default: "3.12"
   extra-dependencies:
     description: "extra dependencies to install"
     required: false
   prune-cache:
     description: "prune cache after installation"
-    required: true
+    required: false
+    default: "true"
 
 runs:
   using: "composite"
@@ -16,9 +22,14 @@ runs:
     - name: Install uv
       uses: astral-sh/setup-uv@v5
       with:
-        version: "0.10.5"
+        version: ${{ inputs.uv-version }}
         enable-cache: true
         prune-cache: ${{ inputs.prune-cache }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ inputs.python-version }}
 
     - name: Set up Node.js
       uses: actions/setup-node@v4
@@ -29,11 +40,6 @@ runs:
       uses: pnpm/action-setup@v4
       with:
         version: 10.14.0
-
-    - name: Set up Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ inputs.python-version }}
 
     - name: Install dependencies
       shell: bash
