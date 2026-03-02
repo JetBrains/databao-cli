@@ -6,6 +6,9 @@ inputs:
   extra-dependencies:
     description: "extra dependencies to install"
     required: false
+  prune-cache:
+    description: "prune cache after installation"
+    required: true
 
 runs:
   using: "composite"
@@ -15,7 +18,7 @@ runs:
       with:
         version: "0.10.5"
         enable-cache: true
-        prune-cache: false
+        prune-cache: ${{ inputs.prune-cache }}
 
     - name: Set up Node.js
       uses: actions/setup-node@v4
