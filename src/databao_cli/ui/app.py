@@ -10,10 +10,10 @@ from databao import domain as create_domain
 from databao.caches.disk_cache import DiskCache, DiskCacheConfig
 from databao.core.agent import Agent
 
-from databao_cli.project.layout import ProjectLayout
+from databao_cli.project.layout import ProjectLayout, find_project
 from databao_cli.ui.components.status import AppStatus, set_status, status_context
 from databao_cli.ui.models.chat_session import ChatSession
-from databao_cli.ui.project_utils import DCEProjectStatus, dce_status
+from databao_cli.ui.project_utils import DatabaoProjectStatus, databao_project_status, has_build_output
 from databao_cli.ui.services.storage import get_cache_dir
 
 logger = logging.getLogger(__name__)
@@ -76,18 +76,15 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
     if st.session_state.get("agent") is not None:
         return cast(Agent, st.session_state.agent)
 
-    status = dce_status(project)
-    if status == DCEProjectStatus.NO_DATASOURCES:
+    status = databao_project_status(project)
+    if status == DatabaoProjectStatus.NOT_INITIALIZED:
+        set_status(AppStatus.INITIALIZING, "Project not initialized.")
+        return None
+
+    if status == DatabaoProjectStatus.NO_DATASOURCES:
         set_status(
             AppStatus.INITIALIZING,
             "No datasources configured. Add datasources to your project first.",
-        )
-        return None
-
-    if status == DCEProjectStatus.NO_BUILD:
-        set_status(
-            AppStatus.INITIALIZING,
-            "DCE project found but no build output. Run 'databao build' first.",
         )
         return None
 
@@ -132,7 +129,56 @@ def _clear_all_chat_threads() -> None:
         chat.thread = None
 
 
-def _initialize_app(project_dir: str):
+def is_read_only_domain() -> bool:
+    """Check whether domain-editing operations are disabled."""
+    return st.session_state.get("_read_only_domain", False)
+
+
+def _is_project_ready(project_dir: Path) -> bool:
+    """Check if the Databao project is fully set up and ready for normal use."""
+    project = find_project(project_dir)
+    if project is None:
+        return False
+    status = databao_project_status(project)
+    return status == DatabaoProjectStatus.VALID
+
+
+def _load_welcome_completed(project: ProjectLayout | None) -> bool:
+    """Read the welcome_completed flag from the on-disk settings file.
+
+    This is called early (before full settings load) to decide whether to
+    show the setup wizard. Returns False if the project doesn't exist or
+    the settings file can't be read.
+    """
+    if project is None:
+        return False
+    settings_path = project.databao_dir / "ui" / "settings.yaml"
+    if not settings_path.exists():
+        return False
+    try:
+        from databao_cli.ui.models.settings import Settings
+
+        yaml_content = settings_path.read_text()
+        settings = Settings.from_yaml(yaml_content)
+        return settings.welcome_completed
+    except Exception:
+        return False
+
+
+def mark_welcome_completed() -> None:
+    """Persist the welcome_completed flag to settings on disk.
+
+    Called when the user finishes the setup wizard.
+    """
+    from databao_cli.ui.services.settings_persistence import get_or_create_settings, save_settings
+
+    settings = get_or_create_settings()
+    settings.welcome_completed = True
+    save_settings(settings)
+    st.session_state.welcome_completed = True
+
+
+def _initialize_app(project_dir: Path) -> None:
     """Initialize app-level resources: project and agent.
 
     This is called on every rerun but returns early if already initialized.
@@ -140,13 +186,13 @@ def _initialize_app(project_dir: str):
 
     project = _get_current_project(project_dir)
 
-    status = dce_status(project)
-    if status == DCEProjectStatus.NO_DATASOURCES:
-        set_status(AppStatus.INITIALIZING, "No datasources configured")
+    status = databao_project_status(project)
+    if status == DatabaoProjectStatus.NOT_INITIALIZED:
+        set_status(AppStatus.INITIALIZING, "Project not initialized")
         return
 
-    if status == DCEProjectStatus.NO_BUILD:
-        set_status(AppStatus.INITIALIZING, "Project needs build")
+    if status == DatabaoProjectStatus.NO_DATASOURCES:
+        set_status(AppStatus.INITIALIZING, "No datasources configured")
         return
 
     with status_context(AppStatus.INITIALIZING, "Loading app data from disk..."):
@@ -191,6 +237,15 @@ def init_session_state() -> None:
     if "title_futures" not in st.session_state:
         st.session_state.title_futures = {}
 
+    if "build_status" not in st.session_state:
+        st.session_state.build_status = "not_started"
+    if "build_future" not in st.session_state:
+        st.session_state.build_future = None
+    if "build_result" not in st.session_state:
+        st.session_state.build_result = None
+    if "build_error" not in st.session_state:
+        st.session_state.build_error = None
+
 
 def _create_new_chat() -> None:
     """Create a new chat and navigate to it."""
@@ -217,7 +272,7 @@ def _create_new_chat() -> None:
 
 
 def build_navigation() -> None:
-    """Build the multipage navigation structure."""
+    """Build the full multipage navigation structure (normal mode)."""
     from databao_cli.ui.pages.agent_settings import render_agent_settings_page
     from databao_cli.ui.pages.chat import render_chat_page
     from databao_cli.ui.pages.context_settings import render_context_settings_page
@@ -322,15 +377,31 @@ def build_navigation() -> None:
     pg.run()
 
 
-def _get_current_project(project_dir: str) -> ProjectLayout:
-    """Get the current DCE project, auto-detecting if needed.
+def build_setup_navigation() -> None:
+    """Build navigation for setup mode -- only the setup wizard page, no sidebar."""
+    from databao_cli.ui.pages.welcome import render_setup_wizard_page
+
+    setup_page = st.Page(
+        render_setup_wizard_page,
+        title="Setup",
+        icon="🎋",
+        url_path="setup",
+        default=True,
+    )
+
+    pg = st.navigation({"": [setup_page]})
+    pg.run()
+
+
+def _get_current_project(project_dir: Path) -> ProjectLayout:
+    """Get the current Databao project, creating a ProjectLayout from the path.
 
     This is called at app level to determine project status for all pages.
     """
     if st.session_state.get("databao_project") is not None:
         return st.session_state.databao_project
 
-    project = ProjectLayout(Path(project_dir))
+    project = ProjectLayout(project_dir)
     st.session_state.databao_project = project
 
     return project
@@ -361,21 +432,52 @@ def main() -> None:
     )
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-p", "--project-dir", type=str, required=True, help="Location of your Databao project")
+    parser.add_argument(
+        "-p",
+        "--project-dir",
+        type=str,
+        required=False,
+        default=None,
+        help="Location of your Databao project (defaults to current directory)",
+    )
+    parser.add_argument(
+        "--read-only-domain",
+        action="store_true",
+        default=False,
+        help="Disable all domain-editing operations (init, datasources, build)",
+    )
     try:
         args = parser.parse_args()
     except SystemExit:
-        st.warning("Please provide a valid project directory using -p/--project-dir CLI argument")
-        st.stop()
+        st.warning("Failed to parse arguments. Using current directory as project directory.")
+        args = argparse.Namespace(project_dir=None, read_only_domain=False)
 
-    project_dir = args.project_dir
+    project_dir = Path(args.project_dir) if args.project_dir else Path.cwd()
 
     init_session_state()
-    _initialize_app(project_dir)
-    _render_global_sidebar()
-    build_navigation()
 
-    _save_settings_if_changed()
+    if "_read_only_domain" not in st.session_state:
+        st.session_state._read_only_domain = args.read_only_domain
+
+    if "_setup_mode_active" not in st.session_state:
+        project = find_project(project_dir)
+        welcome_completed = _load_welcome_completed(project)
+        st.session_state._setup_mode_active = not welcome_completed and (
+            not _is_project_ready(project_dir) or (project is not None and not has_build_output(project))
+        )
+
+    is_setup_mode = st.session_state._setup_mode_active and not st.session_state.get("welcome_completed", False)
+
+    st.session_state._project_dir = project_dir
+
+    if is_setup_mode:
+        _get_current_project(project_dir)
+        build_setup_navigation()
+    else:
+        _initialize_app(project_dir)
+        _render_global_sidebar()
+        build_navigation()
+        _save_settings_if_changed()
 
 
 if __name__ == "__main__":

@@ -1,0 +1,100 @@
+name: E2e tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  e2e-tests-ubuntu:
+    name: "Run e2e tests on ubuntu"
+    runs-on: sre-eqx-kata
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: write
+    env:
+      UV_LINK_MODE: copy
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up project
+        uses: ./.github/actions/setup-project
+        with:
+          python-version: 3.12
+          extra-dependencies: "--group e2e-tests"
+          prune-cache: false
+
+      - name: Run e2e tests
+        env:
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_TEST_USER: ${{ secrets.SNOWFLAKE_TEST_USER }}
+          SNOWFLAKE_TEST_USER_PROGRAM_TOKEN: ${{ secrets.SNOWFLAKE_TEST_USER_PROGRAM_TOKEN }}
+        run: uv run pytest e2e-tests --alluredir=allure-results-ubuntu
+
+      - name: Upload Tests artifacts
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          retention-days: 10
+          compression-level: 6
+          name: artifacts
+          path: ./e2e-tests/artifacts/
+
+      - name: Upload Allure artifacts
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          retention-days: 10
+          compression-level: 6
+          name: allure-results-ubuntu
+          path: ./allure-results-ubuntu
+
+  allure-report:
+    needs: [ e2e-tests-ubuntu ]
+    name: Generate allure report
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    if: always()
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "20.x"
+
+      - name: Download allure results
+        uses: actions/download-artifact@v6
+        with:
+          name: allure-results-ubuntu
+          path: allure-results-ubuntu
+
+      - name: Download Allure
+        run: |
+          npm install -g allure
+
+      - name: Generate Allure report
+        continue-on-error: true
+        run: |
+          allure generate ./allure-results-ubuntu
+
+      - name: Run Allure Action
+        uses: allure-framework/allure-action@v0
+        with:
+          report-directory: ./allure-report
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/main'
+        continue-on-error: true
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./allure-report
+          publish_branch: allure-gh-pages

@@ -52,6 +52,15 @@ def render_agent_settings_page() -> None:
             """,
             icon="⚠️",
         )
+    elif selected == "dbt":
+        st.warning(
+            """
+            **DbtProjectExecutor** is experimental.
+            It relies on initialized dbt project and a connected warehouse.
+            Should be used in case you need to automate dbt project changes.
+            """,
+            icon="⚠️",
+        )
 
     if selected != current and st.button("✓ Apply Changes", type="primary"):
         st.session_state.executor_type = selected

@@ -1,0 +1,607 @@
+# ===== sn_con.yaml =====
+datasource_id: sn_con.yaml
+datasource_type: snowflake
+context_built_at: 2026-02-19 16:04:32.560891
+context:
+  catalogs:
+  - name: DATALORE
+    schemas:
+    - name: DEMO
+      tables:
+      - name: SCREENCAST
+        columns:
+        - name: ID
+          type: NUMBER
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: Invoice ID
+          type: TEXT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: Branch
+          type: TEXT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: City
+          type: TEXT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: Customer type
+          type: TEXT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: Gender
+          type: TEXT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: Product line
+          type: TEXT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: Unit price
+          type: FLOAT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: Quantity
+          type: NUMBER
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: Tax 5%
+          type: FLOAT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: Total
+          type: FLOAT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: Date
+          type: TEXT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: Time
+          type: TEXT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: Payment
+          type: TEXT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: COGS
+          type: FLOAT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: gross margin percentage
+          type: FLOAT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: gross income
+          type: FLOAT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: Rating
+          type: FLOAT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        samples:
+        - id: 0
+          invoice id: 750-67-8428
+          branch: A
+          city: Yangon
+          customer type: Member
+          gender: Female
+          product line: Health and beauty
+          unit price: 74.69
+          quantity: 7
+          tax 5%: 26.1415
+          total: 548.9715
+          date: 1/5/2019
+          time: '13:08'
+          payment: Ewallet
+          cogs: 522.83
+          gross margin percentage: 4.761904762
+          gross income: 26.1415
+          rating: 9.1
+        - id: 1
+          invoice id: 226-31-3081
+          branch: C
+          city: Naypyitaw
+          customer type: Normal
+          gender: Female
+          product line: Electronic accessories
+          unit price: 15.28
+          quantity: 5
+          tax 5%: 3.82
+          total: 80.22
+          date: 3/8/2019
+          time: '10:29'
+          payment: Cash
+          cogs: 76.4
+          gross margin percentage: 4.761904762
+          gross income: 3.82
+          rating: 9.6
+        - id: 2
+          invoice id: 631-41-3108
+          branch: A
+          city: Yangon
+          customer type: Normal
+          gender: Male
+          product line: Home and lifestyle
+          unit price: 46.33
+          quantity: 7
+          tax 5%: 16.2155
+          total: 340.5255
+          date: 3/3/2019
+          time: '13:23'
+          payment: Credit card
+          cogs: 324.31
+          gross margin percentage: 4.761904762
+          gross income: 16.2155
+          rating: 7.4
+        - id: 3
+          invoice id: 123-19-1176
+          branch: A
+          city: Yangon
+          customer type: Member
+          gender: Male
+          product line: Health and beauty
+          unit price: 58.22
+          quantity: 8
+          tax 5%: 23.288
+          total: 489.048
+          date: 1/27/2019
+          time: '20:33'
+          payment: Ewallet
+          cogs: 465.76
+          gross margin percentage: 4.761904762
+          gross income: 23.288
+          rating: 8.4
+        - id: 4
+          invoice id: 373-73-7910
+          branch: A
+          city: Yangon
+          customer type: Normal
+          gender: Male
+          product line: Sports and travel
+          unit price: 86.31
+          quantity: 7
+          tax 5%: 30.2085
+          total: 634.3785
+          date: 2/8/2019
+          time: '10:37'
+          payment: Ewallet
+          cogs: 604.17
+          gross margin percentage: 4.761904762
+          gross income: 30.2085
+          rating: 5.3
+        partition_info: null
+        description: null
+        kind: table
+        primary_key: null
+        unique_constraints: []
+        checks: []
+        indexes: []
+        foreign_keys: []
+      description: null
+    - name: TEST
+      tables:
+      - name: 5mSalesRecords
+        columns:
+        - name: Region
+          type: TEXT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: Country
+          type: TEXT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: Item Type
+          type: TEXT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: Sales Channel
+          type: TEXT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: Order Priority
+          type: TEXT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: Order Date
+          type: TEXT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: Order ID
+          type: NUMBER
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: Ship Date
+          type: TEXT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: Units Sold
+          type: NUMBER
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: Unit Price
+          type: FLOAT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: Unit Cost
+          type: FLOAT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: Total Revenue
+          type: FLOAT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: Total Cost
+          type: FLOAT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: Total Profit
+          type: FLOAT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        samples:
+        - region: Australia and Oceania
+          country: Palau
+          item type: Office Supplies
+          sales channel: Online
+          order priority: H
+          order date: 3/6/2016
+          order id: 517073523
+          ship date: 3/26/2016
+          units sold: 2401
+          unit price: 651.21
+          unit cost: 524.96
+          total revenue: 1563555.21
+          total cost: 1260428.96
+          total profit: 303126.25
+        - region: Europe
+          country: Poland
+          item type: Beverages
+          sales channel: Online
+          order priority: L
+          order date: 4/18/2010
+          order id: 380507028
+          ship date: 5/26/2010
+          units sold: 9340
+          unit price: 47.45
+          unit cost: 31.79
+          total revenue: 443183.0
+          total cost: 296918.6
+          total profit: 146264.4
+        - region: North America
+          country: Canada
+          item type: Cereal
+          sales channel: Online
+          order priority: M
+          order date: 1/8/2015
+          order id: 504055583
+          ship date: 1/31/2015
+          units sold: 103
+          unit price: 205.7
+          unit cost: 117.11
+          total revenue: 21187.1
+          total cost: 12062.33
+          total profit: 9124.77
+        - region: Europe
+          country: Belarus
+          item type: Snacks
+          sales channel: Online
+          order priority: C
+          order date: 1/19/2014
+          order id: 954955518
+          ship date: 2/27/2014
+          units sold: 1414
+          unit price: 152.58
+          unit cost: 97.44
+          total revenue: 215748.12
+          total cost: 137780.16
+          total profit: 77967.96
+        - region: Middle East and North Africa
+          country: Oman
+          item type: Cereal
+          sales channel: Offline
+          order priority: H
+          order date: 4/26/2019
+          order id: 970755660
+          ship date: 6/2/2019
+          units sold: 7027
+          unit price: 205.7
+          unit cost: 117.11
+          total revenue: 1445453.9
+          total cost: 822931.97
+          total profit: 622521.93
+        partition_info: null
+        description: null
+        kind: table
+        primary_key: null
+        unique_constraints: []
+        checks: []
+        indexes: []
+        foreign_keys: []
+      - name: DTGRP_TESTING
+        columns:
+        - name: ID
+          type: NUMBER
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: TEXT
+          type: TEXT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        samples:
+        - id: 1
+          text: test1
+        - id: 2
+          text: test2
+        - id: 3
+          text: test3
+        - id: 4
+          text: test4
+        - id: 5
+          text: test5
+        partition_info: null
+        description: null
+        kind: table
+        primary_key: null
+        unique_constraints: []
+        checks: []
+        indexes: []
+        foreign_keys: []
+      - name: MY_FIRST_DBT_MODEL
+        columns:
+        - name: ID
+          type: NUMBER
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        samples:
+        - id: 1
+        - id: null
+        partition_info: null
+        description: null
+        kind: table
+        primary_key: null
+        unique_constraints: []
+        checks: []
+        indexes: []
+        foreign_keys: []
+      - name: MY_SECOND_DBT_MODEL
+        columns:
+        - name: ID
+          type: NUMBER
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        samples:
+        - id: 1
+        partition_info: null
+        description: null
+        kind: view
+        primary_key: null
+        unique_constraints: []
+        checks: []
+        indexes: []
+        foreign_keys: []
+      - name: TEMP_TEST_VIEW_1
+        columns:
+        - name: TEST_VALUE_1
+          type: NUMBER
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        samples:
+        - test_value_1: 10
+        partition_info: null
+        description: null
+        kind: view
+        primary_key: null
+        unique_constraints: []
+        checks: []
+        indexes: []
+        foreign_keys: []
+      - name: V3
+        columns:
+        - name: C1
+          type: NUMBER
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        samples:
+        - c1: 1
+        partition_info: null
+        description: null
+        kind: view
+        primary_key: null
+        unique_constraints: []
+        checks: []
+        indexes: []
+        foreign_keys: []
+      description: null
+    - name: VB_TEST
+      tables:
+      - name: T1
+        columns:
+        - name: C1
+          type: NUMBER
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: C2
+          type: TEXT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        samples:
+        - c1: 0
+          c2: fMxH280Y8IgMD10jZPsDOyLAeV7dCDnKBuLQoe4rQKN6FoZBdPmxKXfeWPPuanEqqjD6V8RHGpXZaNCJmLa7NTIkXayZQE6RHUyV
+        - c1: 1
+          c2: VHOdcq7G4tBixUz1UuD2z3PE31FjrnUGdzy7vUpPnVMFh22F0Y7gCzD3S3y4UsCppiOIvr985TFlJzSdMviXkO2hnqISe3N2KUwI
+        - c1: 2
+          c2: vfLC1XLh7eOh8tr6FdPZWWCr5zTBmf1Y72bSf9WhLMYZvQWfK7Yf5OR5vykKIRBBcj6JSL1cWQYQ1sfXW7rRrxqwohjSlKwZ3017
+        - c1: 3
+          c2: dy3lRzabp56vaUFkqvOUXpUCB5MwMaBmN5pIyF4BQNcfOfdNyP0hz9mJ6Sv5px58HYxUnESGr4nzJbE5jKRDTW8JkVwFTq8aa1Hr
+        - c1: 4
+          c2: 3dXiF52JAhLnzLjlzmcTyju05WX3kbekq1GjEqnEQ97fBZ8lgnEUDW9xmO5VDNKPYCzyh39GAE53Cmo0O1U5izYhDul8xF8IUbkL
+        partition_info: null
+        description: null
+        kind: table
+        primary_key: null
+        unique_constraints: []
+        checks: []
+        indexes: []
+        foreign_keys: []
+      - name: T2
+        columns:
+        - name: C1
+          type: NUMBER
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        - name: C2
+          type: TEXT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+        samples:
+        - c1: 0
+          c2: n3ZDqeoQTsZL9T2b2I5TcQU2V7G3KGuPZe4r1w7bU7V0Iwj5yVspHTBwF9KAMhLDR5JaZMfFG65XuxQhHfJUaIM4lgMKX6FjQLb1
+        - c1: 1
+          c2: AlQyva9LRYiXsOGUGqEV7LaEgtFH1YFMrU0m87f9cgYX2ZbQMK26f6zN6ewPCNbKI2h7XG4CHhpX6lMCAZLk9BxcjaG2LvCRf0u7
+        - c1: 2
+          c2: w4XZTlx7TBtkKkWwQjX1bXUCDDEAClW5YTUIONUo5SVcVOCo439noSRhx22zjq9rzslpVBg8ZTE13CGMFwVqqcec2cmg0M5C6TMV
+        - c1: 3
+          c2: IKQNbmKKtjGHdok8WdF8AWrThUqDfC7Blgxka1Xpg2jS48DLDmsE83aQPWTYZSrhvruzvy853yiIZv7fk87hLj4nnoEBzE4uNxze
+        - c1: 4
+          c2: dXMgcGlDPYF9oIT5LOCzANe1wyG2wr3XD7e3BuxkIxxA1uip8jes77hcn4zM9xh5PvokVA0RifRkCGjZK3uWD7HPrdOevzmjwNEP
+        partition_info: null
+        description: null
+        kind: table
+        primary_key: null
+        unique_constraints: []
+        checks: []
+        indexes: []
+        foreign_keys: []
+      description: null
+    description: null
+

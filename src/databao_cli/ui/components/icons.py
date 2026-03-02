@@ -2,7 +2,13 @@
 
 from typing import Any
 
-from databao.databases import DBConnectionConfig
+from databao.databases import (
+    DuckDBConnectionConfig,
+    MySQLConnectionProperties,
+    PostgresConnectionProperties,
+    SnowflakeConnectionProperties,
+    SQLiteConnectionConfig,
+)
 
 DB_ICONS = {
     "duckdb": "🦆",
@@ -10,8 +16,17 @@ DB_ICONS = {
     "postgresql": "🐘",
     "mysql": "🐬",
     "sqlite": "📦",
+    "snowflake": "❄️",
     "default": "🗄️",
 }
+
+_CONFIG_TYPE_MAP: list[tuple[type, str, str]] = [
+    (DuckDBConnectionConfig, "DuckDB", "duckdb"),
+    (PostgresConnectionProperties, "PostgreSQL", "postgresql"),
+    (MySQLConnectionProperties, "MySQL", "mysql"),
+    (SQLiteConnectionConfig, "SQLite", "sqlite"),
+    (SnowflakeConnectionProperties, "Snowflake", "snowflake"),
+]
 
 
 def get_db_icon(db_type: str) -> str:
@@ -28,9 +43,9 @@ def get_db_type_and_icon(conn: Any) -> tuple[str, str]:
     Returns:
         Tuple of (db_type_display_name, icon_emoji).
     """
-    if isinstance(conn, DBConnectionConfig):
-        db_type_str = conn.type.full_type
-        return db_type_str.capitalize(), get_db_icon(db_type_str)
+    for config_cls, display_name, icon_key in _CONFIG_TYPE_MAP:
+        if isinstance(conn, config_cls):
+            return display_name, get_db_icon(icon_key)
 
     if hasattr(conn, "dialect"):
         try:

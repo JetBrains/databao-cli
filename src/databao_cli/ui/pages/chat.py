@@ -13,7 +13,7 @@ from databao_cli.ui.components.chat import render_chat_interface
 from databao_cli.ui.components.sidebar import render_sidebar_chat_content
 from databao_cli.ui.components.status import AppStatus, set_status
 from databao_cli.ui.models.chat_session import ChatSession
-from databao_cli.ui.project_utils import DCEProjectStatus, dce_status
+from databao_cli.ui.project_utils import DatabaoProjectStatus, databao_project_status
 from databao_cli.ui.services.chat_persistence import save_chat
 from databao_cli.ui.services.chat_title import check_title_completion, trigger_title_generation
 
@@ -49,15 +49,15 @@ def render_chat_page() -> None:
         _render_no_project_state()
         return
 
-    status = dce_status(project)
-    if status == DCEProjectStatus.NO_DATASOURCES:
+    status = databao_project_status(project)
+    if status == DatabaoProjectStatus.NOT_INITIALIZED:
         _render_chat_sidebar(project)
-        _render_no_datasources_state(project)
+        _render_no_project_state()
         return
 
-    if status == DCEProjectStatus.NO_BUILD:
+    if status == DatabaoProjectStatus.NO_DATASOURCES:
         _render_chat_sidebar(project)
-        _render_no_build_state(project)
+        _render_no_datasources_state(project)
         return
 
     agent: Agent | None = st.session_state.get("agent")
@@ -227,32 +227,6 @@ def _render_no_datasources_state(project: ProjectLayout) -> None:
         Add datasources to your project before using Databao.
 
         See the documentation for how to configure datasources.
-        """
-    )
-
-    if st.button("🔄 Check Again"):
-        st.session_state.databao_project = None
-        st.rerun()
-
-
-def _render_no_build_state(project: ProjectLayout) -> None:
-    """Render state when DCE project has no build output."""
-    st.title("💬 Chat")
-    st.markdown("---")
-
-    st.warning(f"DCE project found at `{project.project_dir}` but no build output exists.")
-
-    st.markdown(
-        """
-
-        The DCE project needs to be built before Databao can use it.
-
-        Run the following command:
-        ```bash
-        databao build
-        ```
-
-        Then reload this page.
         """
     )
 

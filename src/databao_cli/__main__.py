@@ -163,7 +163,7 @@ def build(ctx: Context, domain: str, should_index: bool) -> None:
     "--model",
     type=str,
     default=None,
-    help="LLM model in format provider:name (e.g., openai:gpt-4o, anthropic:claude-3-5-sonnet)",
+    help="LLM model in format provider:name (e.g., openai:gpt-4o, anthropic:claude-sonnet-4-6)",
 )
 @click.option(
     "-t",
@@ -195,7 +195,7 @@ def ask(
     Examples:
         databao ask                                          # Interactive mode
         databao ask --one-shot "What tables exist?"          # One-shot mode
-        databao ask --model anthropic:claude-3-5-sonnet      # With custom model
+        databao ask --model anthropic:claude-sonnet-4-6      # With custom model
         databao ask --no-show-thinking                       # Hide reasoning
     """
     ask_impl(ctx, question, one_shot, model, temperature, show_thinking)
@@ -204,8 +204,14 @@ def ask(
 @cli.command(
     context_settings={"ignore_unknown_options": True, "allow_extra_args": True},
 )
+@click.option(
+    "--read-only-domain",
+    is_flag=True,
+    default=False,
+    help="Disable all domain-editing operations (init, datasources, build) in the UI",
+)
 @click.pass_context
-def app(ctx: click.Context) -> None:
+def app(ctx: click.Context, read_only_domain: bool) -> None:
     """Launch the Databao Streamlit web interface.
 
     All additional arguments are passed directly to streamlit run.
@@ -215,7 +221,9 @@ def app(ctx: click.Context) -> None:
         databao app
         databao app --server.port 8502
         databao app --server.headless true
+        databao app --read-only-domain
     """
+    ctx.obj["read_only_domain"] = read_only_domain
     app_impl(ctx)
 
 

@@ -4,11 +4,14 @@ from __future__ import annotations
 
 import json
 import logging
-import pickle
 import shutil
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from databao_cli.ui.services.storage import get_cache_dir, get_chat_dir, get_chats_dir
+import pandas as pd
+from databao import ExecutionResult
+
+from databao_cli.ui.services.storage import get_cache_dir, get_chat_dir, get_chats_dir, is_valid_chat_id
 
 if TYPE_CHECKING:
     from databao_cli.ui.models.chat_session import ChatSession
@@ -35,12 +38,22 @@ _RESULTS_DIR = "results"
 _VISUALIZATIONS_DIR = "visualizations"
 
 
+def _write_file_secure(path: Path, data: bytes | str, *, binary: bool = False) -> None:
+    """Write data to a file and set owner-only permissions (0o600)."""
+    mode = "wb" if binary else "w"
+    with open(path, mode) as f:
+        f.write(data)
+    path.chmod(0o600)
+
+
 def save_chat(chat: ChatSession) -> None:
     """Save a chat session to disk.
 
     Saves:
     - session.json: Chat metadata and messages (without results)
-    - results/{idx}.pkl: Pickled ExecutionResult for each message that has one
+    - results/{idx}.json: JSON with text/code from ExecutionResult
+    - results/{idx}.parquet: DataFrame from ExecutionResult (when present)
+    - visualizations/{idx}_spec_df.parquet: Visualization spec DataFrame
 
     Args:
         chat: The ChatSession to save
@@ -49,37 +62,45 @@ def save_chat(chat: ChatSession) -> None:
 
     session_data = chat.to_dict()
     session_path = chat_dir / _SESSION_FILE
-    with open(session_path, "w") as f:
-        json.dump(session_data, f, indent=2)
+    _write_file_secure(session_path, json.dumps(session_data, indent=2))
 
     results_dir = chat_dir / _RESULTS_DIR
     results_dir.mkdir(parents=True, exist_ok=True)
 
     for i, msg in enumerate(chat.messages):
-        result_path = results_dir / f"{i}.pkl"
+        json_path = results_dir / f"{i}.json"
+        parquet_path = results_dir / f"{i}.parquet"
         if msg.result is not None:
             try:
-                with open(result_path, "wb") as f:
-                    pickle.dump(msg.result, f)
+                result_json = {"text": msg.result.text, "code": msg.result.code}
+                _write_file_secure(json_path, json.dumps(result_json))
+                if msg.result.df is not None:
+                    msg.result.df.to_parquet(parquet_path)
+                    parquet_path.chmod(0o600)
+                elif parquet_path.exists():
+                    parquet_path.unlink()
             except Exception as e:
-                logger.warning(f"Failed to pickle result for message {i}: {e}")
-                if result_path.exists():
-                    result_path.unlink()
-        elif result_path.exists():
-            result_path.unlink()
+                logger.warning(f"Failed to save result for message {i}: {e}")
+                for p in (json_path, parquet_path):
+                    if p.exists():
+                        p.unlink()
+        else:
+            for p in (json_path, parquet_path):
+                if p.exists():
+                    p.unlink()
 
     visualizations_dir = chat_dir / _VISUALIZATIONS_DIR
     visualizations_dir.mkdir(parents=True, exist_ok=True)
 
     for i, msg in enumerate(chat.messages):
-        vis_df_path = visualizations_dir / f"{i}_spec_df.pkl"
+        vis_df_path = visualizations_dir / f"{i}_spec_df.parquet"
         vis_data = msg.visualization_data
         if vis_data is not None and vis_data.get("spec_df") is not None:
             try:
-                with open(vis_df_path, "wb") as f:
-                    pickle.dump(vis_data["spec_df"], f)
+                vis_data["spec_df"].to_parquet(vis_df_path)
+                vis_df_path.chmod(0o600)
             except Exception as e:
-                logger.warning(f"Failed to pickle visualization spec_df for message {i}: {e}")
+                logger.warning(f"Failed to save visualization spec_df for message {i}: {e}")
                 if vis_df_path.exists():
                     vis_df_path.unlink()
         elif vis_df_path.exists():
@@ -97,6 +118,10 @@ def load_chat(chat_id: str) -> ChatSession | None:
     Returns:
         ChatSession if found, None otherwise
     """
+    if not is_valid_chat_id(chat_id):
+        logger.warning(f"Refusing to load chat with invalid id: {chat_id!r}")
+        return None
+
     from databao_cli.ui.models.chat_session import ChatSession
 
     chats_dir = get_chats_dir()
@@ -118,13 +143,23 @@ def load_chat(chat_id: str) -> ChatSession | None:
 
         num_messages = len(session_data.get("messages", []))
         for i in range(num_messages):
-            result_path = results_dir / f"{i}.pkl"
-            if result_path.exists():
+            json_path = results_dir / f"{i}.json"
+            if json_path.exists():
                 try:
-                    with open(result_path, "rb") as f:
-                        results.append(pickle.load(f))
+                    with open(json_path) as f:
+                        result_data = json.load(f)
+                    parquet_path = results_dir / f"{i}.parquet"
+                    df = pd.read_parquet(parquet_path) if parquet_path.exists() else None
+                    results.append(
+                        ExecutionResult(
+                            text=result_data["text"],
+                            code=result_data.get("code"),
+                            df=df,
+                            meta={},
+                        )
+                    )
                 except Exception as e:
-                    logger.warning(f"Failed to unpickle result {i} for chat {chat_id}: {e}")
+                    logger.warning(f"Failed to load result {i} for chat {chat_id}: {e}")
                     results.append(None)
             else:
                 results.append(None)
@@ -133,13 +168,12 @@ def load_chat(chat_id: str) -> ChatSession | None:
         for i, msg_data in enumerate(session_data.get("messages", [])):
             vis_data = msg_data.get("visualization_data")
             if vis_data is not None:
-                vis_df_path = visualizations_dir / f"{i}_spec_df.pkl"
+                vis_df_path = visualizations_dir / f"{i}_spec_df.parquet"
                 if vis_df_path.exists():
                     try:
-                        with open(vis_df_path, "rb") as f:
-                            vis_data["spec_df"] = pickle.load(f)
+                        vis_data["spec_df"] = pd.read_parquet(vis_df_path)
                     except Exception as e:
-                        logger.warning(f"Failed to unpickle visualization spec_df {i} for chat {chat_id}: {e}")
+                        logger.warning(f"Failed to load visualization spec_df {i} for chat {chat_id}: {e}")
 
         chat = ChatSession.from_dict(session_data, results)
         logger.debug(f"Chat loaded: {chat_id}")
@@ -167,6 +201,8 @@ def load_all_chats() -> dict[str, ChatSession]:
             continue
 
         chat_id = chat_dir.name
+        if not is_valid_chat_id(chat_id):
+            continue
         chat = load_chat(chat_id)
         if chat is not None:
             chats[chat_id] = chat
@@ -184,6 +220,10 @@ def delete_chat(chat_id: str) -> bool:
     Returns:
         True if deleted successfully, False otherwise
     """
+    if not is_valid_chat_id(chat_id):
+        logger.warning(f"Refusing to delete chat with invalid id: {chat_id!r}")
+        return False
+
     chat = load_chat(chat_id)
     cache_scope = chat.cache_scope if chat else None
 

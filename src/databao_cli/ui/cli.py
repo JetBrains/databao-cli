@@ -15,7 +15,12 @@ def _get_streamlit_app_path() -> str:
     return spec.origin
 
 
-def bootstrap_streamlit_app(project_path: Path, streamlit_args: list[str] | None = None):
+def bootstrap_streamlit_app(
+    project_path: Path,
+    streamlit_args: list[str] | None = None,
+    *,
+    read_only_domain: bool = False,
+):
     """Bootstrap the UI."""
 
     if streamlit_args is None:
@@ -23,7 +28,11 @@ def bootstrap_streamlit_app(project_path: Path, streamlit_args: list[str] | None
 
     app_path = _get_streamlit_app_path()
 
+    app_args = ["--project-dir", str(project_path)]
+    if read_only_domain:
+        app_args.append("--read-only-domain")
+
     subprocess.run(
-        [sys.executable, "-m", "streamlit", "run", app_path, *streamlit_args, "--", "--project-dir", project_path],
+        [sys.executable, "-m", "streamlit", "run", app_path, *streamlit_args, "--", *app_args],
         check=True,
     )
