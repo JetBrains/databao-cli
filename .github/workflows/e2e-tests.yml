@@ -83,7 +83,7 @@ jobs:
         if: always()
         with:
           gh_pages: gh-pages
-          allure_results: allure-results
+          allure_results: allure-results-ubuntu
           allure_history: allure-history
 
       - name: Publish Allure report to GitHub Pages
