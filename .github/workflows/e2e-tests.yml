@@ -72,25 +72,25 @@ jobs:
         uses: actions/download-artifact@v6
         with:
           name: allure-results-ubuntu
-          path: ./
+          path: allure-results-ubuntu
 
       - name: Download Allure
         run: |
           npm install -g allure
 
-      - name: Show structure
-        run: |
-          ls -R
-
       - name: Generate Allure report
         continue-on-error: true
         run: |
           allure generate ./allure-results-ubuntu
+
+      - name: Show structure
+        run: |
+          ls -R
       
       - name: Run Allure Action
         uses: allure-framework/allure-action@v0
         with:
-          report-directory: "./allure-report"
+          report-directory: ./allure-report
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy to GitHub Pages
