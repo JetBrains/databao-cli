@@ -1,3 +1,4 @@
+import ast
 import subprocess
 from pathlib import Path
 
@@ -21,7 +22,7 @@ def load_plugin_ids(*uv_extra_args) -> list[str]:
     err = {"".join([line.decode() for line in p.stderr.readlines()]) if p.stderr is not None else ""}
 """
     output = "".join(lines)
-    plugin_ids = eval(output)
+    plugin_ids = ast.literal_eval(output)
     return plugin_ids
 
 
