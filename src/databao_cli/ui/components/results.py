@@ -204,7 +204,7 @@ def render_visualization_section(thread: "Thread", visualization_data: dict[str,
     """
     vis_result = thread._visualization_result
 
-    if vis_result is None and visualization_data is not None:
+    if visualization_data is not None:
         spec = visualization_data.get("spec")
         spec_df = visualization_data.get("spec_df")
         if spec is not None and spec_df is not None:
