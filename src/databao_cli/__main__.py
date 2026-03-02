@@ -12,7 +12,7 @@ from databao_cli.commands.datasource.check_datasource_connection import check_da
 from databao_cli.commands.init import InitDatabaoProjectError, ProjectDirDoesnotExistError, init_impl
 from databao_cli.commands.mcp import mcp_impl
 from databao_cli.commands.status import status_impl
-from databao_cli.logging import configure_logging
+from databao_cli.log.logging import configure_logging
 from databao_cli.project.layout import ROOT_DOMAIN, ProjectLayout, find_project
 
 
