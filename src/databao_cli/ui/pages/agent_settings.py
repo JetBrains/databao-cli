@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import streamlit as st
 
-from databao_cli.executor_utils import EXECUTOR_TYPES, create_executor  # noqa: F401
+from databao_cli.executor_utils import EXECUTOR_TYPES
 from databao_cli.ui.app import _clear_all_chat_threads
 from databao_cli.ui.components.status import AppStatus, set_status
 

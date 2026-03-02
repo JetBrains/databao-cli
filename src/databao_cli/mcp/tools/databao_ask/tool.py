@@ -2,11 +2,13 @@
 
 import json
 import logging
+import traceback
 from typing import TYPE_CHECKING, Annotated, Any
 
 from databao.caches.in_mem_cache import InMemCache
 from langchain_core.messages import AIMessage, HumanMessage
 from pydantic import BaseModel, Field
+from uuid6 import uuid6
 
 from databao_cli.mcp.tools.databao_ask.agent_factory import create_agent_for_tool
 
@@ -18,7 +20,6 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 DEFAULT_MAX_DATA_ROWS = 50
-_CACHE_SCOPE = "mcp"
 
 
 class Message(BaseModel):
@@ -76,20 +77,25 @@ def register(mcp: "FastMCP", context: "McpContext") -> None:
         The messages array carries conversation history. Pass the returned messages
         back on subsequent calls to maintain conversation context.
         """
+        request_id = str(uuid6())
+        cache_scope = f"mcp/{request_id}"
+
         if not messages:
-            return _error("messages must not be empty")
+            return _error("messages must not be empty", request_id=request_id)
 
         last = messages[-1]
         if last.role != "user":
-            return _error("Last message must have role 'user'")
+            return _error("Last message must have role 'user'", request_id=request_id)
 
         query = last.content
         history = messages[:-1]
 
+        logger.info("[%s] Processing query (%d messages in history)", request_id, len(history))
+
         cache = InMemCache()
         if history:
             langchain_history = _to_langchain_messages(history)
-            cache.scoped(_CACHE_SCOPE).put("state", {"messages": langchain_history})
+            cache.scoped(cache_scope).put("state", {"messages": langchain_history})
 
         try:
             agent = create_agent_for_tool(
@@ -100,11 +106,15 @@ def register(mcp: "FastMCP", context: "McpContext") -> None:
                 cache=cache,
             )
         except Exception as e:
-            logger.exception("Failed to initialize agent")
-            return _error(f"Agent initialization failed: {e}")
+            logger.exception("[%s] Failed to initialize agent", request_id)
+            return _error(
+                f"Agent initialization failed: {e}",
+                request_id=request_id,
+                traceback_str=traceback.format_exc(),
+            )
 
         try:
-            thread = agent.thread(stream_ask=False, cache_scope=_CACHE_SCOPE)
+            thread = agent.thread(stream_ask=False, cache_scope=cache_scope)
             thread.ask(query)
 
             text = thread.text() or ""
@@ -116,6 +126,7 @@ def register(mcp: "FastMCP", context: "McpContext") -> None:
                 data_table = df.head(max_data_rows).to_markdown(index=False)
 
             result: dict[str, Any] = {
+                "request_id": request_id,
                 "text": text,
                 "sql": sql,
                 "data": data_table,
@@ -123,9 +134,18 @@ def register(mcp: "FastMCP", context: "McpContext") -> None:
             return json.dumps(result, default=str)
 
         except Exception as e:
-            logger.exception("Query execution failed")
-            return _error(f"Query failed: {e}")
+            logger.exception("[%s] Query execution failed", request_id)
+            return _error(
+                f"Query failed: {e}",
+                request_id=request_id,
+                traceback_str=traceback.format_exc(),
+            )
 
 
-def _error(message: str) -> str:
-    return json.dumps({"error": message})
+def _error(message: str, *, request_id: str | None = None, traceback_str: str | None = None) -> str:
+    result: dict[str, str] = {"error": message}
+    if request_id:
+        result["request_id"] = request_id
+    if traceback_str:
+        result["traceback"] = traceback_str
+    return json.dumps(result)

@@ -8,9 +8,8 @@ from databao.api import agent as create_agent
 from databao.configs.llm import LLMConfig, LLMConfigDirectory
 from databao.core import Cache
 
-from databao_cli.executor_utils import create_executor
 from databao_cli.project.layout import ProjectLayout
-from databao_cli.ui.project_utils import DCEProjectStatus, dce_status
+from databao_cli.ui.project_utils import DatabaoProjectStatus, databao_project_status, has_build_output
 
 
 def create_agent_for_tool(
@@ -26,11 +25,13 @@ def create_agent_for_tool(
     """
     project = ProjectLayout(project_dir)
 
-    status = dce_status(project)
-    if status == DCEProjectStatus.NO_DATASOURCES:
-        raise ValueError(f"No datasources configured in project at {project.project_dir}. Run 'databao datasource add' first.")
-    if status == DCEProjectStatus.NO_BUILD:
-        raise ValueError(f"Project at {project.project_dir} has no build output. Run 'databao build' first.")
+    status = databao_project_status(project)
+    if status == DatabaoProjectStatus.NOT_INITIALIZED:
+        raise ValueError("Databao project is not initialized. Run 'databao init' first.")
+    if status == DatabaoProjectStatus.NO_DATASOURCES:
+        raise ValueError("No datasources configured. Run 'databao datasource add' first.")
+    if not has_build_output(project):
+        raise ValueError("Project has no build output. Run 'databao build' first.")
 
     domain = create_domain(project.root_domain_dir)
 
@@ -42,11 +43,9 @@ def create_agent_for_tool(
     else:
         llm_config = LLMConfigDirectory.DEFAULT
 
-    data_executor = create_executor(executor) if executor != "lighthouse" else None
-
     return create_agent(
         domain=domain,
         llm_config=llm_config,
-        data_executor=data_executor,
+        executor_type=executor,
         cache=cache,
     )

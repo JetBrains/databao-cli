@@ -6,17 +6,26 @@ def configure_logging():
         {
             "version": 1,
             "handlers": {
-                "console": {
+                "stdout": {
                     "class": "logging.StreamHandler",
                     "stream": "ext://sys.stdout",
-                }
+                },
+                "stderr": {
+                    "class": "logging.StreamHandler",
+                    "stream": "ext://sys.stderr",
+                },
             },
             "loggers": {
                 "databao_context_engine": {
                     "level": "INFO",
                     "propagate": False,
-                    "handlers": ["console"],
-                }
+                    "handlers": ["stdout"],
+                },
+                "databao_cli": {
+                    "level": "INFO",
+                    "propagate": False,
+                    "handlers": ["stderr"],
+                },
             },
         }
     )
