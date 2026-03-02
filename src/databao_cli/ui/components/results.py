@@ -325,14 +325,18 @@ def render_visualization_and_actions(
         msg = messages[message_index]
         has_visualization = msg.has_visualization
         visualization_data = msg.visualization_data
+        viz_pending = msg.viz_pending
     else:
         has_visualization = False
         visualization_data = None
+        viz_pending = False
 
-    if has_visualization or thread._visualization_result is not None or visualization_data is not None:
+    if viz_pending:
+        st.info("Generating visualization...", icon="📈")
+    elif has_visualization or thread._visualization_result is not None or visualization_data is not None:
         render_visualization_section(thread, visualization_data)
 
-    if is_latest:
+    if is_latest and not viz_pending:
         _render_and_handle_action_buttons(result, current_chat, message_index, has_visualization)
 
 

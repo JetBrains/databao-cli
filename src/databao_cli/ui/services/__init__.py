@@ -15,6 +15,7 @@ from databao_cli.ui.services.chat_title import (
 from databao_cli.ui.services.query_executor import (
     QueryResult,
     check_query_completion,
+    get_query_phase,
     is_query_running,
     start_query_execution,
 )
@@ -43,6 +44,7 @@ __all__ = [
     "get_chat_dir",
     "get_chats_dir",
     "get_or_create_settings",
+    "get_query_phase",
     "get_settings_path",
     "get_storage_base_path",
     "is_query_running",

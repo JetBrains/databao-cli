@@ -8,6 +8,7 @@ from databao_cli.ui.components.results import render_execution_result
 from databao_cli.ui.models.chat_session import ChatMessage
 from databao_cli.ui.services import (
     check_query_completion,
+    get_query_phase,
     is_query_running,
     save_current_chat,
     start_query_execution,
@@ -187,18 +188,48 @@ def start_background_query(chat: "ChatSession", query: str) -> None:
 
 
 def handle_query_completion(chat: "ChatSession") -> bool:
-    """Check if query completed and create assistant message if so.
+    """Check if query progressed and create/update the assistant message.
 
-    Args:
-        chat: The ChatSession to check.
+    Handles two transitions:
+    - **Partial**: data phase done, viz in progress → create message with
+      ``viz_pending=True`` so the UI can show text/code/data immediately.
+    - **Full**: everything done → either update the pending message with viz
+      data, or create a new message if there was no partial step.
 
     Returns:
-        True if query completed and message was created, False otherwise.
+        True if the UI should rerun to reflect the new state.
     """
     result = check_query_completion(chat)
     if result is None:
         return False
 
+    if result.viz_pending:
+        if chat.writer:
+            chat.writer._on_write = None
+            chat.writer.clear()
+
+        chat.messages.append(
+            ChatMessage(
+                role="assistant",
+                content=result.text,
+                thinking=result.thinking,
+                result=result.result,
+                viz_pending=True,
+            )
+        )
+        save_current_chat()
+        return True
+
+    # Full result — check if we need to update an existing pending message
+    pending_msg = _find_pending_viz_message(chat)
+    if pending_msg is not None:
+        pending_msg.viz_pending = False
+        pending_msg.has_visualization = result.has_visualization
+        pending_msg.visualization_data = result.visualization_data
+        save_current_chat()
+        return True
+
+    # No pending message — create normally (no auto-viz, or error)
     if chat.writer:
         chat.writer._on_write = None
         chat.writer.clear()
@@ -219,15 +250,21 @@ def handle_query_completion(chat: "ChatSession") -> bool:
         )
 
     chat.messages.append(assistant_message)
-
     save_current_chat()
-
     return True
+
+
+def _find_pending_viz_message(chat: "ChatSession") -> ChatMessage | None:
+    """Return the last assistant message that is waiting for visualization, if any."""
+    for msg in reversed(chat.messages):
+        if msg.role == "assistant" and msg.viz_pending:
+            return msg
+    return None
 
 
 def render_thinking_section(chat: "ChatSession") -> None:
     """Render the thinking section wrapper that contains the streaming fragment."""
-    with st.chat_message("assistant"), st.expander("💭 Thinking...", expanded=True):
+    with st.chat_message("assistant"):
         _thinking_stream_fragment(chat)
 
 
@@ -238,12 +275,17 @@ def _thinking_stream_fragment(chat: "ChatSession") -> None:
     This is the Streamlit-recommended pattern for streaming updates from
     background tasks. The fragment polls the writer's buffer rapidly.
     """
-    current_text = chat.writer.getvalue() if chat.writer else ""
+    phase = get_query_phase(chat)
 
-    if current_text:
-        st.markdown(current_text)
-    else:
-        st.caption("Processing...")
+    with st.expander("💭 Thinking...", expanded=phase != "visualizing"):
+        current_text = chat.writer.getvalue() if chat.writer else ""
+        if current_text:
+            st.markdown(current_text)
+        else:
+            st.caption("Processing...")
+
+    if phase == "visualizing":
+        st.info("📈 Generating visualization...", icon="📈")
 
 
 @st.fragment(run_every=1.0)
@@ -329,6 +371,8 @@ def render_chat_interface(chat: "ChatSession") -> None:
     else:
         render_chat_history(chat)
 
-        if query_running:
+        if chat.query_status == "running":
             render_thinking_section(chat)
+
+        if query_running:
             _query_polling_fragment()

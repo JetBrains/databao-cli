@@ -32,10 +32,15 @@ class QueryResult:
     has_visualization: bool
     visualization_data: dict[str, Any] | None = None
     error: str | None = None
+    viz_pending: bool = False
 
 
 class QueryThread(threading.Thread):
-    """Custom thread for query execution that stores its result."""
+    """Custom thread for query execution that stores its result.
+
+    The ``phase`` attribute tracks the current execution stage so the UI can
+    display appropriate progress indicators.
+    """
 
     def __init__(
         self,
@@ -48,18 +53,38 @@ class QueryThread(threading.Thread):
         self.query = query
         self.writer = writer
         self.result: QueryResult | None = None
+        self.partial_result: QueryResult | None = None
+        self.phase: str = "asking"
 
     def run(self) -> None:
         """Execute the query and store the result."""
         try:
+            self.databao_thread._auto_output_modality = False
             self.databao_thread.ask(self.query, stream=True)
             result = self.databao_thread._data_result
 
             has_visualization = False
+            viz_prompt: str | None = None
             if result and result.meta:
                 hints = result.meta.get("output_modality_hints")
-                if hints:
-                    has_visualization = getattr(hints, "should_visualize", False)
+                if hints and getattr(hints, "should_visualize", False):
+                    has_visualization = True
+                    viz_prompt = (
+                        f"Last question - {self.query}\nPlot instruction - {getattr(hints, 'visualization_prompt', None)}"
+                    )
+
+            if has_visualization:
+                thinking_text = self.writer.getvalue() if self.writer else ""
+                self.partial_result = QueryResult(
+                    text=result.text if result else "",
+                    thinking=thinking_text,
+                    result=result,
+                    has_visualization=False,
+                    viz_pending=True,
+                )
+                self.phase = "visualizing"
+                self.databao_thread.plot(viz_prompt)
+
             if self.databao_thread._visualization_result is not None:
                 has_visualization = True
 
@@ -127,19 +152,21 @@ def start_query_execution(chat: "ChatSession", thread: "Thread", query: str) -> 
 
 
 def check_query_completion(chat: "ChatSession") -> QueryResult | None:
-    """Check if a chat's background query has completed.
+    """Check if a chat's background query has progressed.
 
-    If completed, updates chat state and returns the result.
-    Thread safety: we only read query_thread.result after confirming the thread
-    is no longer alive (is_alive() returns False), so there are no concurrent writes.
+    Returns a ``QueryResult`` in two situations:
 
-    Args:
-        chat: The ChatSession to check.
+    1. **Partial** (``viz_pending=True``): the data phase finished but
+       visualization is still running.  The UI should create the message
+       immediately and show a placeholder for the chart.
+    2. **Full**: the entire query (data + optional viz) finished.  If a
+       partial message was already created, the UI should update it.
 
-    Returns:
-        QueryResult if query completed, None if still running or not started.
+    Thread safety: ``partial_result`` is written once by the background thread
+    before it starts the viz phase, and consumed (set to *None*) here.
+    ``result`` is only read after confirming the thread is no longer alive.
     """
-    if chat.query_status != "running":
+    if chat.query_status not in ("running", "visualizing"):
         return None
 
     query_thread: QueryThread | None = cast(QueryThread | None, chat.query_thread)
@@ -147,28 +174,35 @@ def check_query_completion(chat: "ChatSession") -> QueryResult | None:
         chat.query_status = "idle"
         return None
 
-    if query_thread.is_alive():
-        return None
+    if not query_thread.is_alive():
+        result = query_thread.result
+        if result is None:
+            result = QueryResult(
+                text="",
+                thinking="",
+                result=None,
+                has_visualization=False,
+                error="Thread finished without result",
+            )
 
-    result = query_thread.result
-    if result is None:
-        result = QueryResult(
-            text="",
-            thinking="",
-            result=None,
-            has_visualization=False,
-            error="Thread finished without result",
-        )
+        chat.query_thread = None
+        chat.query_status = "completed" if result.error is None else "error"
 
-    chat.query_thread = None
-    chat.query_status = "completed" if result.error is None else "error"
+        logger.info(f"Query completed for chat {chat.id}: success={result.error is None}")
+        return result
 
-    logger.info(f"Query completed for chat {chat.id}: success={result.error is None}")
-    return result
+    # Thread still alive — check for partial result (data done, viz in progress)
+    if chat.query_status == "running" and query_thread.partial_result is not None:
+        partial = query_thread.partial_result
+        query_thread.partial_result = None
+        chat.query_status = "visualizing"
+        return partial
+
+    return None
 
 
 def is_query_running(chat: "ChatSession") -> bool:
-    """Check if a chat has a query currently running.
+    """Check if a chat has a query currently running (data or visualization phase).
 
     Args:
         chat: The ChatSession to check.
@@ -176,4 +210,15 @@ def is_query_running(chat: "ChatSession") -> bool:
     Returns:
         True if a query is in progress.
     """
-    return chat.query_status == "running"
+    return chat.query_status in ("running", "visualizing")
+
+
+def get_query_phase(chat: "ChatSession") -> str | None:
+    """Return the current execution phase of the running query, or None if idle.
+
+    Possible phases: ``"asking"``, ``"visualizing"``.
+    """
+    qt = chat.query_thread
+    if isinstance(qt, QueryThread):
+        return qt.phase
+    return None
