@@ -23,7 +23,7 @@ from databao_cli.project.layout import ROOT_DOMAIN, ProjectLayout, find_project
     help="Location of your Databao project",
 )
 @click.pass_context
-def cli(ctx: Context, project_dir: Path | None):
+def cli(ctx: Context, project_dir: Path | None) -> None:
     """Databao Common CLI"""
     project_path = Path.cwd() if project_dir is None else project_dir.expanduser().resolve()
 
@@ -94,7 +94,7 @@ def datasource() -> None:
     help="Databao domain name",
 )
 @click.pass_context
-def add_datasource_config(ctx: Context, domain: str | None) -> None:
+def add_datasource_config(ctx: Context, domain: str) -> None:
     """Add a new datasource configuration.
 
     The command will ask all relevant information for that datasource and save it in a chosen Databao domain

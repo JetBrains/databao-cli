@@ -222,6 +222,7 @@ def ask_impl(
 
     # Run appropriate mode
     if one_shot:
+        assert question is not None
         run_one_shot_mode(agent, question, show_thinking)
     else:
         run_interactive_mode(agent, show_thinking)

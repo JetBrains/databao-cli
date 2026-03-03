@@ -9,7 +9,7 @@ from databao_cli.commands.init import init_impl as init_databao_project
 
 
 @pytest.fixture
-def temp_parquet_file(request, tmp_path: Path) -> Path:
+def temp_parquet_file(request: pytest.FixtureRequest, tmp_path: Path) -> Path:
     name = request.function.__name__
     parquet_file_with_row_groups = tmp_path / f"{name}_with_row_groups.parquet"
     parquet_file = tmp_path / f"{name}.parquet"
@@ -31,7 +31,7 @@ def temp_parquet_file(request, tmp_path: Path) -> Path:
     return parquet_file
 
 
-def test_databao_datasource_add(tmp_path: Path, temp_parquet_file: Path):
+def test_databao_datasource_add(tmp_path: Path, temp_parquet_file: Path) -> None:
     init_databao_project(tmp_path)
 
     inputs = [

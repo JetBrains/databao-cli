@@ -1,7 +1,7 @@
 """Result display component with foldable sections and action buttons."""
 
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import nh3
 import streamlit as st
@@ -292,7 +292,7 @@ def _get_current_chat() -> "ChatSession | None":
     current_chat_id = st.session_state.get("current_chat_id")
     chats = st.session_state.get("chats", {})
     if current_chat_id and current_chat_id in chats:
-        return chats[current_chat_id]
+        return cast("ChatSession", chats[current_chat_id])
     return None
 
 

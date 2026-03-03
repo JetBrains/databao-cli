@@ -6,9 +6,10 @@ Reads datasource configs from disk on every render -- no in-memory caching.
 
 import logging
 from pathlib import Path
+from typing import Any, cast
 
 import streamlit as st
-from databao_context_engine import DatasourceConnectionStatus
+from databao_context_engine import ConfiguredDatasource, DatasourceConnectionStatus
 
 from databao_cli.ui.components.datasource_form import render_datasource_config_form
 from databao_cli.ui.services.dce_operations import (
@@ -58,7 +59,7 @@ def _get_form_version() -> int:
     """Get the current form version counter used to reset widget keys."""
     if "_new_ds_form_version" not in st.session_state:
         st.session_state._new_ds_form_version = 0
-    return st.session_state._new_ds_form_version
+    return cast(int, st.session_state._new_ds_form_version)
 
 
 def _render_add_datasource_section(project_dir: Path) -> None:
@@ -86,7 +87,7 @@ def _render_add_datasource_section(project_dir: Path) -> None:
         help="A unique name for this datasource",
     )
 
-    config_values: dict = {}
+    config_values: dict[str, Any] = {}
     if selected_type:
         try:
             config_fields = get_datasource_config_fields(selected_type)
@@ -137,7 +138,7 @@ def _render_add_datasource_section(project_dir: Path) -> None:
                     logger.exception("Failed to verify new datasource")
 
 
-def _render_existing_datasource(project_dir: Path, ds, idx: int, *, read_only: bool = False) -> None:
+def _render_existing_datasource(project_dir: Path, ds: ConfiguredDatasource, idx: int, *, read_only: bool = False) -> None:
     """Render a single existing datasource with its config fields and action buttons."""
     ds_id = ds.datasource.id
     ds_type = ds.datasource.type.full_type
@@ -153,7 +154,7 @@ def _render_existing_datasource(project_dir: Path, ds, idx: int, *, read_only: b
             config_fields = []
             st.caption("Could not load config field definitions for this datasource type.")
 
-        edited_values: dict = {}
+        edited_values: dict[str, Any] = {}
         if config_fields:
             edited_values = render_datasource_config_form(
                 config_fields=config_fields,

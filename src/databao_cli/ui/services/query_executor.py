@@ -7,7 +7,7 @@ running when users switch between chats. The pattern follows suggestions.py.
 import logging
 import threading
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from streamlit.runtime.scriptrunner import add_script_run_ctx, get_script_run_ctx
 
@@ -142,7 +142,7 @@ def check_query_completion(chat: "ChatSession") -> QueryResult | None:
     if chat.query_status != "running":
         return None
 
-    query_thread: QueryThread | None = chat.query_thread
+    query_thread: QueryThread | None = cast(QueryThread | None, chat.query_thread)
     if query_thread is None:
         chat.query_status = "idle"
         return None

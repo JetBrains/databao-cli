@@ -3,7 +3,7 @@ from click.testing import CliRunner
 from databao_cli.__main__ import cli
 
 
-def test_ask_help():
+def test_ask_help() -> None:
     """Test that the ask command shows help."""
     runner = CliRunner()
     result = runner.invoke(cli, ["ask", "--help"])

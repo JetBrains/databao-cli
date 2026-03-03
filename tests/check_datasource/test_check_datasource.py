@@ -8,7 +8,7 @@ from databao_cli.__main__ import cli
 TEST_PROJECT_DIR = Path(__file__).parent / "test_project"
 
 
-def test_databao_datasource_check(tmp_path: Path):
+def test_databao_datasource_check(tmp_path: Path) -> None:
     runner = CliRunner()
     test_duckdb = tmp_path / "test_db.duckdb"
     duckdb.connect(test_duckdb)

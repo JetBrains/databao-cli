@@ -1,7 +1,7 @@
 from logging.config import dictConfig
 
 
-def configure_logging():
+def configure_logging() -> None:
     dictConfig(
         {
             "version": 1,

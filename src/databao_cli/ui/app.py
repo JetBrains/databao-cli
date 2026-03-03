@@ -2,6 +2,7 @@
 
 import argparse
 import logging
+from collections.abc import Callable
 from pathlib import Path
 from typing import cast
 
@@ -9,6 +10,7 @@ import streamlit as st
 from databao import domain as create_domain
 from databao.caches.disk_cache import DiskCache, DiskCacheConfig
 from databao.core.agent import Agent
+from streamlit.navigation.page import StreamlitPage
 
 from databao_cli.project.layout import ProjectLayout, find_project
 from databao_cli.ui.components.status import AppStatus, set_status, status_context
@@ -65,7 +67,7 @@ def _get_or_create_disk_cache() -> DiskCache:
         cache_dir = get_cache_dir()
         config = DiskCacheConfig(db_dir=cache_dir / "diskcache")
         st.session_state.disk_cache = DiskCache(config=config)
-    return st.session_state.disk_cache
+    return cast(DiskCache, st.session_state.disk_cache)
 
 
 def _initialize_agent(project: ProjectLayout) -> Agent | None:
@@ -131,7 +133,7 @@ def _clear_all_chat_threads() -> None:
 
 def is_read_only_domain() -> bool:
     """Check whether domain-editing operations are disabled."""
-    return st.session_state.get("_read_only_domain", False)
+    return cast(bool, st.session_state.get("_read_only_domain", False))
 
 
 def _is_project_ready(project_dir: Path) -> bool:
@@ -307,9 +309,9 @@ def build_navigation() -> None:
     st.session_state._page_context_settings = context_settings_page
     st.session_state._page_agent_settings = agent_settings_page
 
-    chat_pages: list[st.Page] = []
+    chat_pages: list[StreamlitPage] = []
 
-    def new_chat_action():
+    def new_chat_action() -> None:
         _create_new_chat()
         st.rerun()
 
@@ -323,15 +325,15 @@ def build_navigation() -> None:
     )
 
     chats: dict[str, ChatSession] = st.session_state.get("chats", {})
-    target_chat_page: st.Page | None = None
+    target_chat_page: StreamlitPage | None = None
 
     if chats:
         sorted_chats = sorted(chats.values(), key=lambda c: c.created_at, reverse=True)
 
         for chat in sorted_chats:
 
-            def make_chat_page(chat_id: str):
-                def page_fn():
+            def make_chat_page(chat_id: str) -> Callable[[], None]:
+                def page_fn() -> None:
                     st.session_state.current_chat_id = chat_id
                     render_chat_page()
 
@@ -399,7 +401,7 @@ def _get_current_project(project_dir: Path) -> ProjectLayout:
     This is called at app level to determine project status for all pages.
     """
     if st.session_state.get("databao_project") is not None:
-        return st.session_state.databao_project
+        return cast(ProjectLayout, st.session_state.databao_project)
 
     project = ProjectLayout(project_dir)
     st.session_state.databao_project = project

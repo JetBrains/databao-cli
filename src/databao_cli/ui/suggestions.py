@@ -103,7 +103,7 @@ def generate_suggested_questions(agent: "Agent") -> tuple[list[str], bool]:
             ]
         )
 
-        if result and result.questions and len(result.questions) == 3:
+        if isinstance(result, SuggestedQuestions) and result.questions and len(result.questions) == 3:
             logger.info(f"Successfully generated {len(result.questions)} suggested questions via LLM")
             return list(result.questions), True
 

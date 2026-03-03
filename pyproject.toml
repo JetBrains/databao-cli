@@ -59,6 +59,8 @@ dev = [
     "pre-commit>=4.5.1",
     "pytest>=9.0.2,<10.0.0",
     "ruff>=0.9.0,<1.0.0",
+    "mypy>=1.18.2",
+    "types-PyYAML>=6.0.12.20250915",
 ]
 
 e2e-tests = [
@@ -103,3 +105,25 @@ ignore = []
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.mypy]
+strict = true
+show_error_codes = true
+check_untyped_defs = true
+disallow_untyped_defs = true
+warn_redundant_casts = true
+warn_unused_configs = true
+warn_unused_ignores = true
+allow_redefinition_new = true
+local_partial_types = true
+files = ["src/databao_cli", "tests", "examples"]
+plugins = ["pydantic.mypy", "sqlalchemy.ext.mypy.plugin"]
+
+
+[[tool.mypy.overrides]]
+module = ["databao_context_engine", "databao_context_engine.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["databao.integrations.dce.*"]
+disable_error_code = ["no-any-return"]
