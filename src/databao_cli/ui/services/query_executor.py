@@ -103,10 +103,11 @@ class QueryThread(threading.Thread):
         except Exception as e:
             logger.exception("Query execution failed")
             thinking_text = self.writer.getvalue() if self.writer else ""
+            partial = self.partial_result
             self.result = QueryResult(
-                text="",
+                text=partial.text if partial else "",
                 thinking=thinking_text,
-                result=None,
+                result=partial.result if partial else None,
                 has_visualization=False,
                 error=str(e),
             )

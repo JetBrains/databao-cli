@@ -198,9 +198,13 @@ def render_visualization_section(thread: "Thread", visualization_data: dict[str,
     2. HTML-capable objects: embed HTML
     3. PIL Images: render as images
 
+    Per-message ``visualization_data`` takes priority over the shared
+    ``thread._visualization_result`` so that each message renders its own
+    chart even when the thread's live result belongs to a different query.
+
     Args:
         thread: The Thread object (may have _visualization_result)
-        visualization_data: Optional persisted visualization data (used if thread result is None)
+        visualization_data: Optional persisted visualization data (takes priority over thread result)
     """
     vis_result = thread._visualization_result
 
@@ -326,17 +330,21 @@ def render_visualization_and_actions(
         has_visualization = msg.has_visualization
         visualization_data = msg.visualization_data
         viz_pending = msg.viz_pending
+        viz_error = msg.metadata.get("viz_error")
     else:
         has_visualization = False
         visualization_data = None
         viz_pending = False
+        viz_error = None
 
     if viz_pending:
         st.info("Generating visualization...", icon="📈")
+    elif viz_error:
+        st.error(f"Failed to generate visualization: {viz_error}")
     elif has_visualization or thread._visualization_result is not None or visualization_data is not None:
         render_visualization_section(thread, visualization_data)
 
-    if is_latest and not viz_pending:
+    if is_latest and not viz_pending and not viz_error:
         _render_and_handle_action_buttons(result, current_chat, message_index, has_visualization)
 
 

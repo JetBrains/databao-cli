@@ -47,6 +47,8 @@ def render_assistant_message(
                 is_latest=is_latest,
                 visualization_data=message.visualization_data,
             )
+        elif message.content:
+            st.error(message.content)
 
 
 def _truncate_question(question: str, max_len: int = 60) -> tuple[str, bool]:
@@ -224,8 +226,13 @@ def handle_query_completion(chat: "ChatSession") -> bool:
     pending_msg = _find_pending_viz_message(chat)
     if pending_msg is not None:
         pending_msg.viz_pending = False
-        pending_msg.has_visualization = result.has_visualization
-        pending_msg.visualization_data = result.visualization_data
+        if result.error:
+            pending_msg.has_visualization = False
+            pending_msg.visualization_data = None
+            pending_msg.metadata["viz_error"] = str(result.error)
+        else:
+            pending_msg.has_visualization = result.has_visualization
+            pending_msg.visualization_data = result.visualization_data
         save_current_chat()
         return True
 
@@ -235,10 +242,20 @@ def handle_query_completion(chat: "ChatSession") -> bool:
         chat.writer.clear()
 
     if result.error:
-        assistant_message = ChatMessage(
-            role="assistant",
-            content=f"Error processing request: {result.error}",
-        )
+        if result.result is not None:
+            assistant_message = ChatMessage(
+                role="assistant",
+                content=result.text,
+                thinking=result.thinking,
+                result=result.result,
+                has_visualization=False,
+                metadata={"viz_error": str(result.error)},
+            )
+        else:
+            assistant_message = ChatMessage(
+                role="assistant",
+                content=f"Error processing request: {result.error}",
+            )
     else:
         assistant_message = ChatMessage(
             role="assistant",
@@ -285,7 +302,7 @@ def _thinking_stream_fragment(chat: "ChatSession") -> None:
             st.caption("Processing...")
 
     if phase == "visualizing":
-        st.info("📈 Generating visualization...", icon="📈")
+        st.info("Generating visualization...", icon="📈")
 
 
 @st.fragment(run_every=1.0)
