@@ -3,7 +3,7 @@ from click.testing import CliRunner
 from databao_cli.__main__ import cli
 
 
-def test_mcp_help():
+def test_mcp_help() -> None:
     """Test that the mcp command shows help."""
     runner = CliRunner()
     result = runner.invoke(cli, ["mcp", "--help"])
