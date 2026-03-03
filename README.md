@@ -1,5 +1,5 @@
 # Databao CLI
-TEST
+
 A command-line interface tool for managing Databao Agents and Context Engine (DCE) components.
 
 ## Requirements
