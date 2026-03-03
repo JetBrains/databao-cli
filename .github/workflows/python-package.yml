@@ -25,13 +25,16 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Lint with ruff
-        run: |
-          uv run ruff check src/ tests/ e2e-tests/
-          uv run ruff format --check src/ tests/ e2e-tests/
+      - name: Cache pre-commit hooks
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ runner.os }}-${{ hashFiles('.pre-commit-config.yaml', 'uv.lock') }}
+          restore-keys: |
+            pre-commit-${{ runner.os }}-
 
-      - name: Test with pytest
-        run: uv run pytest
+      - name: Run pre-commit
+        run: uv run pre-commit run --all-files --show-diff-on-failure
 
       - name: CLI smoke test
         run: uv run databao --help
