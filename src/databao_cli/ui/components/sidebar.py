@@ -2,11 +2,11 @@
 
 import streamlit as st
 
+from databao_cli.executor_utils import EXECUTOR_TYPES
 from databao_cli.project.layout import ProjectLayout
 from databao_cli.ui.app import _clear_all_chat_threads
 from databao_cli.ui.components.icons import get_db_type_and_icon
 from databao_cli.ui.components.status import AppStatus, render_status_fragment, set_status
-from databao_cli.ui.pages.agent_settings import EXECUTOR_TYPES
 from databao_cli.ui.project_utils import DatabaoProjectStatus, databao_project_status
 from databao_cli.ui.suggestions import reset_suggestions_state
 

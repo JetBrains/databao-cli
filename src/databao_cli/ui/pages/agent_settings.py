@@ -2,43 +2,11 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import streamlit as st
 
+from databao_cli.executor_utils import EXECUTOR_TYPES
 from databao_cli.ui.app import _clear_all_chat_threads
 from databao_cli.ui.components.status import AppStatus, set_status
-
-if TYPE_CHECKING:
-    from databao.core import Executor
-
-EXECUTOR_TYPES = {
-    "lighthouse": "LighthouseExecutor (recommended)",
-    "react_duckdb": "ReactDuckDBExecutor (experimental)",
-    "dbt": "DbtProjectExecutor (experimental)",
-}
-
-
-def create_executor(executor_type: str) -> Executor:
-    """Create a data executor instance from its type name.
-
-    Supported types are defined in EXECUTOR_TYPES.
-    """
-    from databao.executors.dbt.executor import DbtProjectExecutor
-    from databao.executors.lighthouse.executor import LighthouseExecutor
-    from databao.executors.react_duckdb.executor import ReactDuckDBExecutor
-
-    match executor_type:
-        case "lighthouse":
-            return LighthouseExecutor()
-        case "react_duckdb":
-            return ReactDuckDBExecutor()
-        case "dbt":
-            # TODO: (@gas) add QueryExpansionConfig on
-            # initialization through the UI config
-            return DbtProjectExecutor()
-        case _:
-            raise ValueError(f"Unknown executor type: {executor_type!r}. Supported types: {', '.join(EXECUTOR_TYPES)}")
 
 
 def render_agent_settings_page() -> None:

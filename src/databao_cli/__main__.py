@@ -10,6 +10,7 @@ from databao_cli.commands.build import build_impl
 from databao_cli.commands.datasource.add_datasource_config import add_datasource_config_interactive_impl
 from databao_cli.commands.datasource.check_datasource_connection import check_datasource_connection_impl
 from databao_cli.commands.init import InitDatabaoProjectError, ProjectDirDoesnotExistError, init_impl
+from databao_cli.commands.mcp import mcp_impl
 from databao_cli.commands.status import status_impl
 from databao_cli.logging import configure_logging
 from databao_cli.project.layout import ROOT_DOMAIN, ProjectLayout, find_project
@@ -190,6 +191,7 @@ def ask(
     By default, starts an interactive chat session. Use --one-shot with a
     QUESTION argument to run a single query and exit.
 
+    \b
     Examples:
         databao ask                                          # Interactive mode
         databao ask --one-shot "What tables exist?"          # One-shot mode
@@ -214,6 +216,7 @@ def app(ctx: click.Context, read_only_domain: bool) -> None:
 
     All additional arguments are passed directly to streamlit run.
 
+    \b
     Examples:
         databao app
         databao app --server.port 8502
@@ -222,6 +225,44 @@ def app(ctx: click.Context, read_only_domain: bool) -> None:
     """
     ctx.obj["read_only_domain"] = read_only_domain
     app_impl(ctx)
+
+
+@cli.command()
+@click.option(
+    "--transport",
+    type=click.Choice(["stdio", "sse"]),
+    default="stdio",
+    show_default=True,
+    help="MCP transport type.",
+)
+@click.option(
+    "--host",
+    type=str,
+    default="localhost",
+    show_default=True,
+    help="Host to bind to (SSE transport only).",
+)
+@click.option(
+    "--port",
+    type=int,
+    default=8765,
+    show_default=True,
+    help="Port to listen on (SSE transport only).",
+)
+@click.pass_context
+def mcp(ctx: click.Context, transport: str, host: str, port: int) -> None:
+    """Run an MCP server exposing Databao tools.
+
+    Starts a Model Context Protocol server that provides tools for
+    interacting with your Databao project programmatically.
+
+    \b
+    Examples:
+        databao mcp                              # stdio (default)
+        databao mcp --transport sse              # SSE on localhost:8765
+        databao mcp --transport sse --port 9000  # SSE on custom port
+    """
+    mcp_impl(ctx.obj["project_dir"], transport, host, port)
 
 
 def _get_project_or_exit(project_dir: Path) -> ProjectLayout:
