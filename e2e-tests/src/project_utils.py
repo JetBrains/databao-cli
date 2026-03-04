@@ -40,16 +40,16 @@ def run_common_interactive_flow(
     child_answer(child, r"Datasource name\?:", database.datasource_name)
 
     if isinstance(database, SnowflakeDB):
-        (child_answer_safe(child, r"connection\.account\? :", database.account),)
+        (child_answer_safe(child, r"connection\.account\?:", database.account),)
         child_answer(child, r"connection\.warehouse\? \(Optional\):", database.warehouse)
         child_answer(child, r"connection\.database\? \(Optional\):", database.database)
         child_answer_safe(child, r"connection\.user\? \(Optional\):", database.user)
         child_answer(child, r"connection\.role\? \(Optional\):", database.role)
         database.auth.apply(child)
     elif isinstance(database, (SqliteDB, DuckdbDB)):
-        (child_answer_safe(child, r"connection\.database_path\? :", database.database_path))
+        (child_answer_safe(child, r"connection\.database_path\?:", database.database_path))
     else:
-        child_answer(child, r"connection\.host\?  \[localhost\]:", database.host)
+        child_answer(child, r"connection\.host\? \[localhost\]:", database.host)
         child_answer(child, r"connection\.port\? \(Optional\):", database.port)
         child_answer(child, r"connection\.database\? \(Optional\):", database.database)
         child_answer(child, r"connection\.user\? \(Optional\):", database.user)

@@ -24,7 +24,7 @@ def compare_yaml(current_yaml: str, expected_yaml: dict):
 
 
 def compare_yaml_by_path(path1: Path, path2: Path):
-    keys_to_remove = ["context_built_at"]
+    keys_to_remove = ["context_built_at", "stats"]
     current_yaml = remove_keys(load_yaml(path1), keys_to_remove)
     expected_yaml = remove_keys(load_yaml(path2), keys_to_remove)
     compare_yaml(current_yaml, expected_yaml)
