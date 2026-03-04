@@ -31,7 +31,8 @@ def _format_openai_error(e: Exception) -> str | None:
 
     body = e.body
     if isinstance(body, dict) and body.get("code") == "model_not_found":
-        return body.get("message", "Model was not found. Please check the model name and try again.")
+        msg = body.get("message")
+        return str(msg) if msg is not None else "Model was not found. Please check the model name and try again."
 
     return None
 
