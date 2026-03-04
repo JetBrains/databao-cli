@@ -46,7 +46,7 @@ def _check_domains(
         if not domain_dir.exists():
             raise ValueError(
                 f"The specified {domain} domain does not exist. "
-                f"Avaiable domains: {', '.join(project_layout.get_domain_names())}"
+                f"Available domains: {', '.join(project_layout.get_domain_names())}"
             )
         domain_manager = DatabaoContextDomainManager(domain_dir=domain_dir)
         results[domain] = domain_manager.check_datasource_connection()

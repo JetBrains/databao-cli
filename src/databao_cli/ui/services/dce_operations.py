@@ -98,9 +98,10 @@ def list_datasources(project_dir: Path) -> list[ConfiguredDatasource]:
 
 
 def verify_datasource(project_dir: Path, datasource_id: DatasourceId) -> CheckDatasourceConnectionResult:
-    """Check the connection for a single datasource.
+    """Returns the connection check result for the given datasource_id.
 
-    Returns the first result (there should be exactly one since we pass one ID).
+    Raises:
+        ValueError: If no connection check result is available for the given datasource.
     """
     manager = DatabaoContextDomainManager(domain_dir=project_dir)
     results = manager.check_datasource_connection(datasource_ids=[datasource_id])
