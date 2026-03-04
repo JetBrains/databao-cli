@@ -1,6 +1,6 @@
 import duckdb
 from _pytest.tmpdir import TempPathFactory
-from databao_context_engine import DatabaoContextProjectManager, DatasourceType
+from databao_context_engine import DatabaoContextDomainManager, DatasourceType
 
 from databao_cli.project.layout import ProjectLayout
 from tests.utils.project import describe_result, run_build
@@ -11,7 +11,7 @@ def test_databao_build_duckdb_datasource(project_layout: ProjectLayout, tmp_path
     duckdb.connect(str(test_db))
     duckdb.execute("CREATE TABLE t1 AS SELECT 1 AS i, 2 AS j;")
 
-    dce_project_manager = DatabaoContextProjectManager(project_layout.root_domain_dir)
+    dce_project_manager = DatabaoContextDomainManager(domain_dir=project_layout.root_domain_dir)
     dce_project_manager.create_datasource_config(
         datasource_type=DatasourceType(full_type="duckdb"),
         datasource_name="my_test",
