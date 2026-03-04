@@ -12,6 +12,7 @@ from databao.configs.llm import LLMConfig, LLMConfigDirectory
 from databao.core.thread import Thread
 from prettytable import PrettyTable
 
+from databao_cli.log.llm_errors import format_llm_error
 from databao_cli.project.layout import ProjectLayout
 from databao_cli.ui.project_utils import DatabaoProjectStatus, databao_project_status
 from databao_cli.ui.streaming import StreamingWriter
@@ -173,7 +174,7 @@ def run_interactive_mode(agent: Agent, show_thinking: bool) -> None:
         except Exception as e:
             if writer:
                 writer.clear()
-            click.echo(f"\nError: {e}\n", err=True)
+            click.echo(f"\nError: {format_llm_error(e)}\n", err=True)
 
 
 def run_one_shot_mode(agent: Agent, question: str, show_thinking: bool) -> None:
@@ -195,7 +196,7 @@ def run_one_shot_mode(agent: Agent, question: str, show_thinking: bool) -> None:
         display_result(thread)
 
     except Exception as e:
-        click.echo(f"Error: {e}", err=True)
+        click.echo(f"Error: {format_llm_error(e)}", err=True)
         sys.exit(1)
 
 

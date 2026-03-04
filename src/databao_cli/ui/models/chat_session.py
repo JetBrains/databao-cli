@@ -25,6 +25,8 @@ class ChatMessage:
     result: ExecutionResult | None = None
     has_visualization: bool = False
     visualization_data: dict[str, Any] | None = None
+    viz_pending: bool = False
+    """Transient flag: visualization is being generated (not persisted to disk)."""
     message_id: str = ""
     metadata: dict[str, Any] = field(default_factory=dict)
     timestamp: datetime = field(default_factory=datetime.now)
