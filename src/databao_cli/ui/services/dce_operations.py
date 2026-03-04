@@ -7,14 +7,14 @@ using direct Python API calls (no subprocess/shell).
 import logging
 import os
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
 from databao_context_engine import (
     BuildDatasourceResult,
     CheckDatasourceConnectionResult,
     ConfiguredDatasource,
+    DatabaoContextDomainManager,
     DatabaoContextPluginLoader,
-    DatabaoContextProjectManager,
     DatasourceId,
     DatasourceType,
 )
@@ -53,7 +53,7 @@ def get_datasource_config_fields(ds_type_str: str) -> list[ConfigPropertyDefinit
     """Return the config field definitions for a given datasource type string."""
     loader = DatabaoContextPluginLoader()
     ds_type = DatasourceType(full_type=ds_type_str)
-    return cast(list[ConfigPropertyDefinition], loader.get_config_file_structure_for_datasource_type(ds_type))
+    return loader.get_config_file_structure_for_datasource_type(ds_type)
 
 
 def add_datasource(project_dir: Path, ds_type_str: str, ds_name: str, config: dict[str, Any]) -> ConfiguredDatasource:
@@ -65,21 +65,21 @@ def add_datasource(project_dir: Path, ds_type_str: str, ds_name: str, config: di
         ds_name: Name for the datasource.
         config: Config dictionary (field values, excluding type and name).
     """
-    manager = DatabaoContextProjectManager(project_dir=project_dir)
+    manager = DatabaoContextDomainManager(domain_dir=project_dir)
     ds_type = DatasourceType(full_type=ds_type_str)
     return manager.create_datasource_config(ds_type, ds_name, config, overwrite_existing=False)
 
 
 def save_datasource(project_dir: Path, ds_type_str: str, ds_name: str, config: dict[str, Any]) -> ConfiguredDatasource:
     """Save (overwrite) an existing datasource config in the DCE project."""
-    manager = DatabaoContextProjectManager(project_dir=project_dir)
+    manager = DatabaoContextDomainManager(domain_dir=project_dir)
     ds_type = DatasourceType(full_type=ds_type_str)
     return manager.create_datasource_config(ds_type, ds_name, config, overwrite_existing=True)
 
 
 def remove_datasource(project_dir: Path, datasource_id: DatasourceId) -> None:
     """Remove a datasource config file from the DCE project."""
-    manager = DatabaoContextProjectManager(project_dir=project_dir)
+    manager = DatabaoContextDomainManager(domain_dir=project_dir)
     config_path = manager.get_config_file_path_for_datasource(datasource_id)
     if config_path.is_file():
         os.unlink(config_path)
@@ -91,21 +91,22 @@ def remove_datasource(project_dir: Path, datasource_id: DatasourceId) -> None:
 def list_datasources(project_dir: Path) -> list[ConfiguredDatasource]:
     """List all configured datasources in the DCE project (reads from disk)."""
     try:
-        manager = DatabaoContextProjectManager(project_dir=project_dir)
-        return cast(list[ConfiguredDatasource], manager.get_configured_datasource_list())
+        manager = DatabaoContextDomainManager(domain_dir=project_dir)
+        return manager.get_configured_datasource_list()
     except ValueError:
         return []
 
 
 def verify_datasource(project_dir: Path, datasource_id: DatasourceId) -> CheckDatasourceConnectionResult:
-    """Check the connection for a single datasource.
+    """Returns the connection check result for the given datasource_id.
 
-    Returns the first result (there should be exactly one since we pass one ID).
+    Raises:
+        ValueError: If no connection check result is available for the given datasource.
     """
-    manager = DatabaoContextProjectManager(project_dir=project_dir)
+    manager = DatabaoContextDomainManager(domain_dir=project_dir)
     results = manager.check_datasource_connection(datasource_ids=[datasource_id])
-    if results:
-        return results[0]
+    if datasource_id in results:
+        return results[datasource_id]
     raise ValueError(f"No connection check result for datasource {datasource_id}")
 
 
@@ -140,7 +141,6 @@ def verify_datasource_config(ds_type_str: str, ds_name: str, config: dict[str, A
             plugin=plugin,
             datasource_type=ds_type,
             config=full_config,
-            datasource_name=ds_name,
         )
         return CheckDatasourceConnectionResult(
             datasource_id=dummy_id,
@@ -164,8 +164,8 @@ def verify_datasource_config(ds_type_str: str, ds_name: str, config: dict[str, A
 
 def build_context(project_dir: Path) -> list[BuildDatasourceResult]:
     """Build context for all datasources in the DCE project. This is a long-running operation."""
-    manager = DatabaoContextProjectManager(project_dir=project_dir)
-    return cast(list[BuildDatasourceResult], manager.build_context())
+    manager = DatabaoContextDomainManager(domain_dir=project_dir)
+    return manager.build_context()
 
 
 def get_status_info(project_dir: Path) -> str:

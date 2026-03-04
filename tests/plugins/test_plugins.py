@@ -30,6 +30,7 @@ def load_plugin_ids(*uv_extra_args: str) -> set[str]:
 def test_loaded_plugins_no_extra() -> None:
     plugin_ids = load_plugin_ids()
     assert plugin_ids == {
+        "jetbrains/bigquery",
         "jetbrains/dbt",
         "jetbrains/duckdb",
         # comes transitively from databao agents dependency

@@ -3,14 +3,17 @@ import os
 import click
 from databao_context_engine import (
     CheckDatasourceConnectionResult,
-    DatabaoContextProjectManager,
+    DatabaoContextDomainManager,
+    DatasourceId,
 )
 
 from databao_cli.project.layout import ProjectLayout
 
 
-def print_connection_check_results(domain: str, datasource_results: list[CheckDatasourceConnectionResult]) -> None:
-    for result in datasource_results:
+def print_connection_check_results(
+    domain: str, datasource_results: dict[DatasourceId, CheckDatasourceConnectionResult]
+) -> None:
+    for result in datasource_results.values():
         fq_datasource_name = domain + os.pathsep + str(result.datasource_id)
         status = str(result.connection_status.value)
         if result.summary:
@@ -34,15 +37,17 @@ def check_datasource_connection_impl(project_layout: ProjectLayout, requested_do
         print_connection_check_results(domain, datasource_results)
 
 
-def _check_domains(project_layout: ProjectLayout, domains: list[str]) -> dict[str, list[CheckDatasourceConnectionResult]]:
-    results: dict[str, list[CheckDatasourceConnectionResult]] = {}
+def _check_domains(
+    project_layout: ProjectLayout, domains: list[str]
+) -> dict[str, dict[DatasourceId, CheckDatasourceConnectionResult]]:
+    results: dict[str, dict[DatasourceId, CheckDatasourceConnectionResult]] = {}
     for domain in domains:
         domain_dir = project_layout.domains_dir / domain
         if not domain_dir.exists():
             raise ValueError(
                 f"The specified {domain} domain does not exist. "
-                f"Avaiable domains: {', '.join(project_layout.get_domain_names())}"
+                f"Available domains: {', '.join(project_layout.get_domain_names())}"
             )
-        domain_manager = DatabaoContextProjectManager(project_dir=domain_dir)
+        domain_manager = DatabaoContextDomainManager(domain_dir=domain_dir)
         results[domain] = domain_manager.check_datasource_connection()
     return results

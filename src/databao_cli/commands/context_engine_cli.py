@@ -4,7 +4,7 @@ import click
 from databao_context_engine import Choice, UserInputCallback
 
 
-class ClickUserInputCallback(UserInputCallback):  # type: ignore[misc]
+class ClickUserInputCallback(UserInputCallback):
     def prompt(
         self,
         text: str,
