@@ -341,7 +341,7 @@ def render_visualization_and_actions(
         st.info("Generating visualization...", icon="📈")
     elif viz_error:
         st.error(f"Failed to generate visualization: {viz_error}")
-    elif has_visualization or thread._visualization_result is not None or visualization_data is not None:
+    elif has_visualization or visualization_data is not None or (is_latest and thread._visualization_result is not None):
         render_visualization_section(thread, visualization_data)
 
     if is_latest and not viz_pending and not viz_error:

@@ -4,6 +4,7 @@ This module provides background execution of queries so that they continue
 running when users switch between chats. The pattern follows suggestions.py.
 """
 
+import ctypes
 import logging
 import threading
 from dataclasses import dataclass
@@ -20,6 +21,8 @@ if TYPE_CHECKING:
     from databao_cli.ui.streaming import StreamingWriter
 
 logger = logging.getLogger(__name__)
+
+_STOP_TIMEOUT_SECONDS = 5.0
 
 
 @dataclass
@@ -100,6 +103,8 @@ class QueryThread(threading.Thread):
                 visualization_data=visualization_data,
                 error=None,
             )
+        except (KeyboardInterrupt, SystemExit):
+            logger.debug("Query thread stopped")
         except Exception as e:
             logger.exception("Query execution failed")
             thinking_text = self.writer.getvalue() if self.writer else ""
@@ -200,6 +205,91 @@ def check_query_completion(chat: "ChatSession") -> QueryResult | None:
         return partial
 
     return None
+
+
+def _raise_in_thread(thread: threading.Thread, exc_type: type) -> bool:
+    """Raise an exception asynchronously in a running thread.
+
+    Uses ``PyThreadState_SetAsyncExc`` to inject an exception into the
+    target thread.  The exception will be delivered the next time the
+    thread executes Python bytecode (it may not interrupt C-level
+    blocking calls immediately).
+
+    Returns True if the exception was successfully scheduled.
+    """
+    if not thread.is_alive():
+        return False
+    thread_id = thread.ident
+    if thread_id is None:
+        return False
+    res = ctypes.pythonapi.PyThreadState_SetAsyncExc(
+        ctypes.c_ulong(thread_id),
+        ctypes.py_object(exc_type),
+    )
+    if res == 0:
+        logger.warning("Thread %s not found for async exception", thread_id)
+        return False
+    if res > 1:
+        ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_ulong(thread_id), None)
+        logger.error("Multiple thread states modified — reverted")
+        return False
+    return True
+
+
+def _reap_thread(thread: threading.Thread, timeout: float = _STOP_TIMEOUT_SECONDS) -> None:
+    """Wait for *thread* to finish, then force-kill it if necessary.
+
+    Intended to run in a short-lived daemon reaper thread so the UI is
+    not blocked.
+    """
+    thread.join(timeout=timeout)
+    if thread.is_alive():
+        logger.warning("Query thread did not stop after %.1fs — sending SystemExit", timeout)
+        _raise_in_thread(thread, SystemExit)
+
+
+def stop_query(chat: "ChatSession") -> str | None:
+    """Stop a running background query for a chat.
+
+    Termination strategy:
+    1. Capture partial thinking text and disconnect the writer so old
+       output cannot leak into the next query.
+    2. Raise ``KeyboardInterrupt`` in the query thread (graceful stop).
+    3. Spawn a short-lived daemon *reaper* that waits up to
+       ``_STOP_TIMEOUT_SECONDS`` and, if the thread is still alive,
+       force-kills it with ``SystemExit``.
+
+    Returns:
+        The captured thinking text if a query was stopped, or None if
+        nothing was running.
+    """
+    if chat.query_status not in ("running", "visualizing"):
+        return None
+
+    thinking_text = ""
+    if chat.writer:
+        thinking_text = chat.writer.getvalue()
+        chat.writer._on_write = None
+
+    query_thread = chat.query_thread
+
+    chat.query_thread = None
+    chat.query_status = "idle"
+    chat.thread = None
+    chat.writer = None
+
+    if isinstance(query_thread, threading.Thread) and query_thread.is_alive():
+        _raise_in_thread(query_thread, KeyboardInterrupt)
+        reaper = threading.Thread(
+            target=_reap_thread,
+            args=(query_thread,),
+            name="query_reaper",
+            daemon=True,
+        )
+        reaper.start()
+
+    logger.info(f"Stopped query for chat {chat.id}")
+    return thinking_text
 
 
 def is_query_running(chat: "ChatSession") -> bool:
