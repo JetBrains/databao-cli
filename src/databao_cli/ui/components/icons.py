@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from databao.databases import (
+from databao.agent.databases import (
     DuckDBConnectionConfig,
     MySQLConnectionProperties,
     PostgresConnectionProperties,

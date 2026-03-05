@@ -1,7 +1,7 @@
 import logging
 from enum import Enum
 
-from databao.integrations.dce import DatabaoContextApi
+from databao.agent.integrations.dce import DatabaoContextApi
 
 from databao_cli.project.layout import ProjectLayout
 

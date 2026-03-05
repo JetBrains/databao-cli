@@ -10,7 +10,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from pydantic import BaseModel, Field
 
 if TYPE_CHECKING:
-    from databao.core.agent import Agent
+    from databao.agent.core.agent import Agent
 
 logger = logging.getLogger(__name__)
 

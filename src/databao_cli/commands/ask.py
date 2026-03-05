@@ -5,11 +5,11 @@ from pathlib import Path
 
 import click
 import pandas as pd
-from databao import Agent
-from databao import domain as create_domain
-from databao.api import agent as create_agent
-from databao.configs.llm import LLMConfig, LLMConfigDirectory
-from databao.core.thread import Thread
+from databao.agent import Agent
+from databao.agent import domain as create_domain
+from databao.agent.api import agent as create_agent
+from databao.agent.configs.llm import LLMConfig, LLMConfigDirectory
+from databao.agent.core.thread import Thread
 from prettytable import PrettyTable
 
 from databao_cli.log.llm_errors import format_llm_error

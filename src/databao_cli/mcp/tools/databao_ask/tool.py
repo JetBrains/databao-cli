@@ -5,7 +5,7 @@ import logging
 import traceback
 from typing import TYPE_CHECKING, Annotated, Any
 
-from databao.caches.in_mem_cache import InMemCache
+from databao.agent.caches.in_mem_cache import InMemCache
 from langchain_core.messages import AIMessage, HumanMessage
 from pydantic import BaseModel, Field
 from uuid6 import uuid6
