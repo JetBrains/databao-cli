@@ -7,9 +7,9 @@ from pathlib import Path
 from typing import cast
 
 import streamlit as st
-from databao import domain as create_domain
-from databao.caches.disk_cache import DiskCache, DiskCacheConfig
-from databao.core.agent import Agent
+from databao.agent import domain as create_domain
+from databao.agent.caches.disk_cache import DiskCache, DiskCacheConfig
+from databao.agent.core.agent import Agent
 from streamlit.navigation.page import StreamlitPage
 
 from databao_cli.project.layout import ProjectLayout, find_project
@@ -98,7 +98,7 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
         with status_context(AppStatus.INITIALIZING, "Loading domain..."):
             _domain = create_domain(project.root_domain_dir)
 
-        from databao.api import agent as create_agent
+        from databao.agent.api import agent as create_agent
 
         _agent = create_agent(
             domain=_domain,

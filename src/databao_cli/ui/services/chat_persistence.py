@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 import pandas as pd
-from databao import ExecutionResult
+from databao.agent import ExecutionResult
 
 from databao_cli.ui.services.storage import get_cache_dir, get_chat_dir, get_chats_dir, is_valid_chat_id
 
@@ -253,7 +253,7 @@ def _delete_cache_scope(cache_scope: str) -> None:
     Args:
         cache_scope: The cache scope identifier (e.g., "agent_name/uuid")
     """
-    from databao.caches.disk_cache import DiskCache, DiskCacheConfig
+    from databao.agent.caches.disk_cache import DiskCache, DiskCacheConfig
 
     cache_dir = get_cache_dir()
     config = DiskCacheConfig(db_dir=cache_dir / "diskcache")
