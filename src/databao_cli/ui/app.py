@@ -2,6 +2,7 @@
 
 import argparse
 import logging
+import os
 from collections.abc import Callable
 from pathlib import Path
 from typing import cast
@@ -9,6 +10,7 @@ from typing import cast
 import streamlit as st
 from databao.agent import domain as create_domain
 from databao.agent.caches.disk_cache import DiskCache, DiskCacheConfig
+from databao.agent.configs.llm import LLMConfig
 from databao.agent.core.agent import Agent
 from streamlit.navigation.page import StreamlitPage
 
@@ -106,7 +108,6 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
             _domain = create_domain(project.root_domain_dir)
 
         from databao.agent.api import agent as create_agent
-        from databao.agent.configs.llm import LLMConfig
 
         llm_config = _build_llm_config()
 
@@ -130,9 +131,8 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
         return None
 
 
-def _build_llm_config():
+def _build_llm_config() -> LLMConfig | None:
     """Build an LLMConfig from session-state LLM settings, or None for defaults."""
-    from databao.agent.configs.llm import LLMConfig
 
     llm: LLMSettings = st.session_state.get("llm_settings", LLMSettings())
 
@@ -140,10 +140,8 @@ def _build_llm_config():
         return None
 
     config = llm.active_config
-    assert config is not None  # guaranteed by is_configured
+    assert config is not None
     provider_type = llm.active_provider
-
-    import os
 
     env_var_map: dict[str, str] = {
         "openai": "OPENAI_API_KEY",

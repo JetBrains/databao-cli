@@ -22,7 +22,7 @@ class LLMProviderConfig:
 
 @dataclass
 class LLMSettings:
-    """All LLM provider configurations + which one is active."""
+    """All LLM provider configurations"""
 
     active_provider: str = "openai"
     providers: dict[str, LLMProviderConfig] = field(default_factory=dict)

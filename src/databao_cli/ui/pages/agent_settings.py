@@ -17,7 +17,6 @@ def render_agent_settings_page() -> None:
 
     st.markdown("---")
 
-    # ── Execution Engine ────────────────────────────────────────────
     st.subheader("⚙️ Execution Engine")
 
     st.markdown(
@@ -74,14 +73,12 @@ def render_agent_settings_page() -> None:
 
     st.markdown("---")
 
-    # ── Language Model ──────────────────────────────────────────────
     st.subheader("🤖 Language Model")
 
     st.markdown("Choose the LLM provider and configure its credentials.")
 
     llm: LLMSettings = st.session_state.get("llm_settings", LLMSettings())
 
-    # ── Provider dropdown ───────────────────────────────────────────
     provider_keys = list(LLM_PROVIDERS.keys())
     current_provider = llm.active_provider if llm.active_provider in provider_keys else "openai"
 
@@ -93,7 +90,6 @@ def render_agent_settings_page() -> None:
         help="The LLM provider the agent will use",
     )
 
-    # ── Fields for the chosen provider ──────────────────────────────
     existing = llm.providers.get(chosen_provider, LLMProviderConfig())
 
     api_key = ""
@@ -127,7 +123,6 @@ def render_agent_settings_page() -> None:
         help="The specific model identifier",
     )
 
-    # ── Build new config and detect changes ─────────────────────────
     new_cfg = LLMProviderConfig(api_key=api_key, model=model, base_url=base_url)
     new_providers = dict(llm.providers)
     new_providers[chosen_provider] = new_cfg
@@ -135,7 +130,6 @@ def render_agent_settings_page() -> None:
 
     changed = (new_llm.active_provider != llm.active_provider) or (new_cfg != existing)
 
-    # ── Apply button with validation ────────────────────────────────
     if changed and st.button("✓ Apply Changes", type="primary", key="apply_llm"):
         errors = _validate_provider(chosen_provider, new_cfg)
         if errors:
