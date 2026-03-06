@@ -2,6 +2,7 @@ from pathlib import Path
 
 import allure
 import pexpect
+from databases.bigquery_utils import BigQueryDB
 from databases.duckdb_utils import DuckdbDB
 from databases.mysql_utils import MysqlDB
 from databases.postgres_utils import PostgresDB
@@ -13,7 +14,7 @@ from utils.pexpect_utils import child_answer, child_answer_safe
 
 
 @allure.step("Executing databao init")
-def execute_init(project_dir: Path, db: PostgresDB | MysqlDB | SnowflakeDB | None = None):
+def execute_init(project_dir: Path, db: PostgresDB | MysqlDB | SnowflakeDB | BigQueryDB | None = None):
     log_file_path = project_dir / "cli.log"
     with open(log_file_path, "w") as logfile:
         # child = PopenSpawn(
@@ -60,8 +61,13 @@ def run_common_interactive_flow(
         child_answer_safe(child, r"connection\.user\? \(Optional\):", database.user)
         child_answer(child, r"connection\.role\? \(Optional\):", database.role)
         database.auth.apply(child)
+    elif isinstance(database, BigQueryDB):
+        (child_answer_safe(child, r"connection\.project?\?:", database.project),)
+        child_answer_safe(child, r"connection\.dataset\? \(Optional\):", database.dataset)
+        child_answer_safe(child, r"connection\.location\? \(Optional\):", database.location)
+        database.auth.apply(child)
     elif isinstance(database, (SqliteDB, DuckdbDB)):
-        (child_answer_safe(child, r"connection\.database_path\?:", database.database_path))
+        child_answer_safe(child, r"connection\.database_path\?:", database.database_path)
     else:
         child_answer(child, r"connection\.host\? \[localhost\]:", database.host)
         child_answer(child, r"connection\.port\? \(Optional\):", database.port)
