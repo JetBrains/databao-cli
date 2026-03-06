@@ -497,7 +497,7 @@ def render_chat_interface(chat: "ChatSession") -> None:
     """Render the complete chat interface."""
     _process_pending_overwrite(chat)
 
-    query_running = is_query_running(chat)
+    query_running = is_query_running(chat) or "pending_plot_message_index" in st.session_state
 
     if handle_query_completion(chat):
         st.rerun()
@@ -520,3 +520,8 @@ def render_chat_interface(chat: "ChatSession") -> None:
 
     st.markdown("<div style='height: 2em'></div>", unsafe_allow_html=True)
     _render_chat_input_bar(chat, query_running)
+
+    if "pending_plot_message_index" in st.session_state:
+        from databao_cli.ui.components.results import execute_pending_plot
+
+        execute_pending_plot(chat)

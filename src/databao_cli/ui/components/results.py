@@ -337,6 +337,10 @@ def render_visualization_and_actions(
         viz_pending = False
         viz_error = None
 
+    if st.session_state.get("pending_plot_message_index") == message_index:
+        st.info("Generating visualization...", icon="📈")
+        return
+
     if viz_pending:
         st.info("Generating visualization...", icon="📈")
     elif viz_error:
@@ -377,31 +381,38 @@ def _render_and_handle_action_buttons(
         button_key = f"action_generate_plot_{message_index}"
         clicked = st.button("📈 Generate Plot", key=button_key, width="stretch", disabled=is_processing)
         if clicked and not is_processing:
-            _handle_generate_plot(chat, message_index)
+            st.session_state["pending_plot_message_index"] = message_index
+            st.rerun(scope="app")
 
 
-def _handle_generate_plot(chat: "ChatSession", message_index: int) -> None:
-    """Handle Generate Plot button click.
+def execute_pending_plot(chat: "ChatSession") -> None:
+    """Execute a pending Generate Plot request.
 
-    Called from within a fragment, so st.rerun() will only rerun the fragment.
+    Called from ``render_chat_interface`` **after** ``_render_chat_input_bar``
+    so that the disabled input bar is already rendered before this blocking
+    ``thread.plot()`` call begins.
     """
     thread = chat.thread
     if thread is None:
         return
 
-    with st.spinner("Generating visualization..."):
-        try:
-            thread.plot()
+    message_index: int = st.session_state.pop("pending_plot_message_index")
 
-            messages = chat.messages
-            if message_index < len(messages):
-                messages[message_index].has_visualization = True
-                messages[message_index].visualization_data = _extract_visualization_data(thread)
-                save_current_chat()
+    try:
+        thread.plot()
 
-            st.rerun()
-        except Exception as e:
-            st.error(f"Failed to generate visualization: {e}")
+        messages = chat.messages
+        if message_index < len(messages):
+            messages[message_index].has_visualization = True
+            messages[message_index].visualization_data = _extract_visualization_data(thread)
+            save_current_chat()
+    except Exception as e:
+        logger.exception("Failed to generate visualization")
+        if message_index < len(chat.messages):
+            chat.messages[message_index].metadata["viz_error"] = str(e)
+            save_current_chat()
+
+    st.rerun(scope="app")
 
 
 def render_execution_result(
