@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import allure
 import pytest
 from databases.mysql_utils import MysqlDB
 from project_utils import execute_build, execute_init
@@ -16,6 +17,8 @@ def mysql_container():
     container.stop()
 
 
+@allure.title("Test databao build with MySQL")
+@allure.description("Initialize a project with MySQL and build it, then compare results with expected introspection.")
 def test_databao_build_mysql(project_folder: Path, mysql_container: MySqlContainer):
     db = MysqlDB.prepare_database(mysql_container)
     execute_init(project_folder, db)

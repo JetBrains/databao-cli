@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import allure
 import pexpect
 from databases.duckdb_utils import DuckdbDB
 from databases.mysql_utils import MysqlDB
@@ -11,28 +12,41 @@ from pexpect.popen_spawn import PopenSpawn
 from utils.pexpect_utils import child_answer, child_answer_safe
 
 
+@allure.step("Executing databao init")
 def execute_init(project_dir: Path, db: PostgresDB | MysqlDB | SnowflakeDB | None = None):
-    with open(project_dir / "cli.log", "w") as logfile:
+    log_file_path = project_dir / "cli.log"
+    with open(log_file_path, "w") as logfile:
         # child = PopenSpawn(
         child = pexpect.spawn("uv run databao init", cwd=project_dir, encoding="utf-8", timeout=30, logfile=logfile)
 
-        child.expect(r"Do you want to configure a domain now\? \[y/N\]:")
-        if db:
-            child.sendline("Y")
-            run_common_interactive_flow(child, db)
-        else:
-            child.sendline("N")
-            child.expect(pexpect.EOF)
+        try:
+            child.expect(r"Do you want to configure a domain now\? \[y/N\]:")
+            if db:
+                child.sendline("Y")
+                run_common_interactive_flow(child, db)
+            else:
+                child.sendline("N")
+                child.expect(pexpect.EOF)
+        finally:
+            if log_file_path.exists():
+                allure.attach.file(log_file_path, name="cli.log", attachment_type=allure.attachment_type.TEXT)
 
 
+@allure.step("Executing databao build")
 def execute_build(project_dir: Path):
-    with open(project_dir / "cli.log", "w") as logfile:
+    log_file_path = project_dir / "cli.log"
+    with open(log_file_path, "w") as logfile:
         # child = PopenSpawn(
         child = pexpect.spawn("uv run databao build", cwd=project_dir, encoding="utf-8", timeout=140, logfile=logfile)
-        child.expect("Found datasource of type")
-        child.expect(pexpect.EOF)
+        try:
+            child.expect("Found datasource of type")
+            child.expect(pexpect.EOF)
+        finally:
+            if log_file_path.exists():
+                allure.attach.file(log_file_path, name="cli.log", attachment_type=allure.attachment_type.TEXT)
 
 
+@allure.step("Interactive domain configuration")
 def run_common_interactive_flow(
     child: spawn | PopenSpawn, database: PostgresDB | SnowflakeDB | MysqlDB | SqliteDB | DuckdbDB
 ) -> None:

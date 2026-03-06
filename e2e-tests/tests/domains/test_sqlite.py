@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import allure
 import pytest
 from databases.sqlite_utils import SqliteDB
 from project_utils import execute_build, execute_init
@@ -13,6 +14,8 @@ def temp_sqlite_file(tmp_path: Path):
     yield db_file
 
 
+@allure.title("Test databao build with SQLite")
+@allure.description("Initialize a project with SQLite and build it, then compare results with expected introspection.")
 def test_databao_build_sqlite(project_folder: Path, temp_sqlite_file: Path):
     db = SqliteDB.prepare_database(temp_sqlite_file)
     execute_init(project_folder, db)

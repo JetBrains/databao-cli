@@ -1,8 +1,6 @@
 from asyncio import Protocol
 from dataclasses import dataclass
-from pathlib import Path
 
-from databases.database_utils import create_and_save_database_creds_file
 from dotenv import load_dotenv
 from utils.pexpect_utils import child_answer, child_answer_safe
 
@@ -71,24 +69,3 @@ class SnowflakeDB:
     auth: SnowflakePasswordAuth | SnowflakeKeyPairAuth | SnowflakeSSOAuth = SnowflakePasswordAuth()
     check_connection: bool = False
     check_connection_succeed: bool = True
-
-
-def create_snowflake_creds_file() -> dict[str, str | None]:
-    return {
-        "type": "snowflake",
-        "name": "my_test_snowflake",
-        "connection": {
-            "account": SN_ACCOUNT,
-            "warehouse": "DEMO_WH",
-            "database": "DATALORE",
-            "schema": "TEST",
-            "user": SN_USER,
-            "auth": {
-                "password": SN_PASSWORD,
-            },
-        },
-    }
-
-
-def create_and_save_snowflake_creds_file(project_path: Path, name: str):
-    create_and_save_database_creds_file(project_path, name, create_snowflake_creds_file())

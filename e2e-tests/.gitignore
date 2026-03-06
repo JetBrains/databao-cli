@@ -29,3 +29,4 @@ build/
 # Test artifacts
 artifacts/
 allure-results/
+allure-report/

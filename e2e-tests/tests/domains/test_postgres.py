@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import allure
 import pytest
 from databases.postgres_utils import PostgresDB
 from project_utils import execute_build, execute_init
@@ -18,6 +19,8 @@ def postgres_container():
         container.stop()
 
 
+@allure.title("Test databao build with Postgres")
+@allure.description("Initialize a project with Postgres and build it, then compare results with expected introspection.")
 def test_databao_build_postgres(project_folder: Path, postgres_container: PostgresContainer):
     db = PostgresDB.prepare_database(postgres_container)
     execute_init(project_folder, db)

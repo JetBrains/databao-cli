@@ -1,5 +1,5 @@
 # ===== sn_con.yaml =====
-datasource_id: sn_con.yaml
+datasource_id: my_test_snowflake.yaml
 datasource_type: snowflake
 context_built_at: 2026-02-19 16:04:32.560891
 context:
