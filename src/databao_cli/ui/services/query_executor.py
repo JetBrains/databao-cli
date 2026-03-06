@@ -254,14 +254,18 @@ def stop_query(chat: "ChatSession") -> str | None:
     Termination strategy:
     1. Capture partial thinking text and disconnect the writer so old
        output cannot leak into the next query.
-    2. Raise ``KeyboardInterrupt`` in the query thread (graceful stop).
-    3. Spawn a short-lived daemon *reaper* that waits up to
+    2. Discard ``chat.thread`` — the databao ``Thread`` object's internal
+       state (``_lazy_mode``, ``_opas_processed_count``) becomes
+       inconsistent after an interrupted ``ask()`` call and cannot be
+       reused without hitting ``AssertionError``.
+    3. Raise ``KeyboardInterrupt`` in the query thread (graceful stop).
+    4. Spawn a short-lived daemon *reaper* that waits up to
        ``_STOP_TIMEOUT_SECONDS`` and, if the thread is still alive,
        force-kills it with ``SystemExit``.
 
     Returns:
-        The captured thinking text if a query was stopped, or None if
-        nothing was running.
+        The captured thinking text (possibly empty ``""``) if a query
+        was stopped, or ``None`` if nothing was running.
     """
     if chat.query_status not in ("running", "visualizing"):
         return None
@@ -278,7 +282,7 @@ def stop_query(chat: "ChatSession") -> str | None:
     chat.thread = None
     chat.writer = None
 
-    if isinstance(query_thread, threading.Thread) and query_thread.is_alive():
+    if query_thread is not None and query_thread.is_alive():
         _raise_in_thread(query_thread, KeyboardInterrupt)
         reaper = threading.Thread(
             target=_reap_thread,

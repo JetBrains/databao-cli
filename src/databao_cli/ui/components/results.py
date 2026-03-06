@@ -308,13 +308,17 @@ def render_visualization_and_actions(
     *,
     is_latest: bool = False,
 ) -> None:
-    """Fragment that renders visualization and action buttons together.
+    """Fragment that renders visualization status and action buttons.
 
-    This is a fragment so that when action buttons trigger updates (e.g., Generate Plot),
-    only this fragment reruns, showing the new visualization without a full app rerun.
+    Re-reads ``has_visualization``, ``visualization_data``, ``viz_pending``
+    and ``viz_error`` from ``chat.messages[message_index]`` on every run so
+    it reflects the latest state.
 
-    The fragment reads has_visualization and visualization_data from chat.messages
-    so it can see updates made by button click handlers on fragment rerun.
+    When a manual "Generate Plot" is pending (flagged via session state),
+    this fragment only renders a placeholder; the actual blocking
+    ``thread.plot()`` call is executed by ``execute_pending_plot`` in the
+    main script — after the input bar has been rendered — to keep the UI
+    responsive and the input visibly disabled.
     """
     current_chat = _get_current_chat()
     if current_chat is None:
@@ -358,9 +362,11 @@ def _render_and_handle_action_buttons(
     message_index: int,
     has_visualization: bool,
 ) -> None:
-    """Render action buttons and handle clicks inline.
+    """Render action buttons and handle clicks.
 
-    Called from within the fragment, so button clicks can trigger fragment-scoped reruns.
+    "Generate Plot" sets a session-state flag and triggers a full app
+    rerun so that the input bar is rendered as disabled before the
+    blocking ``thread.plot()`` call begins.
     """
     from databao_cli.ui.services import is_query_running
 
@@ -386,11 +392,11 @@ def _render_and_handle_action_buttons(
 
 
 def execute_pending_plot(chat: "ChatSession") -> None:
-    """Execute a pending Generate Plot request.
+    """Execute a pending manual "Generate Plot" request.
 
-    Called from ``render_chat_interface`` **after** ``_render_chat_input_bar``
-    so that the disabled input bar is already rendered before this blocking
-    ``thread.plot()`` call begins.
+    Must be called **after** the input bar has been rendered (disabled)
+    so the user sees a locked UI while the blocking ``thread.plot()``
+    runs.  On completion (or error) triggers a full app rerun.
     """
     thread = chat.thread
     if thread is None:

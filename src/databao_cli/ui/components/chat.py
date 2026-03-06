@@ -402,12 +402,42 @@ def _confirm_overwrite_dialog() -> None:
             st.rerun()
 
 
-def _render_chat_input_bar(chat: "ChatSession", query_running: bool) -> None:
-    """Render a custom chat input bar with send or stop button.
+def _handle_stop_click(chat: "ChatSession") -> None:
+    """Stop the running query and record the partial result.
 
-    When idle, shows a text input inside a form (so Enter submits) plus a
-    send button.  When a query is running, the input is disabled and the
-    send button is replaced with a stop button.
+    If the data phase already produced a message (``viz_pending``), marks
+    it as stopped.  Otherwise creates a new assistant message with
+    whatever thinking text was captured so far.
+    """
+    thinking_text = stop_query(chat)
+    if thinking_text is None:
+        return
+
+    pending = _find_pending_viz_message(chat)
+    if pending is not None:
+        pending.viz_pending = False
+        pending.metadata["stopped"] = True
+    else:
+        chat.messages.append(
+            ChatMessage(
+                role="assistant",
+                thinking=thinking_text or None,
+                content="",
+                metadata={"stopped": True},
+            )
+        )
+    save_current_chat()
+
+
+def _render_chat_input_bar(chat: "ChatSession", query_running: bool) -> None:
+    """Render the chat input bar.
+
+    When ``query_running`` is False, shows an enabled text input inside a
+    form (so Enter submits) and a send button.
+
+    When ``query_running`` is True (background query **or** manual plot
+    in progress), the input is disabled and a stop button is shown
+    instead.
     """
     if query_running:
         col1, col2 = st.columns([12, 1], vertical_alignment="bottom")
@@ -427,22 +457,7 @@ def _render_chat_input_bar(chat: "ChatSession", query_running: bool) -> None:
                 type="primary",
                 help="Stop the running query",
             ):
-                thinking_text = stop_query(chat)
-                if thinking_text is not None:
-                    pending = _find_pending_viz_message(chat)
-                    if pending is not None:
-                        pending.viz_pending = False
-                        pending.metadata["stopped"] = True
-                    else:
-                        chat.messages.append(
-                            ChatMessage(
-                                role="assistant",
-                                thinking=thinking_text or None,
-                                content="",
-                                metadata={"stopped": True},
-                            )
-                        )
-                    save_current_chat()
+                _handle_stop_click(chat)
                 st.rerun()
     else:
         with st.form("chat_input_form", clear_on_submit=True, border=False):
@@ -494,7 +509,15 @@ def _process_pending_overwrite(chat: "ChatSession") -> None:
 
 
 def render_chat_interface(chat: "ChatSession") -> None:
-    """Render the complete chat interface."""
+    """Render the complete chat interface.
+
+    Orchestrates, in order:
+    1. Processing a confirmed overwrite of a stopped exchange.
+    2. Chat history, thinking section, and polling fragments.
+    3. The input bar (enabled or disabled).
+    4. A pending manual "Generate Plot" execution (blocking, runs last
+       so the disabled input bar is already visible).
+    """
     _process_pending_overwrite(chat)
 
     query_running = is_query_running(chat) or "pending_plot_message_index" in st.session_state
