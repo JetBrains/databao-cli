@@ -1,0 +1,940 @@
+# ===== my_test_bigquery.yaml =====
+datasource_id: my_test_bigquery.yaml
+datasource_type: bigquery
+context_built_at: 2026-03-06 16:30:20.504412
+context:
+  catalogs:
+  - name: datalore-internal
+    schemas:
+    - name: selenium
+      tables:
+      - name: 5mSalesRecords
+        columns:
+        - name: Region
+          type: STRING
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Country
+          type: STRING
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Item_Type
+          type: STRING
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Sales_Channel
+          type: STRING
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Order_Priority
+          type: STRING
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Order_Date
+          type: STRING
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Order_ID
+          type: INT64
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Ship_Date
+          type: STRING
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Units_Sold
+          type: INT64
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Unit_Price
+          type: FLOAT64
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Unit_Cost
+          type: FLOAT64
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Total_Revenue
+          type: FLOAT64
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Total_Cost
+          type: FLOAT64
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Total_Profit
+          type: FLOAT64
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        samples:
+        - Region: Asia
+          Country: Singapore
+          Item_Type: Meat
+          Sales_Channel: Offline
+          Order_Priority: M
+          Order_Date: 12/20/2010
+          Order_ID: 836998832
+          Ship_Date: 1/22/2011
+          Units_Sold: 5409
+          Unit_Price: 421.89
+          Unit_Cost: 364.69
+          Total_Revenue: 2282003.01
+          Total_Cost: 1972608.21
+          Total_Profit: 309394.8
+        - Region: Asia
+          Country: Singapore
+          Item_Type: Meat
+          Sales_Channel: Offline
+          Order_Priority: M
+          Order_Date: 12/20/2010
+          Order_ID: 836998832
+          Ship_Date: 1/22/2011
+          Units_Sold: 5409
+          Unit_Price: 421.89
+          Unit_Cost: 364.69
+          Total_Revenue: 2282003.01
+          Total_Cost: 1972608.21
+          Total_Profit: 309394.8
+        - Region: Asia
+          Country: Uzbekistan
+          Item_Type: Meat
+          Sales_Channel: Offline
+          Order_Priority: H
+          Order_Date: 6/16/2017
+          Order_ID: 644075477
+          Ship_Date: 7/10/2017
+          Units_Sold: 5101
+          Unit_Price: 421.89
+          Unit_Cost: 364.69
+          Total_Revenue: 2152060.89
+          Total_Cost: 1860283.69
+          Total_Profit: 291777.2
+        - Region: Asia
+          Country: Uzbekistan
+          Item_Type: Meat
+          Sales_Channel: Offline
+          Order_Priority: H
+          Order_Date: 6/16/2017
+          Order_ID: 644075477
+          Ship_Date: 7/10/2017
+          Units_Sold: 5101
+          Unit_Price: 421.89
+          Unit_Cost: 364.69
+          Total_Revenue: 2152060.89
+          Total_Cost: 1860283.69
+          Total_Profit: 291777.2
+        - Region: Asia
+          Country: Kazakhstan
+          Item_Type: Meat
+          Sales_Channel: Offline
+          Order_Priority: C
+          Order_Date: 10/16/2017
+          Order_ID: 680293452
+          Ship_Date: 12/3/2017
+          Units_Sold: 2805
+          Unit_Price: 421.89
+          Unit_Cost: 364.69
+          Total_Revenue: 1183401.45
+          Total_Cost: 1022955.45
+          Total_Profit: 160446.0
+        partition_info: null
+        description: null
+        kind: table
+        primary_key: null
+        unique_constraints: []
+        checks: []
+        indexes: []
+        foreign_keys: []
+        stats: null
+      - name: dl13444
+        columns:
+        - name: Region
+          type: STRING
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Country
+          type: STRING
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Item_Type
+          type: STRING
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Sales_Channel
+          type: STRING
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Order_Priority
+          type: STRING
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Order_Date
+          type: STRING
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Order_ID
+          type: INT64
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Ship_Date
+          type: STRING
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Units_Sold
+          type: INT64
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Unit_Price
+          type: FLOAT64
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Unit_Cost
+          type: FLOAT64
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Total_Revenue
+          type: FLOAT64
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Total_Cost
+          type: FLOAT64
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Total_Profit
+          type: FLOAT64
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        samples:
+        - Region: Asia
+          Country: Uzbekistan
+          Item_Type: null
+          Sales_Channel: null
+          Order_Priority: null
+          Order_Date: null
+          Order_ID: null
+          Ship_Date: null
+          Units_Sold: null
+          Unit_Price: null
+          Unit_Cost: null
+          Total_Revenue: null
+          Total_Cost: null
+          Total_Profit: null
+        - Region: Asia
+          Country: Bangladesh
+          Item_Type: null
+          Sales_Channel: null
+          Order_Priority: null
+          Order_Date: null
+          Order_ID: null
+          Ship_Date: null
+          Units_Sold: null
+          Unit_Price: null
+          Unit_Cost: null
+          Total_Revenue: null
+          Total_Cost: null
+          Total_Profit: null
+        - Region: Asia
+          Country: Myanmar
+          Item_Type: null
+          Sales_Channel: null
+          Order_Priority: null
+          Order_Date: null
+          Order_ID: null
+          Ship_Date: null
+          Units_Sold: null
+          Unit_Price: null
+          Unit_Cost: null
+          Total_Revenue: null
+          Total_Cost: null
+          Total_Profit: null
+        - Region: Asia
+          Country: South Korea
+          Item_Type: null
+          Sales_Channel: null
+          Order_Priority: null
+          Order_Date: null
+          Order_ID: null
+          Ship_Date: null
+          Units_Sold: null
+          Unit_Price: null
+          Unit_Cost: null
+          Total_Revenue: null
+          Total_Cost: null
+          Total_Profit: null
+        - Region: Asia
+          Country: Bangladesh
+          Item_Type: null
+          Sales_Channel: null
+          Order_Priority: null
+          Order_Date: null
+          Order_ID: null
+          Ship_Date: null
+          Units_Sold: null
+          Unit_Price: null
+          Unit_Cost: null
+          Total_Revenue: null
+          Total_Cost: null
+          Total_Profit: null
+        partition_info: null
+        description: null
+        kind: table
+        primary_key: null
+        unique_constraints: []
+        checks: []
+        indexes: []
+        foreign_keys: []
+        stats: null
+      - name: effects_of_covid_on_trade
+        columns:
+        - name: Direction
+          type: STRING
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Year
+          type: INT64
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Date
+          type: DATE
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Weekday
+          type: STRING
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Country
+          type: STRING
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Commodity
+          type: STRING
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Transport_Mode
+          type: STRING
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Measure
+          type: STRING
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Value
+          type: INT64
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: Cumulative
+          type: INT64
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        samples:
+        - Direction: Exports
+          Year: 2015
+          Date: 2015-01-02
+          Weekday: Friday
+          Country: All
+          Commodity: All
+          Transport_Mode: All
+          Measure: $
+          Value: 96000000
+          Cumulative: 200000000
+        - Direction: Exports
+          Year: 2015
+          Date: 2015-01-09
+          Weekday: Friday
+          Country: All
+          Commodity: All
+          Transport_Mode: All
+          Measure: $
+          Value: 98000000
+          Cumulative: 786000000
+        - Direction: Exports
+          Year: 2015
+          Date: 2015-01-16
+          Weekday: Friday
+          Country: All
+          Commodity: All
+          Transport_Mode: All
+          Measure: $
+          Value: 155000000
+          Cumulative: 1589000000
+        - Direction: Exports
+          Year: 2015
+          Date: 2015-01-23
+          Weekday: Friday
+          Country: All
+          Commodity: All
+          Transport_Mode: All
+          Measure: $
+          Value: 139000000
+          Cumulative: 2525000000
+        - Direction: Exports
+          Year: 2015
+          Date: 2015-01-30
+          Weekday: Friday
+          Country: All
+          Commodity: All
+          Transport_Mode: All
+          Measure: $
+          Value: 125000000
+          Cumulative: 3423000000
+        partition_info: null
+        description: null
+        kind: table
+        primary_key: null
+        unique_constraints: []
+        checks: []
+        indexes: []
+        foreign_keys: []
+        stats: null
+      - name: new_table
+        columns:
+        - name: column1
+          type: INT64
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: column2
+          type: STRING
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: column3
+          type: FLOAT64
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        samples:
+        - column1: 61
+          column2: A
+          column3: 0.24412552224777417
+        - column1: 75
+          column2: A
+          column3: 0.06489224710898156
+        - column1: 55
+          column2: A
+          column3: 0.2202410475655483
+        - column1: 87
+          column2: A
+          column3: 0.7209399242521293
+        - column1: 73
+          column2: A
+          column3: 0.3975720210875223
+        partition_info: null
+        description: null
+        kind: table
+        primary_key: null
+        unique_constraints: []
+        checks: []
+        indexes: []
+        foreign_keys: []
+        stats: null
+      - name: stupin_DL_13554
+        columns:
+        - name: column1
+          type: INT64
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: column2
+          type: STRING
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: column3
+          type: FLOAT64
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        samples:
+        - column1: 15
+          column2: D
+          column3: 0.18182496720710062
+        - column1: 15
+          column2: D
+          column3: 0.18182496720710062
+        - column1: 15
+          column2: D
+          column3: 0.18182496720710062
+        - column1: 15
+          column2: D
+          column3: 0.18182496720710062
+        - column1: 15
+          column2: D
+          column3: 0.18182496720710062
+        partition_info: null
+        description: null
+        kind: table
+        primary_key: null
+        unique_constraints: []
+        checks: []
+        indexes: []
+        foreign_keys: []
+        stats: null
+      - name: stupin_corrupted_df_export
+        columns:
+        - name: code
+          type: INT64
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: customer_type
+          type: STRING(100)
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: country
+          type: STRING(100)
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: via_reseller
+          type: BOOL
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: subscription_type
+          type: STRING(100)
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: email_campaign
+          type: STRING(1000)
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: program_name
+          type: STRING(1000)
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: recipient_action_datetime
+          type: DATETIME
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: placed_date
+          type: DATE
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: purchased_product
+          type: STRING(100)
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: license_type
+          type: STRING(100)
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: license_id
+          type: STRING(100)
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: price
+          type: FLOAT64
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        samples:
+        - code: 18636715
+          customer_type: Personal
+          country: TAIWAN
+          via_reseller: false
+          subscription_type: Annual
+          email_campaign: DotCover Lead Nurturing.4 - Licensing
+          program_name: DotCover Lead Nurturing
+          recipient_action_datetime: 2024-02-16 15:37:51
+          placed_date: 2024-03-13
+          purchased_product: JetBrains AI
+          license_type: New
+          license_id: YYSQU9RKJY
+          price: 100.0
+        - code: 18636715
+          customer_type: Personal
+          country: TAIWAN
+          via_reseller: false
+          subscription_type: Annual
+          email_campaign: DotCover Lead Nurturing.4 - Licensing
+          program_name: DotCover Lead Nurturing
+          recipient_action_datetime: 2024-02-16 15:37:51
+          placed_date: 2024-03-13
+          purchased_product: JetBrains AI
+          license_type: New
+          license_id: YYSQU9RKJY
+          price: 100.0
+        - code: 18636715
+          customer_type: Personal
+          country: TAIWAN
+          via_reseller: false
+          subscription_type: Annual
+          email_campaign: DotCover Lead Nurturing.4 - Licensing
+          program_name: DotCover Lead Nurturing
+          recipient_action_datetime: 2024-02-16 15:37:51
+          placed_date: 2024-03-13
+          purchased_product: JetBrains AI
+          license_type: New
+          license_id: YYSQU9RKJY
+          price: 100.0
+        - code: 18636715
+          customer_type: Personal
+          country: TAIWAN
+          via_reseller: false
+          subscription_type: Annual
+          email_campaign: DotCover Lead Nurturing.4 - Licensing
+          program_name: DotCover Lead Nurturing
+          recipient_action_datetime: 2024-02-16 15:37:51
+          placed_date: 2024-03-13
+          purchased_product: JetBrains AI
+          license_type: New
+          license_id: YYSQU9RKJY
+          price: 100.0
+        - code: 18636715
+          customer_type: Personal
+          country: TAIWAN
+          via_reseller: false
+          subscription_type: Annual
+          email_campaign: DotCover Lead Nurturing.4 - Licensing
+          program_name: DotCover Lead Nurturing
+          recipient_action_datetime: 2024-02-16 15:37:51
+          placed_date: 2024-03-13
+          purchased_product: JetBrains AI
+          license_type: New
+          license_id: YYSQU9RKJY
+          price: 100.0
+        partition_info: null
+        description: null
+        kind: table
+        primary_key: null
+        unique_constraints: []
+        checks: []
+        indexes: []
+        foreign_keys: []
+        stats: null
+      - name: test_stgn
+        columns:
+        - name: column1
+          type: INT64
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: column2
+          type: STRING
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: column3
+          type: FLOAT64
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        samples:
+        - column1: 20
+          column2: A
+          column3: 0.7368224753949129
+        - column1: 20
+          column2: A
+          column3: 0.23321641154980122
+        - column1: 19
+          column2: A
+          column3: 0.5841994847141693
+        - column1: 3
+          column2: A
+          column3: 0.5353355640155235
+        - column1: 56
+          column2: A
+          column3: 0.06234136251124145
+        partition_info: null
+        description: null
+        kind: table
+        primary_key: null
+        unique_constraints: []
+        checks: []
+        indexes: []
+        foreign_keys: []
+        stats: null
+      - name: timestamp_table
+        columns:
+        - name: d
+          type: DATE
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: t
+          type: TIME
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: dt
+          type: DATETIME
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        - name: ts
+          type: TIMESTAMP
+          nullable: true
+          description: null
+          default_expression: 'NULL'
+          generated: null
+          checks: []
+          stats: null
+        samples:
+        - d: 2024-01-01
+          t: 00:00:00
+          dt: 2024-01-01 00:00:00
+          ts: 2024-01-01 00:00:00+00:00
+        - d: 1970-01-01
+          t: 00:00:00
+          dt: 1970-01-01 00:00:00
+          ts: 1970-01-01 00:00:00+00:00
+        - d: 2025-10-26
+          t: 01:30:00
+          dt: 2025-10-26 01:30:00
+          ts: 2025-10-25 23:30:00+00:00
+        - d: 2025-03-30
+          t: 03:05:00
+          dt: 2025-03-30 03:05:00
+          ts: 2025-03-30 01:05:00+00:00
+        - d: 1600-02-29
+          t: 06:00:00
+          dt: 1600-02-29 06:00:00
+          ts: 1600-02-29 05:06:32+00:00
+        partition_info: null
+        description: null
+        kind: table
+        primary_key: null
+        unique_constraints: []
+        checks: []
+        indexes: []
+        foreign_keys: []
+        stats: null
+      description: null
+    description: null
