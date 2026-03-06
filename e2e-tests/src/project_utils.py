@@ -17,10 +17,10 @@ from utils.pexpect_utils import child_answer, child_answer_safe
 def execute_init(project_dir: Path, db: PostgresDB | MysqlDB | SnowflakeDB | BigQueryDB | None = None):
     log_file_path = project_dir / "cli.log"
     with open(log_file_path, "w") as logfile:
-        # child = PopenSpawn(
-        child = pexpect.spawn("uv run databao init", cwd=project_dir, encoding="utf-8", timeout=30, logfile=logfile)
-
         try:
+            # Use PopenSpawn for debugging
+            child = pexpect.spawn("uv run databao init", cwd=project_dir, encoding="utf-8", timeout=30, logfile=logfile)
+
             child.expect(r"Do you want to configure a domain now\? \[y/N\]:")
             if db:
                 child.sendline("Y")
@@ -37,9 +37,9 @@ def execute_init(project_dir: Path, db: PostgresDB | MysqlDB | SnowflakeDB | Big
 def execute_build(project_dir: Path):
     log_file_path = project_dir / "cli.log"
     with open(log_file_path, "w") as logfile:
-        # child = PopenSpawn(
-        child = pexpect.spawn("uv run databao build", cwd=project_dir, encoding="utf-8", timeout=140, logfile=logfile)
         try:
+            # Use PopenSpawn for debugging
+            child = pexpect.spawn("uv run databao build", cwd=project_dir, encoding="utf-8", timeout=140, logfile=logfile)
             child.expect("Found datasource of type")
             child.expect(pexpect.EOF)
         finally:
