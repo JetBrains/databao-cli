@@ -22,10 +22,11 @@ class LLMProviderConfig:
 
 @dataclass
 class LLMSettings:
-    """All LLM provider configurations"""
+    """All LLM provider configurations."""
 
     active_provider: str = "openai"
     providers: dict[str, LLMProviderConfig] = field(default_factory=dict)
+    cached_models: dict[str, list[str]] = field(default_factory=dict)
 
     @property
     def active_config(self) -> LLMProviderConfig | None:
@@ -40,9 +41,7 @@ class LLMSettings:
         config = self.active_config
         if config is None:
             return False
-        if self.active_provider == "ollama":
-            return bool(config.model)
-        if self.active_provider == "openai_compat":
+        if self.active_provider in ("ollama", "openai_compat"):
             return bool(config.model and config.base_url)
         return bool(config.api_key and config.model)
 
@@ -75,6 +74,7 @@ class Settings:
                 "llm": {
                     "active_provider": llm.active_provider,
                     "providers": providers_dict,
+                    "cached_models": llm.cached_models,
                 },
             },
             "welcome_completed": self.welcome_completed,
@@ -97,12 +97,16 @@ class Settings:
             if isinstance(cfg, dict)
         }
 
+        cached_models_raw = llm_data.get("cached_models", {})
+        cached_models = {k: v for k, v in cached_models_raw.items() if isinstance(v, list)}
+
         return cls(
             agent=AgentSettings(
                 executor_type=agent_data.get("executor_type", "lighthouse"),
                 llm=LLMSettings(
-                    active_provider=llm_data.get("active_provider", ""),
+                    active_provider=llm_data.get("active_provider", "openai"),
                     providers=providers,
+                    cached_models=cached_models,
                 ),
             ),
             welcome_completed=data.get("welcome_completed", False),
