@@ -127,6 +127,18 @@ def _clear_all_chat_threads() -> None:
         chat.thread = None
 
 
+def invalidate_agent(status_message: str = "Reloading project...") -> None:
+    """Reset the in-memory agent and project so they are re-created on the next rerun.
+
+    Call this whenever the set of datasources changes (add, remove, save)
+    to ensure the agent does not reference stale catalogs/schemas.
+    """
+    st.session_state.databao_project = None
+    st.session_state.agent = None
+    _clear_all_chat_threads()
+    set_status(AppStatus.INITIALIZING, status_message)
+
+
 def is_read_only_domain() -> bool:
     """Check whether domain-editing operations are disabled."""
     return cast(bool, st.session_state.get("_read_only_domain", False))
