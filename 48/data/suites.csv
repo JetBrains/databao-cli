@@ -1,7 +1,0 @@
-"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
-"","23953","test_databao_build_sqlite","tests.domains","Wed Mar 04 15:09:58 UTC 2026","passed","Wed Mar 04 15:10:22 UTC 2026","","test_sqlite","",""
-"","24720","test_databao_build_postgres","tests.domains","Wed Mar 04 15:08:37 UTC 2026","passed","Wed Mar 04 15:09:02 UTC 2026","","test_postgres","",""
-"","24231","test_databao_build_mysql","tests.domains","Wed Mar 04 15:08:02 UTC 2026","passed","Wed Mar 04 15:08:27 UTC 2026","","test_mysql","",""
-"","17019","test_databao_build_snowflake_datasource_from_init_config","tests.domains","Wed Mar 04 15:09:41 UTC 2026","passed","Wed Mar 04 15:09:58 UTC 2026","","test_snowflake","",""
-"","37760","test_databao_build_snowflake_datasource","tests.domains","Wed Mar 04 15:09:03 UTC 2026","passed","Wed Mar 04 15:09:41 UTC 2026","","test_snowflake","",""
-"","119595","test_databao_build_duckdb","tests.domains","Wed Mar 04 15:05:38 UTC 2026","passed","Wed Mar 04 15:07:38 UTC 2026","","test_duckdb","",""
