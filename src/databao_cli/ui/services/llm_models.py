@@ -21,6 +21,8 @@ def fetch_models(provider_type: str, api_key: str, base_url: str = "") -> list[s
         return _fetch_openai_models(api_key, base_url=base_url)
     if provider_type == "ollama":
         return _fetch_ollama_models(base_url)
+    if provider_type == "anthropic":
+        return _fetch_anthropic_models(api_key)
     return None
 
 
@@ -50,6 +52,20 @@ def _fetch_ollama_models(base_url: str) -> list[str]:
     resp.raise_for_status()
     data = resp.json()
     return sorted(m["name"] for m in data.get("models", []))
+
+
+def _fetch_anthropic_models(api_key: str) -> list[str]:
+    """List available models via the Anthropic /v1/models endpoint."""
+    import anthropic
+
+    client = anthropic.Anthropic(api_key=api_key)
+    response = client.models.list(limit=100)
+
+    chat_prefixes = ("claude-",)
+    all_ids = sorted(m.id for m in response.data)
+
+    filtered = [m for m in all_ids if any(m.startswith(p) for p in chat_prefixes)]
+    return filtered or all_ids
 
 
 def pick_default_model(models: list[str], provider_type: str) -> str:
