@@ -2,10 +2,6 @@
 name = "databao-cli"
 version = "0.1.0"
 description = ""
-authors = [
-    { name = "Maryia Lapatsina", email = "maryia.lapatsina@jetbrains.com" },
-    { name = "Yury Khudyakov", email = "yury.khudyakov@jetbrains.com" }
-]
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
