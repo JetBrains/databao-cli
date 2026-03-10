@@ -1,0 +1,79 @@
+name: publish-pypi-dev
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish-dev:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: pypi
+
+    permissions:
+      id-token: write
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Compute dev version
+        id: version
+        run: |
+          LATEST=$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -1)
+          if [ -z "$LATEST" ]; then
+            BASE="0.0.0"
+          else
+            BASE=${LATEST#v}
+          fi
+          MAJOR=$(echo $BASE | cut -d. -f1)
+          MINOR=$(echo $BASE | cut -d. -f2)
+          PATCH=$(echo $BASE | cut -d. -f3)
+          NEXT="${MAJOR}.${MINOR}.$((PATCH + 1))"
+          N=$(git tag | grep -cE "^v${NEXT}\.dev[0-9]+$" || true)
+          TAG="v${NEXT}.dev$((N + 1))"
+          echo "Computed dev version: ${TAG}"
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+
+      - name: Create and push dev tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ steps.version.outputs.tag }}" \
+            -m "Dev release ${{ steps.version.outputs.tag }}"
+          git push origin "${{ steps.version.outputs.tag }}"
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.9.5"
+          enable-cache: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24.5.0"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.14.0
+
+      - name: Build
+        run: uv build
+
+      # Check that basic features work and we didn't miss to include crucial files
+      - name: Smoke test (wheel)
+        run: uvx --from dist/*.whl databao --help
+      - name: Smoke test (source distribution)
+        run: uvx --from dist/*.tar.gz databao --help
+
+      - name: Publish
+        run: uv publish
