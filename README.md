@@ -37,9 +37,10 @@ pip install databao
    databao init
    ```
 
-1. When prompted, agree to configure a domain and follow the prompts to add data sources.
-   
-   A domain is a dedicated space where data context, context, and agent chats live.
+1. When prompted, agree to configure a domain –
+   a dedicated space where data context, context, and agent chats live.
+
+   Then follow the prompts to add one or several data sources.
 
 1. Build context:
 
@@ -47,13 +48,19 @@ pip install databao
    databao build
    ```
 
-1. Run the Databao app:
+1. Pass your OpenAI API key as an environment variable:
 
    ```bash
-   databao app
+   export OPENAI_API_KEY=<your-key>
+   ```
+   
+1. Run the Databao Agent:
+
+   ```bash
+   databao ask
    ```
 
-1. Click **+ New chat** and ask questions about your data:
+1. Ask questions about your data:
 
    ```text
    # Example questions:
