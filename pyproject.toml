@@ -1,6 +1,6 @@
 [project]
 name = "databao-cli"
-version = "0.1.0"
+dynamic = ["version"]  # Based on the git tag
 description = ""
 readme = "README.md"
 requires-python = ">=3.11"
@@ -39,14 +39,27 @@ pdf = [
 databao = "databao_cli.__main__:cli"
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "uv-dynamic-versioning"]
 build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "uv-dynamic-versioning"
+
+[tool.uv-dynamic-versioning]
+# Use `git tag -a v0.0.0 -m "v0.0.0"` to create a tag.
+vcs = "git"
+style = "pep440"
+fallback-version = "0.0.0"
+bump = true
 
 [tool.hatch.metadata]
 allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/databao_cli"]
+
+[tool.uv]
+cache-keys = [{ file = "pyproject.toml" }, { git = { commit = true, tags = true }}]
 
 [tool.uv.workspace]
 members = ["examples/*"]
