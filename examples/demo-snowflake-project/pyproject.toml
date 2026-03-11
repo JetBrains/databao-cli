@@ -5,11 +5,11 @@ description = "Databao demo project for Snowflake"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "databao-cli",
+    "databao",
 ]
 
 [tool.uv.sources]
-databao-cli = { workspace = true }
+databao = { workspace = true }
 
 [build-system]
 requires = ["hatchling"]
