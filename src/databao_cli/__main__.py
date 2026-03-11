@@ -4,14 +4,6 @@ from pathlib import Path
 import click
 from click import Context
 
-from databao_cli.commands.app import app_impl
-from databao_cli.commands.ask import ask_impl
-from databao_cli.commands.build import build_impl
-from databao_cli.commands.datasource.add_datasource_config import add_datasource_config_interactive_impl
-from databao_cli.commands.datasource.check_datasource_connection import check_datasource_connection_impl
-from databao_cli.commands.init import InitDatabaoProjectError, ProjectDirDoesnotExistError, init_impl
-from databao_cli.commands.mcp import mcp_impl
-from databao_cli.commands.status import status_impl
 from databao_cli.log.logging import configure_logging
 from databao_cli.project.layout import ROOT_DOMAIN, ProjectLayout, find_project
 
@@ -38,6 +30,8 @@ def cli(ctx: Context, project_dir: Path | None) -> None:
 @click.pass_context
 def status(ctx: Context) -> None:
     """Display project status and system-wide information."""
+    from databao_cli.commands.status import status_impl
+
     status_message = status_impl(ctx.obj["project_dir"])
     click.echo(status_message)
 
@@ -46,6 +40,9 @@ def status(ctx: Context) -> None:
 @click.pass_context
 def init(ctx: Context) -> None:
     """Create a new Databao project."""
+    from databao_cli.commands.datasource.add_datasource_config import add_datasource_config_interactive_impl
+    from databao_cli.commands.init import InitDatabaoProjectError, ProjectDirDoesnotExistError, init_impl
+
     project_dir = ctx.obj["project_dir"]
     project_layout: ProjectLayout
     try:
@@ -100,6 +97,8 @@ def add_datasource_config(ctx: Context, domain: str) -> None:
 
     The command will ask all relevant information for that datasource and save it in a chosen Databao domain
     """
+    from databao_cli.commands.datasource.add_datasource_config import add_datasource_config_interactive_impl
+
     project_layout = _get_project_or_exit(ctx.obj["project_dir"])
     add_datasource_config_interactive_impl(project_layout, domain)
 
@@ -119,6 +118,8 @@ def check_datasource_config(ctx: Context, domains: list[str] | None) -> None:
     By default, all declared datasources across all domains in the project will be checked.
     You can explicitely list which domains to validate by using the [DOMAINS] argument.
     """
+    from databao_cli.commands.datasource.check_datasource_connection import check_datasource_connection_impl
+
     project_layout = _get_project_or_exit(ctx.obj["project_dir"])
     check_datasource_connection_impl(project_layout, requested_domains=domains if domains else None)
 
@@ -145,6 +146,8 @@ def build(ctx: Context, domain: str, should_index: bool) -> None:
 
     Internally, this indexes the context to be used by the MCP server and the "retrieve" command.
     """
+    from databao_cli.commands.build import build_impl
+
     project_layout = _get_project_or_exit(ctx.obj["project_dir"])
     results = build_impl(project_layout, domain, should_index)
     click.echo(f"Build complete. Processed {len(results)} datasources.")
@@ -198,6 +201,8 @@ def ask(
         databao ask --model anthropic:claude-sonnet-4-6      # With custom model
         databao ask --no-show-thinking                       # Hide reasoning
     """
+    from databao_cli.commands.ask import ask_impl
+
     ask_impl(ctx, question, one_shot, model, temperature, show_thinking)
 
 
@@ -223,6 +228,8 @@ def app(ctx: click.Context, read_only_domain: bool) -> None:
         databao app --server.headless true
         databao app --read-only-domain
     """
+    from databao_cli.commands.app import app_impl
+
     ctx.obj["read_only_domain"] = read_only_domain
     app_impl(ctx)
 
@@ -262,6 +269,8 @@ def mcp(ctx: click.Context, transport: str, host: str, port: int) -> None:
         databao mcp --transport sse              # SSE on localhost:8765
         databao mcp --transport sse --port 9000  # SSE on custom port
     """
+    from databao_cli.commands.mcp import mcp_impl
+
     mcp_impl(ctx.obj["project_dir"], transport, host, port)
 
 
