@@ -1,3 +1,0 @@
-Found datasource of type "bigquery" with name my_test_bigquery
-Failed to build source at (my_test_bigquery.yaml): Ollama request to /api/embed failed: HTTPConnectionPool(host='127.0.0.1', port=11434): Max retries exceeded with url: /api/embed (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=11434): Failed to establish a new connection: [Errno 111] Connection refused"))
-Build complete. Processed 1 datasources.
