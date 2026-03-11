@@ -105,8 +105,7 @@ def render_agent_settings_page() -> None:
     if chosen_provider == "openai_compat":
         base_url = st.text_input(
             "Base URL",
-            value=existing.base_url,
-            placeholder="http://localhost:8000/v1",
+            value=existing.base_url or "http://localhost:8000/v1",
             help="The base URL of your OpenAI-compatible API server",
         )
     elif chosen_provider == "ollama":
