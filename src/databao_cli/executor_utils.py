@@ -6,6 +6,7 @@ EXECUTOR_TYPES = {
     "lighthouse": "LighthouseExecutor (recommended)",
     "react_duckdb": "ReactDuckDBExecutor (experimental)",
     "dbt": "DbtProjectExecutor (experimental)",
+    "claude_code": "ClaudeCodeExecutor (experimental)",
 }
 
 LLM_PROVIDERS: dict[str, str] = {

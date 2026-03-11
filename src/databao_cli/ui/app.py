@@ -113,11 +113,17 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
 
         kwargs: dict[str, object] = {
             "domain": _domain,
-            "executor_type": executor_type,
             "cache": cache,
         }
         if llm_config is not None:
             kwargs["llm_config"] = llm_config
+
+        if executor_type == "claude_code":
+            from databao.agent.executors import ClaudeCodeExecutor
+
+            kwargs["data_executor"] = ClaudeCodeExecutor()
+        else:
+            kwargs["executor_type"] = executor_type
 
         _agent = create_agent(**kwargs)  # type: ignore[arg-type]
 

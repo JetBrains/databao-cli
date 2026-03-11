@@ -45,9 +45,17 @@ def create_agent_for_tool(
     else:
         llm_config = LLMConfigDirectory.DEFAULT
 
-    return create_agent(
-        domain=domain,
-        llm_config=llm_config,
-        executor_type=executor,
-        cache=cache,
-    )
+    kwargs: dict[str, object] = {
+        "domain": domain,
+        "llm_config": llm_config,
+        "cache": cache,
+    }
+
+    if executor == "claude_code":
+        from databao.agent.executors import ClaudeCodeExecutor
+
+        kwargs["data_executor"] = ClaudeCodeExecutor()
+    else:
+        kwargs["executor_type"] = executor
+
+    return create_agent(**kwargs)  # type: ignore[arg-type]
