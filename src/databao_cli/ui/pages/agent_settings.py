@@ -62,6 +62,15 @@ def render_agent_settings_page() -> None:
             """,
             icon="⚠️",
         )
+    elif selected == "claude_code":
+        st.warning(
+            """
+            **ClaudeCodeExecutor** is experimental.
+            It uses Claude Code as the execution backend for queries.
+            Requires a valid Anthropic API key configured in the LLM settings.
+            """,
+            icon="⚠️",
+        )
 
     if selected != current and st.button("✓ Apply Changes", type="primary", key="apply_executor"):
         st.session_state.executor_type = selected
@@ -82,13 +91,27 @@ def render_agent_settings_page() -> None:
     provider_keys = list(LLM_PROVIDERS.keys())
     current_provider = llm.active_provider if llm.active_provider in provider_keys else "openai"
 
-    chosen_provider = st.selectbox(
-        "Provider",
-        options=provider_keys,
-        index=provider_keys.index(current_provider),
-        format_func=lambda x: LLM_PROVIDERS[x],
-        help="The LLM provider the agent will use",
-    )
+    is_claude_code = st.session_state.get("executor_type", "lighthouse") == "claude_code"
+
+    if is_claude_code:
+        chosen_provider = "anthropic"
+        st.selectbox(
+            "Provider",
+            options=["anthropic"],
+            index=0,
+            format_func=lambda x: LLM_PROVIDERS[x],
+            help="ClaudeCodeExecutor requires the Anthropic provider",
+            disabled=True,
+        )
+        st.caption("🔒 Provider is locked to **Anthropic** when using the ClaudeCodeExecutor.")
+    else:
+        chosen_provider = st.selectbox(
+            "Provider",
+            options=provider_keys,
+            index=provider_keys.index(current_provider),
+            format_func=lambda x: LLM_PROVIDERS[x],
+            help="The LLM provider the agent will use",
+        )
 
     existing = llm.providers.get(chosen_provider, LLMProviderConfig())
 
