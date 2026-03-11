@@ -10,7 +10,7 @@ resolution-markers = [
 
 [manifest]
 members = [
-    "databao-cli",
+    "databao",
     "databao-demo-snowflake-project",
 ]
 
@@ -988,43 +988,7 @@ wheels = [
 ]
 
 [[package]]
-name = "databao-agent"
-version = "0.1.4.dev5"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "databao-context-engine", extra = ["mysql", "postgresql", "snowflake"] },
-    { name = "dbt-core" },
-    { name = "dbt-duckdb" },
-    { name = "diskcache" },
-    { name = "duckdb" },
-    { name = "edaplot-vl" },
-    { name = "jinja2" },
-    { name = "langchain" },
-    { name = "langchain-anthropic" },
-    { name = "langchain-ollama" },
-    { name = "langchain-openai" },
-    { name = "langgraph" },
-    { name = "matplotlib" },
-    { name = "mcp" },
-    { name = "pandas", version = "2.3.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
-    { name = "pandas", version = "2.3.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
-    { name = "pandas-stubs" },
-    { name = "psycopg2-binary" },
-    { name = "pydantic" },
-    { name = "snowflake-sqlalchemy" },
-    { name = "sqlalchemy" },
-    { name = "sqlalchemy-bigquery" },
-    { name = "tabulate" },
-    { name = "watchdog" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/87/3b/0a40816ecaf135b193863e389311c80ec328d44ea6c25d94d082d1fe1cfc/databao_agent-0.1.4.dev5.tar.gz", hash = "sha256:cfc17fa80b77bc28f5570383f8defe37ae38e0def655e76917414a2a3f5479bf", size = 1024015, upload-time = "2026-03-05T16:21:37.339Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/7b/9f/75602c8236ff981d7232c5ea05a14edb327d9e30c328ffd3ca2666350e4c/databao_agent-0.1.4.dev5-py3-none-any.whl", hash = "sha256:3b3e57303b235fad5ef42a457b719a2da088b4fadb02495ef85d7fff6746c355", size = 1062460, upload-time = "2026-03-05T16:21:35.908Z" },
-]
-
-[[package]]
-name = "databao-cli"
-version = "0.1.0"
+name = "databao"
 source = { editable = "." }
 dependencies = [
     { name = "adbc-driver-manager" },
@@ -1094,7 +1058,7 @@ requires-dist = [
     { name = "streamlit", extras = ["snowflake"], specifier = ">=1.53.0" },
     { name = "uuid6", specifier = ">=2024.7.10" },
 ]
-provides-extras = ["mssql", "clickhouse", "athena", "bigquery", "pdf"]
+provides-extras = ["athena", "bigquery", "clickhouse", "mssql", "pdf"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -1112,6 +1076,41 @@ e2e-tests = [
     { name = "python-dotenv", specifier = ">=1.2.1" },
     { name = "pyyaml", specifier = ">=6.0.3" },
     { name = "testcontainers", specifier = ">=4.14.1" },
+]
+
+[[package]]
+name = "databao-agent"
+version = "0.1.4.dev5"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "databao-context-engine", extra = ["mysql", "postgresql", "snowflake"] },
+    { name = "dbt-core" },
+    { name = "dbt-duckdb" },
+    { name = "diskcache" },
+    { name = "duckdb" },
+    { name = "edaplot-vl" },
+    { name = "jinja2" },
+    { name = "langchain" },
+    { name = "langchain-anthropic" },
+    { name = "langchain-ollama" },
+    { name = "langchain-openai" },
+    { name = "langgraph" },
+    { name = "matplotlib" },
+    { name = "mcp" },
+    { name = "pandas", version = "2.3.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "pandas", version = "2.3.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "pandas-stubs" },
+    { name = "psycopg2-binary" },
+    { name = "pydantic" },
+    { name = "snowflake-sqlalchemy" },
+    { name = "sqlalchemy" },
+    { name = "sqlalchemy-bigquery" },
+    { name = "tabulate" },
+    { name = "watchdog" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/87/3b/0a40816ecaf135b193863e389311c80ec328d44ea6c25d94d082d1fe1cfc/databao_agent-0.1.4.dev5.tar.gz", hash = "sha256:cfc17fa80b77bc28f5570383f8defe37ae38e0def655e76917414a2a3f5479bf", size = 1024015, upload-time = "2026-03-05T16:21:37.339Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/7b/9f/75602c8236ff981d7232c5ea05a14edb327d9e30c328ffd3ca2666350e4c/databao_agent-0.1.4.dev5-py3-none-any.whl", hash = "sha256:3b3e57303b235fad5ef42a457b719a2da088b4fadb02495ef85d7fff6746c355", size = 1062460, upload-time = "2026-03-05T16:21:35.908Z" },
 ]
 
 [[package]]
@@ -1165,11 +1164,11 @@ name = "databao-demo-snowflake-project"
 version = "0.1.0"
 source = { editable = "examples/demo-snowflake-project" }
 dependencies = [
-    { name = "databao-cli" },
+    { name = "databao" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "databao-cli", editable = "." }]
+requires-dist = [{ name = "databao", editable = "." }]
 
 [[package]]
 name = "dbt-adapters"
@@ -6196,6 +6195,8 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/0f/8b/4b61d6e13f7108f36910df9ab4b58fd389cc2520d54d81b88660804aad99/torch-2.10.0-2-cp311-none-macosx_11_0_arm64.whl", hash = "sha256:418997cb02d0a0f1497cf6a09f63166f9f5df9f3e16c8a716ab76a72127c714f", size = 79423467, upload-time = "2026-02-10T21:44:48.711Z" },
     { url = "https://files.pythonhosted.org/packages/d3/54/a2ba279afcca44bbd320d4e73675b282fcee3d81400ea1b53934efca6462/torch-2.10.0-2-cp312-none-macosx_11_0_arm64.whl", hash = "sha256:13ec4add8c3faaed8d13e0574f5cd4a323c11655546f91fbe6afa77b57423574", size = 79498202, upload-time = "2026-02-10T21:44:52.603Z" },
     { url = "https://files.pythonhosted.org/packages/ec/23/2c9fe0c9c27f7f6cb865abcea8a4568f29f00acaeadfc6a37f6801f84cb4/torch-2.10.0-2-cp313-none-macosx_11_0_arm64.whl", hash = "sha256:e521c9f030a3774ed770a9c011751fb47c4d12029a3d6522116e48431f2ff89e", size = 79498254, upload-time = "2026-02-10T21:44:44.095Z" },
+    { url = "https://files.pythonhosted.org/packages/f4/39/590742415c3030551944edc2ddc273ea1fdfe8ffb2780992e824f1ebee98/torch-2.10.0-3-cp314-cp314-manylinux_2_28_x86_64.whl", hash = "sha256:b1d5e2aba4eb7f8e87fbe04f86442887f9167a35f092afe4c237dfcaaef6e328", size = 915632474, upload-time = "2026-03-11T14:15:13.666Z" },
+    { url = "https://files.pythonhosted.org/packages/b6/8e/34949484f764dde5b222b7fe3fede43e4a6f0da9d7f8c370bb617d629ee2/torch-2.10.0-3-cp314-cp314t-manylinux_2_28_x86_64.whl", hash = "sha256:0228d20b06701c05a8f978357f657817a4a63984b0c90745def81c18aedfa591", size = 915523882, upload-time = "2026-03-11T14:14:46.311Z" },
     { url = "https://files.pythonhosted.org/packages/78/89/f5554b13ebd71e05c0b002f95148033e730d3f7067f67423026cc9c69410/torch-2.10.0-cp311-cp311-manylinux_2_28_aarch64.whl", hash = "sha256:3282d9febd1e4e476630a099692b44fdc214ee9bf8ee5377732d9d9dfe5712e4", size = 145992610, upload-time = "2026-01-21T16:25:26.327Z" },
     { url = "https://files.pythonhosted.org/packages/ae/30/a3a2120621bf9c17779b169fc17e3dc29b230c29d0f8222f499f5e159aa8/torch-2.10.0-cp311-cp311-manylinux_2_28_x86_64.whl", hash = "sha256:a2f9edd8dbc99f62bc4dfb78af7bf89499bca3d753423ac1b4e06592e467b763", size = 915607863, upload-time = "2026-01-21T16:25:06.696Z" },
     { url = "https://files.pythonhosted.org/packages/6f/3d/c87b33c5f260a2a8ad68da7147e105f05868c281c63d65ed85aa4da98c66/torch-2.10.0-cp311-cp311-win_amd64.whl", hash = "sha256:29b7009dba4b7a1c960260fc8ac85022c784250af43af9fb0ebafc9883782ebd", size = 113723116, upload-time = "2026-01-21T16:25:21.916Z" },
