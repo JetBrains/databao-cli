@@ -1,6 +1,7 @@
 import os
 
 import click
+import questionary
 from databao_context_engine import (
     DatabaoContextDomainManager,
     DatabaoContextPluginLoader,
@@ -10,6 +11,19 @@ from databao_context_engine import (
 from databao_cli.commands.context_engine_cli import ClickUserInputCallback
 from databao_cli.commands.datasource.check_datasource_connection import print_connection_check_results
 from databao_cli.project.layout import ProjectLayout
+
+DISPLAY_NAMES = {
+    "athena": "Amazon Athena",
+    "bigquery": "BigQuery",
+    "clickhouse": "ClickHouse",
+    "duckdb": "DuckDB",
+    "mssql": "Microsoft SQL Server",
+    "mysql": "MySQL",
+    "parquet": "Parquet",
+    "postgres": "PostgreSQL",
+    "snowflake": "Snowflake",
+    "sqlite": "SQLite",
+}
 
 
 def add_datasource_config_interactive_impl(project_layout: ProjectLayout, domain: str) -> None:
@@ -47,11 +61,17 @@ def add_datasource_config_interactive_impl(project_layout: ProjectLayout, domain
 
 def _ask_for_datasource_type(supported_datasource_types: set[DatasourceType]) -> DatasourceType:
     all_datasource_types = sorted([ds_type.full_type for ds_type in supported_datasource_types])
-    config_type = click.prompt(
+    choices = [
+        questionary.Choice(title=DISPLAY_NAMES.get(datasource_type, datasource_type), value=datasource_type)
+        for datasource_type in all_datasource_types
+    ]
+    config_type = questionary.select(
         "What type of datasource do you want to add?",
-        type=click.Choice(all_datasource_types),
+        choices=choices,
         default=all_datasource_types[0] if len(all_datasource_types) == 1 else None,
-    )
+    ).ask()
+    if config_type is None:
+        raise click.Abort()
     click.echo(f"Selected type: {config_type}")
 
     return DatasourceType(full_type=config_type)
