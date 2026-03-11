@@ -9,7 +9,7 @@ on:
 jobs:
   e2e-tests-ubuntu:
     name: "Run e2e tests on ubuntu"
-    runs-on: sre-eqx-kata
+    runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write
