@@ -1,5 +1,5 @@
 [project]
-name = "databao-cli"
+name = "databao"
 dynamic = ["version"]  # Based on the git tag
 description = ""
 readme = "README.md"
