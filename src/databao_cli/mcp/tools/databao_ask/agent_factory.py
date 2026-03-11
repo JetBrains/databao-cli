@@ -37,7 +37,9 @@ def create_agent_for_tool(
 
     llm_config: LLMConfig
     if model:
-        llm_config = LLMConfig(name=model, temperature=temperature)
+        from databao_cli.executor_utils import build_llm_config
+
+        llm_config = build_llm_config(model, temperature=temperature)
     elif temperature != 0.0:
         llm_config = LLMConfig(name=LLMConfigDirectory.DEFAULT.name, temperature=temperature)
     else:
