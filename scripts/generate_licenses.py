@@ -15,7 +15,7 @@ Requirements:
     - pip-licenses (installed automatically via uv --with flag)
 
 Output File:
-    - databao-cli-third-party-list.csv - CSV report with all Python dependencies
+    - databao-third-party-list.csv - CSV report with all Python dependencies
 
 The CSV includes columns for Name, Version, License, Author, and URL.
 """
@@ -88,7 +88,7 @@ def generate_python_licenses(output_file: Path, no_confirm: bool = False) -> boo
     base_dir = script_dir.parent if script_dir.name == "scripts" else script_dir
 
     # Temporary intermediate file
-    temp_file = base_dir / ".databao-cli-third-party-list-temp.csv"
+    temp_file = base_dir / ".databao-third-party-list-temp.csv"
 
     # First sync dependencies
     sync_cmd = [
@@ -125,7 +125,7 @@ def generate_python_licenses(output_file: Path, no_confirm: bool = False) -> boo
             reader = csv.DictReader(f)
             for row in reader:
                 # Filter out the project itself - only include actual third-party dependencies
-                if row["Name"].lower() == "databao-cli":
+                if row["Name"].lower() == "databao":
                     continue
 
                 filtered_licenses.append(row)
@@ -179,7 +179,7 @@ def main() -> int:
     base_dir = script_dir.parent if script_dir.name == "scripts" else script_dir
 
     # Final output file
-    output_file = base_dir / "databao-cli-third-party-list.csv"
+    output_file = base_dir / "databao-third-party-list.csv"
 
     # Generate Python licenses
     if not generate_python_licenses(output_file, no_confirm=args.no_confirm):

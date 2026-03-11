@@ -1,0 +1,40 @@
+name: publish-pypi
+
+on:
+  push:
+    tags:
+      # Publish on stable version tags only, e.g., v0.1.0
+      - 'v[0-9]*.[0-9]*.[0-9]*'
+    tags-ignore:
+      - 'v*.dev*'
+jobs:
+  publish-pypi:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: pypi
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Set up project
+        uses: ./.github/actions/setup-project
+
+      - name: Build
+        run: uv build
+
+      # Check that basic features work and we didn't miss to include crucial files
+      - name: Smoke test (wheel)
+        run: uvx --from dist/*.whl databao --help
+      - name: Smoke test (source distribution)
+        run: uvx --from dist/*.tar.gz databao --help
+
+      - name: Publish
+        run: uv publish
