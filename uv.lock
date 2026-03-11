@@ -1082,12 +1082,12 @@ requires-dist = [
     { name = "adbc-driver-snowflake", specifier = ">=1.10.0" },
     { name = "click", specifier = ">=8.2.1,<9.0.0" },
     { name = "databao-agent", specifier = "~=0.1.4.dev5" },
-    { name = "databao-context-engine", extras = ["athena"], marker = "extra == 'athena'", directory = "../databao-context-engine" },
-    { name = "databao-context-engine", extras = ["bigquery"], marker = "extra == 'bigquery'", directory = "../databao-context-engine" },
-    { name = "databao-context-engine", extras = ["clickhouse"], marker = "extra == 'clickhouse'", directory = "../databao-context-engine" },
-    { name = "databao-context-engine", extras = ["mssql"], marker = "extra == 'mssql'", directory = "../databao-context-engine" },
-    { name = "databao-context-engine", extras = ["pdf"], marker = "extra == 'pdf'", directory = "../databao-context-engine" },
-    { name = "databao-context-engine", extras = ["snowflake"], directory = "../databao-context-engine" },
+    { name = "databao-context-engine", extras = ["athena"], marker = "extra == 'athena'" },
+    { name = "databao-context-engine", extras = ["bigquery"], marker = "extra == 'bigquery'" },
+    { name = "databao-context-engine", extras = ["clickhouse"], marker = "extra == 'clickhouse'" },
+    { name = "databao-context-engine", extras = ["mssql"], marker = "extra == 'mssql'" },
+    { name = "databao-context-engine", extras = ["pdf"], marker = "extra == 'pdf'" },
+    { name = "databao-context-engine", extras = ["snowflake"], specifier = "~=0.6.0" },
     { name = "fastmcp", specifier = ">=2.0.0" },
     { name = "nh3", specifier = ">=0.2.15" },
     { name = "prettytable", specifier = ">=3.10.0" },
@@ -1119,7 +1119,7 @@ e2e-tests = [
 [[package]]
 name = "databao-context-engine"
 version = "0.6.0"
-source = { directory = "../databao-context-engine" }
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
     { name = "duckdb" },
@@ -1130,6 +1130,10 @@ dependencies = [
     { name = "pyyaml" },
     { name = "requests" },
     { name = "sqlparse" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/14/e4/82bfaeac20a4cc3b0d3f35bf2b9e1107a6430c199b272ce015476e6541c6/databao_context_engine-0.6.0.tar.gz", hash = "sha256:cb18d8a29e38ea55223695f66986c9cd79b013c89d162802787ebde9a2b4e864", size = 108324, upload-time = "2026-03-04T12:45:35.37Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/04/dc/446305308f742bfa726308da633cf8bbee2a792a597d07582a0dc3b39013/databao_context_engine-0.6.0-py3-none-any.whl", hash = "sha256:eeb47c6105304c2391b232e19aeb19feb9c84806086d36c4f3abbf5d624a74f9", size = 176929, upload-time = "2026-03-04T12:45:33.899Z" },
 ]
 
 [package.optional-dependencies]
@@ -1156,42 +1160,6 @@ postgresql = [
 ]
 snowflake = [
     { name = "snowflake-connector-python" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "asyncpg", marker = "extra == 'postgresql'", specifier = ">=0.31.0" },
-    { name = "click", specifier = ">=8.3.0" },
-    { name = "clickhouse-connect", marker = "extra == 'clickhouse'", specifier = ">=0.10.0" },
-    { name = "docling", marker = "extra == 'pdf'", specifier = ">=2.70.0" },
-    { name = "duckdb", specifier = ">=1.4.3" },
-    { name = "google-cloud-bigquery", marker = "extra == 'bigquery'", specifier = ">=3.40.1" },
-    { name = "jinja2", specifier = ">=3.1.6" },
-    { name = "mcp", specifier = ">=1.23.3" },
-    { name = "mssql-python", marker = "extra == 'mssql'", specifier = ">=1.0.0" },
-    { name = "pyarrow", specifier = ">=19.0.1" },
-    { name = "pyathena", marker = "extra == 'athena'", specifier = ">=3.25.0" },
-    { name = "pydantic", specifier = ">=2.12.4" },
-    { name = "pymysql", marker = "extra == 'mysql'", specifier = ">=1.1.2" },
-    { name = "pyyaml", specifier = ">=6.0.3" },
-    { name = "requests", specifier = ">=2.32.5" },
-    { name = "snowflake-connector-python", marker = "extra == 'snowflake'", specifier = ">=4.2.0" },
-    { name = "sqlparse", specifier = ">=0.5.5" },
-]
-provides-extras = ["mssql", "clickhouse", "athena", "snowflake", "bigquery", "mysql", "postgresql", "pdf"]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "asyncpg-stubs", specifier = ">=0.31.1" },
-    { name = "mypy", specifier = ">=1.18.2" },
-    { name = "pre-commit", specifier = ">=4.5.1" },
-    { name = "pytest", specifier = ">=9.0.2" },
-    { name = "pytest-mock", specifier = ">=3.15.1" },
-    { name = "pytest-unordered", specifier = ">=0.7.0" },
-    { name = "ruff", specifier = ">=0.14.4" },
-    { name = "testcontainers", specifier = "==4.12.0" },
-    { name = "types-pymysql", specifier = ">=1.1.0.20250916" },
-    { name = "types-pyyaml", specifier = ">=6.0.12.20250915" },
 ]
 
 [[package]]
