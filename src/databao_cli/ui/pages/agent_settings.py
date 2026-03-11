@@ -123,7 +123,11 @@ def render_agent_settings_page() -> None:
     new_cfg = LLMProviderConfig(api_key=api_key, model=model, base_url=base_url)
     new_providers = dict(llm.providers)
     new_providers[chosen_provider] = new_cfg
-    new_llm = LLMSettings(active_provider=chosen_provider, providers=new_providers)
+    new_llm = LLMSettings(
+        active_provider=chosen_provider,
+        providers=new_providers,
+        cached_models=llm.cached_models,
+    )
 
     changed = (new_llm.active_provider != llm.active_provider) or (new_cfg != existing)
 

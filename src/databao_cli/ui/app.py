@@ -152,13 +152,16 @@ def _build_llm_config() -> LLMConfig | None:
     if env_var and config.api_key:
         os.environ[env_var] = config.api_key
 
-    if provider_type == "openai_compat" and config.base_url:
-        os.environ["OPENAI_API_BASE"] = config.base_url
-
     if provider_type == "ollama" and config.base_url:
         os.environ["OLLAMA_HOST"] = config.base_url
 
-    return LLMConfig(name=config.model)
+    from databao_cli.executor_utils import build_llm_config
+
+    return build_llm_config(
+        config.model,
+        provider=provider_type,
+        base_url=config.base_url,
+    )
 
 
 def _clear_all_chat_threads() -> None:

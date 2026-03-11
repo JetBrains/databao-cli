@@ -1,5 +1,7 @@
 """Shared executor type definitions."""
 
+from databao.agent.configs.llm import LLMConfig
+
 EXECUTOR_TYPES = {
     "lighthouse": "LighthouseExecutor (recommended)",
     "react_duckdb": "ReactDuckDBExecutor (experimental)",
@@ -39,3 +41,32 @@ LLM_PROVIDER_MODELS: dict[str, list[str]] = {
     ],
     "openai_compat": [],
 }
+
+
+def build_llm_config(
+    model: str,
+    *,
+    provider: str = "",
+    temperature: float = 0.0,
+    base_url: str = "",
+) -> LLMConfig:
+    """Build an LLMConfig with correct provider prefix and provider-specific options.
+
+    Handles:
+    - Prefixing Ollama model names with ``ollama:`` so LangChain routes correctly.
+    - Setting ``api_base_url`` for OpenAI-compatible endpoints.
+    - Disabling ``ollama_pull_model`` (the UI already verifies model availability).
+    """
+
+    name = model
+    kwargs: dict[str, object] = {}
+
+    if provider == "ollama":
+        if not name.startswith("ollama:"):
+            name = f"ollama:{name}"
+        kwargs["ollama_pull_model"] = False
+
+    if provider == "openai_compat" and base_url:
+        kwargs["api_base_url"] = base_url
+
+    return LLMConfig(name=name, temperature=temperature, **kwargs)
