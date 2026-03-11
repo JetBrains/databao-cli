@@ -263,7 +263,7 @@ def _model_placeholder(provider_type: str) -> str:
     """Return a helpful placeholder for the model input based on provider type."""
     placeholders: dict[str, str] = {
         "openai": "gpt-5-mini",
-        "anthropic": "claude-sonnet-4-6-20250217",
+        "anthropic": "claude-sonnet-4-6",
         "ollama": "qwen3:8b",
         "openai_compat": "model-name-on-server",
     }
