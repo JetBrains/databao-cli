@@ -2,20 +2,22 @@
 
 from __future__ import annotations
 
+import os
+
 import streamlit as st
 
 from databao_cli.executor_utils import EXECUTOR_TYPES, LLM_PROVIDER_MODELS, LLM_PROVIDERS
 from databao_cli.ui.app import _clear_all_chat_threads
 from databao_cli.ui.components.status import AppStatus, set_status
-from databao_cli.ui.models.settings import LLMProviderConfig, LLMSettings
+from databao_cli.ui.models.settings import _ENV_VAR_MAP, LLMProviderConfig, LLMSettings
 
 
-def render_agent_settings_page() -> None:
+def render_agent_settings_page(*, auto_apply: bool = False) -> None:
     """Render the Agent Settings page."""
-    st.title("Agent Settings")
-    st.markdown("Configure the AI agent behavior and execution engine.")
-
-    st.markdown("---")
+    if not auto_apply:
+        st.title("Agent Settings")
+        st.markdown("Configure the AI agent behavior and execution engine.")
+        st.markdown("---")
 
     st.subheader("⚙️ Execution Engine")
 
@@ -71,13 +73,17 @@ def render_agent_settings_page() -> None:
             icon="💡",
         )
 
-    if selected != current and st.button("✓ Apply Changes", type="primary", key="apply_executor"):
-        st.session_state.executor_type = selected
-        st.session_state.agent = None
-        _clear_all_chat_threads()
-        set_status(AppStatus.INITIALIZING, "Applying executor change...")
-        st.success(f"Executor changed to {EXECUTOR_TYPES[selected]}")
-        st.rerun()
+    if selected != current:
+        if auto_apply:
+            # Always sync — even if user kept the default executor.
+            st.session_state.executor_type = selected
+        elif selected != current and st.button("✓ Apply Changes", type="primary", key="apply_executor"):
+            st.session_state.executor_type = selected
+            st.session_state.agent = None
+            _clear_all_chat_threads()
+            set_status(AppStatus.INITIALIZING, "Applying executor change...")
+            st.success(f"Executor changed to {EXECUTOR_TYPES[selected]}")
+            st.rerun()
 
     st.markdown("---")
 
@@ -116,11 +122,14 @@ def render_agent_settings_page() -> None:
 
     api_key = ""
     if chosen_provider not in ("ollama",):
+        env_var = _ENV_VAR_MAP.get(chosen_provider, "")
+        has_env_key = bool(os.environ.get(env_var))
+        label = f"API key (optional — using `{env_var}`)" if has_env_key else "API key"
         api_key = st.text_input(
-            "API key",
+            label,
             value=existing.api_key,
             type="password",
-            help="Stored locally, sent only to the provider",
+            help="Stored locally, sent only to the provider. Leave empty to use the key from your environment variable.",
         )
 
     base_url = ""
@@ -150,20 +159,43 @@ def render_agent_settings_page() -> None:
         cached_models=llm.cached_models,
     )
 
-    changed = (new_llm.active_provider != llm.active_provider) or (new_cfg != existing)
+    if auto_apply:
+        # Always sync form state → session state so that
+        # mark_welcome_completed() persists the correct values,
+        # even if the user never touched the defaults.
+        st.session_state.llm_settings = new_llm
+        st.session_state.executor_type = selected
+    else:
+        changed = (new_llm.active_provider != llm.active_provider) or (new_cfg != existing)
 
-    if changed and st.button("✓ Apply Changes", type="primary", key="apply_llm"):
-        errors = _validate_provider(chosen_provider, new_cfg)
-        if errors:
-            for err in errors:
-                st.error(err)
-        else:
-            st.session_state.llm_settings = new_llm
-            st.session_state.agent = None
-            _clear_all_chat_threads()
-            set_status(AppStatus.INITIALIZING, "Applying LLM change...")
-            st.success(f"LLM provider changed to {LLM_PROVIDERS[chosen_provider]}")
-            st.rerun()
+        if changed and st.button("✓ Apply Changes", type="primary", key="apply_llm"):
+            errors = _validate_provider(chosen_provider, new_cfg)
+            if errors:
+                for err in errors:
+                    st.error(err)
+            else:
+                st.session_state.llm_settings = new_llm
+                st.session_state.agent = None
+                _clear_all_chat_threads()
+                set_status(AppStatus.INITIALIZING, "Applying LLM change...")
+                st.success(f"LLM provider changed to {LLM_PROVIDERS[chosen_provider]}")
+                st.rerun()
+
+
+def _persist_current_settings() -> None:
+    """Persist the current executor + LLM settings to disk.
+
+    Called by auto_apply mode so that settings survive the transition
+    from setup wizard to normal app mode (where _load_persisted_state
+    reads from disk).
+    """
+    from databao_cli.ui.services.settings_persistence import get_or_create_settings, save_settings
+
+    settings = get_or_create_settings()
+    settings.agent.executor_type = st.session_state.get("executor_type", "claude_code")
+    llm: LLMSettings = st.session_state.get("llm_settings", LLMSettings())
+    settings.agent.llm = llm
+    save_settings(settings)
 
 
 def _render_test_connection(provider_type: str, api_key: str, base_url: str) -> None:
@@ -272,8 +304,10 @@ def _validate_provider(provider_type: str, cfg: LLMProviderConfig) -> list[str]:
     if not cfg.model:
         errors.append("**Model** is required.")
 
-    if provider_type in ("openai", "anthropic") and not cfg.api_key:
-        errors.append("**API key** is required for this provider.")
+    if provider_type in ("openai", "anthropic"):
+        env_var = _ENV_VAR_MAP.get(provider_type, "")
+        if not cfg.api_key and not os.environ.get(env_var):
+            errors.append(f"**API key** is required (or set `{env_var}` in your environment).")
 
     if provider_type == "openai_compat" and not cfg.base_url:
         errors.append("**Base URL** is required for an OpenAI-compatible provider.")

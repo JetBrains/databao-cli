@@ -1,9 +1,16 @@
 """Settings models for app configuration persistence."""
 
+import os
 from dataclasses import dataclass, field
 from typing import Any
 
 import yaml
+
+_ENV_VAR_MAP: dict[str, str] = {
+    "openai": "OPENAI_API_KEY",
+    "anthropic": "ANTHROPIC_API_KEY",
+    "openai_compat": "OPENAI_API_KEY",
+}
 
 
 @dataclass
@@ -13,11 +20,6 @@ class LLMProviderConfig:
     api_key: str = ""
     model: str = ""
     base_url: str = ""
-
-    @property
-    def is_configured(self, provider_type: str = "") -> bool:
-        """Return True when the minimum required fields are filled in."""
-        return bool(self.model)
 
 
 @dataclass
@@ -43,7 +45,8 @@ class LLMSettings:
             return False
         if self.active_provider in ("ollama", "openai_compat"):
             return bool(config.model and config.base_url)
-        return bool(config.api_key and config.model)
+        has_key = bool(config.api_key) or bool(os.environ.get(_ENV_VAR_MAP.get(self.active_provider, "")))
+        return bool(has_key and config.model)
 
 
 @dataclass

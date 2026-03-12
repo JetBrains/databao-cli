@@ -139,6 +139,7 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
 
 def _build_llm_config() -> LLMConfig | None:
     """Build an LLMConfig from session-state LLM settings, or None for defaults."""
+    from databao_cli.ui.models.settings import _ENV_VAR_MAP
 
     llm: LLMSettings = st.session_state.get("llm_settings", LLMSettings())
 
@@ -149,12 +150,7 @@ def _build_llm_config() -> LLMConfig | None:
     assert config is not None
     provider_type = llm.active_provider
 
-    env_var_map: dict[str, str] = {
-        "openai": "OPENAI_API_KEY",
-        "anthropic": "ANTHROPIC_API_KEY",
-        "openai_compat": "OPENAI_API_KEY",
-    }
-    env_var = env_var_map.get(provider_type)
+    env_var = _ENV_VAR_MAP.get(provider_type)
     if env_var and config.api_key:
         os.environ[env_var] = config.api_key
 
@@ -218,14 +214,21 @@ def _load_welcome_completed(project: ProjectLayout | None) -> bool:
 
 
 def mark_welcome_completed() -> None:
-    """Persist the welcome_completed flag to settings on disk.
+    """Persist the welcome_completed flag and current agent settings to disk.
 
-    Called when the user finishes the setup wizard.
+    Called when the user finishes the setup wizard. Ensures that executor
+    type and LLM configuration (provider, model, api key, etc.) chosen
+    during setup are saved, even if the user didn't change them from defaults
+    (which means auto_apply never triggered).
     """
+    from databao_cli.ui.models.settings import LLMSettings
     from databao_cli.ui.services.settings_persistence import get_or_create_settings, save_settings
 
     settings = get_or_create_settings()
     settings.welcome_completed = True
+    settings.agent.executor_type = st.session_state.get("executor_type", "claude_code")
+    llm: LLMSettings = st.session_state.get("llm_settings", LLMSettings())
+    settings.agent.llm = llm
     save_settings(settings)
     st.session_state.welcome_completed = True
 
