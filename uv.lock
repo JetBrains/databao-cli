@@ -1061,7 +1061,7 @@ requires-dist = [
     { name = "adbc-driver-manager", specifier = ">=1.10.0" },
     { name = "adbc-driver-snowflake", specifier = ">=1.10.0" },
     { name = "click", specifier = ">=8.2.1,<9.0.0" },
-    { name = "databao-agent", specifier = "~=0.1.4.dev8" },
+    { name = "databao-agent", specifier = "~=0.2.0" },
     { name = "databao-context-engine", extras = ["athena"], marker = "extra == 'athena'" },
     { name = "databao-context-engine", extras = ["bigquery"], marker = "extra == 'bigquery'" },
     { name = "databao-context-engine", extras = ["clickhouse"], marker = "extra == 'clickhouse'" },
@@ -1098,7 +1098,7 @@ e2e-tests = [
 
 [[package]]
 name = "databao-agent"
-version = "0.1.4.dev8"
+version = "0.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "claude-agent-sdk" },
@@ -1127,9 +1127,9 @@ dependencies = [
     { name = "tabulate" },
     { name = "watchdog" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e4/c0/0f8a0cd0ca27d36b251bc814ab1d85cef5d9bffe726594e8673b8bc200a2/databao_agent-0.1.4.dev8.tar.gz", hash = "sha256:0f4fa37b4484c65849746f9aaf47529748778b0abf511a38a42cfbd22f7663fc", size = 1031933, upload-time = "2026-03-11T20:02:47.983Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/02/d4/4879100915a4b43b567b2522d5a44635de3c8f8cab24a9fb861343cb4ec4/databao_agent-0.2.0.tar.gz", hash = "sha256:9f4e86c9affcae37fd47a4abcc182a4a0e6b2a08a6a4658887fd33b6b08ecfbc", size = 1031892, upload-time = "2026-03-12T13:09:01.207Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/db/2b/53df19ae5065898c88e7fc53119b8c842525e34ec0764e3d27628b05c69b/databao_agent-0.1.4.dev8-py3-none-any.whl", hash = "sha256:00ea47f86c257b4085e47eea2a31936ae15fbc66b3d7d29b0544ed2c4d4434c5", size = 1072813, upload-time = "2026-03-11T20:02:46.326Z" },
+    { url = "https://files.pythonhosted.org/packages/46/81/754413b4d56e7e2f9ab66f626de99f27bba4a7c47f220e50dffb1541f6c7/databao_agent-0.2.0-py3-none-any.whl", hash = "sha256:63417d2b7cffb81d23f27f52fa89f731499c8a53ea72f48e90052ca5a694151a", size = 1072737, upload-time = "2026-03-12T13:08:59.799Z" },
 ]
 
 [[package]]
