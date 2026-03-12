@@ -1134,7 +1134,7 @@ wheels = [
 
 [[package]]
 name = "databao-context-engine"
-version = "0.6.0"
+version = "0.6.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -1147,9 +1147,9 @@ dependencies = [
     { name = "requests" },
     { name = "sqlparse" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/14/e4/82bfaeac20a4cc3b0d3f35bf2b9e1107a6430c199b272ce015476e6541c6/databao_context_engine-0.6.0.tar.gz", hash = "sha256:cb18d8a29e38ea55223695f66986c9cd79b013c89d162802787ebde9a2b4e864", size = 108324, upload-time = "2026-03-04T12:45:35.37Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/62/53/6db5c176cf7c3a5df575fa8800477a0a48d320709e398f4d5ba0dd20c65d/databao_context_engine-0.6.2.tar.gz", hash = "sha256:cd0d816e4ca4e32270bdb8346dbab76b4ac3e2a0c41401225974de2a8167c60e", size = 119996, upload-time = "2026-03-12T11:54:32.965Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/04/dc/446305308f742bfa726308da633cf8bbee2a792a597d07582a0dc3b39013/databao_context_engine-0.6.0-py3-none-any.whl", hash = "sha256:eeb47c6105304c2391b232e19aeb19feb9c84806086d36c4f3abbf5d624a74f9", size = 176929, upload-time = "2026-03-04T12:45:33.899Z" },
+    { url = "https://files.pythonhosted.org/packages/12/fe/74957094a60f047e2c10c7cb2d34ff0c41a42802b5ef2742654e405932dd/databao_context_engine-0.6.2-py3-none-any.whl", hash = "sha256:33bfd668b9bdb9dda80596f248a38ac538a04d1093161ec4d4b8f9e0208d7ee4", size = 189234, upload-time = "2026-03-12T11:54:31.883Z" },
 ]
 
 [package.optional-dependencies]
