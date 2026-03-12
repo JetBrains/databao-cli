@@ -4,10 +4,6 @@ import os
 import sys
 from pathlib import Path
 
-# #region agent log
-print("[DEBUG-824900] app.py module loading started", flush=True)
-# #endregion
-
 import streamlit as st
 
 from databao_cli.ui.app import main
@@ -75,10 +71,6 @@ def _load_snowflake_secrets() -> None:
         except Exception:
             logger.warning("Failed to load secret '%s'", secret_name, exc_info=True)
 
-
-# #region agent log
-print("[DEBUG-824900] app.py starting initialization (imports succeeded)", flush=True)
-# #endregion
 
 _ensure_adbc_driver()
 if _is_running_in_snowflake():
