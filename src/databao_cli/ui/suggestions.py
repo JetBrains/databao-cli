@@ -6,6 +6,7 @@ from concurrent.futures import TimeoutError as FuturesTimeoutError
 from typing import TYPE_CHECKING
 
 import streamlit as st
+from databao.duckdb import describe_duckdb_schema  # type: ignore[import-untyped]
 from langchain_core.messages import HumanMessage, SystemMessage
 from pydantic import BaseModel, Field
 
@@ -40,9 +41,27 @@ class SuggestedQuestions(BaseModel):
     )
 
 
+def _get_duckdb_schema(agent: "Agent") -> str | None:
+    """Try to extract the DuckDB schema from the agent's executor."""
+    conn = getattr(agent.executor, "_duckdb_connection", None)
+    if conn is None:
+        return None
+    try:
+        schema: str = describe_duckdb_schema(conn)
+        if schema and schema != "(no base tables found)":
+            return schema
+    except Exception:
+        logger.debug("Failed to describe DuckDB schema for suggestions", exc_info=True)
+    return None
+
+
 def _build_context_from_sources(agent: "Agent") -> str:
     """Extract schema/context information from agent sources."""
     context_parts: list[str] = []
+
+    db_schema = _get_duckdb_schema(agent)
+    if db_schema:
+        context_parts.append(f"Database schema:\n{db_schema}")
 
     for name, db_source in agent.dbs.items():
         if db_source.description:
