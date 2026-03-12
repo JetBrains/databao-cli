@@ -1,0 +1,358 @@
+version: 2
+sources:
+- name: shopify_analytics
+  schema: main
+  tables:
+  - name: orders
+    columns:
+    - name: id
+      description: Unique order ID
+      meta:
+        type: integer
+        unique_values: 48203
+        null_pct: 0.0
+    - name: customer_id
+      description: Reference to customer
+      meta:
+        type: integer
+        unique_values: 31847
+        null_pct: 1.2
+    - name: created_at
+      description: Order creation timestamp
+      meta:
+        type: timestamp
+        unique_values: 48189
+        null_pct: 0.0
+    - name: total_price
+      description: Total order value including tax
+      meta:
+        type: float
+        unique_values: 12430
+        null_pct: 0.0
+    - name: subtotal_price
+      description: Order value before tax and shipping
+      meta:
+        type: float
+        unique_values: 11980
+        null_pct: 0.0
+    - name: financial_status
+      description: Payment status (paid, refunded, pending)
+      meta:
+        type: varchar
+        unique_values: 5
+        null_pct: 0.0
+    - name: fulfillment_status
+      description: Fulfillment status
+      meta:
+        type: varchar
+        unique_values: 4
+        null_pct: 3.1
+    - name: currency
+      description: Currency code
+      meta:
+        type: varchar
+        unique_values: 12
+        null_pct: 0.0
+    - name: email
+      description: Customer email at time of order
+      meta:
+        type: varchar
+        unique_values: 30112
+        null_pct: 2.4
+  - name: order_lines
+    columns:
+    - name: id
+      description: Unique order line ID
+      meta:
+        type: integer
+        unique_values: 142804
+        null_pct: 0.0
+    - name: order_id
+      description: Reference to order
+      meta:
+        type: integer
+        unique_values: 48203
+        null_pct: 0.0
+    - name: product_id
+      description: Reference to product
+      meta:
+        type: integer
+        unique_values: 4821
+        null_pct: 0.8
+    - name: variant_id
+      description: Reference to product variant
+      meta:
+        type: integer
+        unique_values: 18340
+        null_pct: 0.8
+    - name: quantity
+      description: Number of units ordered
+      meta:
+        type: integer
+        unique_values: 24
+        null_pct: 0.0
+    - name: price
+      description: Unit price
+      meta:
+        type: float
+        unique_values: 3204
+        null_pct: 0.0
+    - name: title
+      description: Product title at time of order
+      meta:
+        type: varchar
+        unique_values: 4950
+        null_pct: 0.0
+    - name: sku
+      description: Stock keeping unit
+      meta:
+        type: varchar
+        unique_values: 17200
+        null_pct: 5.3
+  - name: order_discount_codes
+  - name: customers
+    columns:
+    - name: id
+      description: Unique customer ID
+      meta:
+        type: integer
+        unique_values: 31847
+        null_pct: 0.0
+    - name: email
+      description: Customer email address
+      meta:
+        type: varchar
+        unique_values: 31847
+        null_pct: 0.0
+    - name: first_name
+      description: First name
+      meta:
+        type: varchar
+        unique_values: 8430
+        null_pct: 0.5
+    - name: last_name
+      description: Last name
+      meta:
+        type: varchar
+        unique_values: 14210
+        null_pct: 0.5
+    - name: created_at
+      description: Account creation timestamp
+      meta:
+        type: timestamp
+        unique_values: 31840
+        null_pct: 0.0
+    - name: orders_count
+      description: Total number of orders placed
+      meta:
+        type: integer
+        unique_values: 87
+        null_pct: 0.0
+    - name: total_spent
+      description: Lifetime spend
+      meta:
+        type: float
+        unique_values: 18920
+        null_pct: 0.0
+    - name: accepts_marketing
+      description: Whether customer opted into marketing
+      meta:
+        type: boolean
+        unique_values: 2
+        null_pct: 0.0
+  - name: products
+    columns:
+    - name: id
+      description: Unique product ID
+      meta:
+        type: integer
+        unique_values: 4821
+        null_pct: 0.0
+    - name: title
+      description: Product title
+      meta:
+        type: varchar
+        unique_values: 4810
+        null_pct: 0.0
+    - name: vendor
+      description: Product vendor
+      meta:
+        type: varchar
+        unique_values: 340
+        null_pct: 1.0
+    - name: product_type
+      description: Product category
+      meta:
+        type: varchar
+        unique_values: 82
+        null_pct: 2.1
+    - name: created_at
+      description: Product creation timestamp
+      meta:
+        type: timestamp
+        unique_values: 4821
+        null_pct: 0.0
+    - name: status
+      description: Product status (active, archived, draft)
+      meta:
+        type: varchar
+        unique_values: 3
+        null_pct: 0.0
+    - name: tags
+      description: Comma-separated product tags
+      meta:
+        type: varchar
+        unique_values: 3200
+        null_pct: 8.4
+  - name: product_variants
+    columns:
+    - name: id
+      description: Unique variant ID
+      meta:
+        type: integer
+        unique_values: 18340
+        null_pct: 0.0
+    - name: product_id
+      description: Reference to product
+      meta:
+        type: integer
+        unique_values: 4821
+        null_pct: 0.0
+    - name: title
+      description: Variant title (e.g. S / Red)
+      meta:
+        type: varchar
+        unique_values: 420
+        null_pct: 0.0
+    - name: price
+      description: Variant price
+      meta:
+        type: float
+        unique_values: 3204
+        null_pct: 0.0
+    - name: sku
+      description: Stock keeping unit
+      meta:
+        type: varchar
+        unique_values: 17200
+        null_pct: 5.3
+    - name: inventory_quantity
+      description: Current stock level
+      meta:
+        type: integer
+        unique_values: 2840
+        null_pct: 0.0
+    - name: weight
+      description: Variant weight
+      meta:
+        type: float
+        unique_values: 312
+        null_pct: 12.0
+  - name: inventory_levels
+    columns:
+    - name: inventory_item_id
+      description: Reference to inventory item
+      meta:
+        type: integer
+        unique_values: 18340
+        null_pct: 0.0
+    - name: location_id
+      description: Reference to location
+      meta:
+        type: integer
+        unique_values: 24
+        null_pct: 0.0
+    - name: available
+      description: Available stock quantity
+      meta:
+        type: integer
+        unique_values: 2840
+        null_pct: 0.0
+    - name: updated_at
+      description: Last update timestamp
+      meta:
+        type: timestamp
+        unique_values: 42100
+        null_pct: 0.0
+  - name: refunds
+    columns:
+    - name: id
+      description: Unique refund ID
+      meta:
+        type: integer
+        unique_values: 3841
+        null_pct: 0.0
+    - name: order_id
+      description: Reference to order
+      meta:
+        type: integer
+        unique_values: 3790
+        null_pct: 0.0
+    - name: created_at
+      description: Refund creation timestamp
+      meta:
+        type: timestamp
+        unique_values: 3841
+        null_pct: 0.0
+    - name: note
+      description: Refund reason note
+      meta:
+        type: varchar
+        unique_values: 820
+        null_pct: 34.2
+    - name: restock
+      description: Whether inventory was restocked
+      meta:
+        type: boolean
+        unique_values: 2
+        null_pct: 0.0
+  - name: transactions
+    columns:
+    - name: id
+      description: Unique transaction ID
+      meta:
+        type: integer
+        unique_values: 52410
+        null_pct: 0.0
+    - name: order_id
+      description: Reference to order
+      meta:
+        type: integer
+        unique_values: 48203
+        null_pct: 0.0
+    - name: amount
+      description: Transaction amount
+      meta:
+        type: float
+        unique_values: 11840
+        null_pct: 0.0
+    - name: currency
+      description: Currency code
+      meta:
+        type: varchar
+        unique_values: 12
+        null_pct: 0.0
+    - name: kind
+      description: Transaction type (sale, refund, capture)
+      meta:
+        type: varchar
+        unique_values: 5
+        null_pct: 0.0
+    - name: status
+      description: Transaction status (success, failure, ...)
+      meta:
+        type: varchar
+        unique_values: 4
+        null_pct: 0.0
+    - name: gateway
+      description: Payment gateway used
+      meta:
+        type: varchar
+        unique_values: 18
+        null_pct: 0.5
+    - name: created_at
+      description: Transaction timestamp
+      meta:
+        type: timestamp
+        unique_values: 52410
+        null_pct: 0.0

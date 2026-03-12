@@ -1,0 +1,16 @@
+name: shopify_analytics
+version: '1.0.0'
+profile: shopify_analytics
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  shopify_analytics:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table

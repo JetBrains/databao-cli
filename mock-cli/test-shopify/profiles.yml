@@ -1,0 +1,8 @@
+shopify_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: shopify.duckdb
+      schema: main
+      threads: 4

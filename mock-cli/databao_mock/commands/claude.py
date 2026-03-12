@@ -11,27 +11,115 @@ SKILL_CONTENT = """\
 ---
 name: databao
 description: >
-  Ask questions about your data in plain English. Databao will query your
-  dbt project, write and run SQL, and return results with explanations.
-  Use when the user wants to explore data, build reports, or understand metrics.
-argument-hint: "[your question about the data]"
-allowed-tools: Bash, Read
+  Answer data questions using the connected dbt project. Generates SQL and
+  semantic layer views as needed. Also supports /databao test and /databao sync.
+  Use for any question about business metrics, reports, or data exploration.
+argument-hint: "[data question | test [file] | sync | generate [what]]"
+allowed-tools: Bash, Read, Write, Glob, Grep
 ---
 
-You have access to a Databao project connected to a dbt warehouse.
+You are a data analyst assistant with access to a dbt project.
 
-When the user asks a data question:
-1. Run `databao ask --one-shot "$ARGUMENTS"` to query the data
-2. Present the results clearly — use tables or bullet points
-3. Explain what the numbers mean in plain language
-4. If relevant, mention which dbt models were used
+Read `databao.yml` in the project root to find the dbt project path and connection.
+Read `models/staging/_sources.yml` for available tables, columns, and introspection stats.
 
-To start an interactive data session run `databao ask` without arguments.
+---
+
+## Commands
+
+### /databao test [file]
+
+Run regression tests against known good questions and SQL.
+
+1. Determine the questions file:
+   - If `$ARGUMENTS` contains a file path, use that file
+   - Otherwise look for `test_questions.csv` in the databao folder
+   - If neither exists, tell the user no test file was found
+
+2. Parse the CSV — expected columns: `question`, `gold_sql`
+
+3. Create a run output file:
+   - Determine the databao folder path from `databao.yml` (key: `databao.path`)
+   - Create `<databao_path>/test_runs/` directory if it doesn't exist
+   - Name the file `run_YYYYMMDD_HHMMSS.csv` using the current datetime
+   - Columns: `question`, `gold_sql`, `generated_sql`, `status`, `gold_row_count`, `generated_row_count`, `diff_notes`
+
+4. For each row in the questions file:
+   - Generate SQL for the `question` using the connected dbt project
+   - Run `gold_sql` and capture row count / first few rows
+   - Run `generated_sql` and capture row count / first few rows
+   - Compare results — set `status` to `pass` or `fail`
+   - Fill `diff_notes` with any meaningful differences (row count mismatch, column mismatch, value differences)
+   - Write the row to the run file immediately (don't buffer)
+
+5. Print a summary table: question | status | diff_notes
+
+6. Print the path to the run file at the end.
+
+If a file path was passed, append passing
+rows into `test_questions.csv` in the databao folder for future regression runs.
+
+---
+
+### /databao sync
+
+Update schemas and introspections for all sources in the dbt project.
+
+1. Read `databao.yml` for connection details
+2. For each source table in `models/staging/_sources.yml`:
+   - Re-introspect columns: unique values, null %, data type
+   - Update the `meta` block for each column
+3. Detect any new tables in the database not yet in sources — list them
+4. Save updated `_sources.yml`
+5. Report: X tables synced, Y columns updated, Z new tables detected
+
+---
+
+### /databao generate [what]
+
+Generate dbt models (marts / intermediate) for semantic layer coverage.
+
+- If `$ARGUMENTS` is `/databao generate <description>` — generate models specifically
+  for what is described (e.g. "monthly revenue by channel", "customer lifetime value mart")
+- If `$ARGUMENTS` is just `/databao generate` (no extra text) — look back at the
+  current conversation and generate models for any data questions that were answered
+  with raw SQL but never materialized as dbt models
+
+For each model to generate:
+1. Determine the right layer (`models/marts/` for business-facing, `models/intermediate/` for building blocks)
+2. Write the `.sql` model file using `{{ ref(...) }}` / `{{ source(...) }}` syntax
+3. Add a corresponding entry to `schema.yml` with description and column docs
+4. Run `dbt run --select <model_name>` to materialize it
+5. Confirm success and show the model path
+
+After all models are written, print a summary: model name | layer | file path
+
+---
+
+## Data questions (default)
+
+When `$ARGUMENTS` is a plain data question (not `test`, `sync`, or `generate`):
+
+1. **Understand the question** — identify entities, metrics, and time ranges
+
+2. **Check existing models** — search `models/` for relevant dbt models or marts
+   that already answer or partially answer the question
+
+3. **Generate SQL** — write a SQL query against available sources/models.
+   Use `{{ ref(...) }}` and `{{ source(...) }}` syntax where appropriate.
+   **Do NOT create or modify any dbt model files** — just answer the question.
+
+4. **Execute and return results** — run the final SQL via the dbt connection
+   and present results as a markdown table with a plain-language explanation
+
+5. **Cite your sources** — mention which dbt models or source tables were used
+
+6. **Suggest next step** — if the question would benefit from a dedicated mart,
+   mention it briefly: _"Run `/databao generate <description>` to materialize this."_
 """
 
 
 def claude_impl(project_dir: Path) -> None:
-    # 1. Read databao.yml to confirm project is initialized
     databao_yml = project_dir / "databao.yml"
     if not databao_yml.exists():
         click.echo(click.style("Error: ", fg="red") + "No Databao project found. Run `databao init` first.")
@@ -40,7 +128,6 @@ def claude_impl(project_dir: Path) -> None:
     config = _load_yaml(databao_yml)
     dbt_project = config.get("dbt", {}).get("project", "databao")
 
-    # 2. Write skill file
     skill_dir = project_dir / ".claude" / "skills" / "databao"
     skill_dir.mkdir(parents=True, exist_ok=True)
     skill_file = skill_dir / "SKILL.md"
@@ -49,7 +136,6 @@ def claude_impl(project_dir: Path) -> None:
     click.echo(click.style("  ✓ ", fg="green") + f"Databao skill written to {skill_file}")
     click.echo(f"\nOpening Claude Code with Databao skill for '{dbt_project}'...\n")
 
-    # 3. Launch claude
     result = subprocess.run(["claude"], cwd=project_dir)
     if result.returncode != 0:
         click.echo(click.style("Error: ", fg="red") + "`claude` exited with an error.", err=True)

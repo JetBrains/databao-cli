@@ -124,7 +124,17 @@ def _import_dbt_project(dbt_project_yml: Path) -> None:
     else:
         click.echo(f"  profile     : {profile_name} (connection details not found)")
 
-    config: dict = {"dbt": {"project": project_name, "path": str(dbt_dir.resolve())}}
+    # Create databao/ folder and test_questions.csv
+    databao_folder = dbt_dir.parent / "databao"
+    databao_folder.mkdir(exist_ok=True)
+    test_questions = databao_folder / "test_questions.csv"
+    if not test_questions.exists():
+        test_questions.write_text("question,gold_sql\n")
+
+    config: dict = {
+        "dbt": {"project": project_name, "path": str(dbt_dir.resolve())},
+        "databao": {"path": str(databao_folder.resolve())},
+    }
     if conn_info:
         config["connection"] = {k: v for k, v in conn_info.items() if not str(v).startswith("{{")}
 
@@ -136,6 +146,7 @@ def _import_dbt_project(dbt_project_yml: Path) -> None:
     click.echo(click.style("  ✓ ", fg="green") + f"dbt project '{project_name}' imported")
     if conn_info:
         click.echo(click.style("  ✓ ", fg="green") + f"{conn_info.get('type', 'unknown')} connection configured")
+    click.echo(click.style("  ✓ ", fg="green") + f"databao/ folder created at {databao_folder}")
     click.echo(click.style("  ✓ ", fg="green") + f"databao.yml created at {databao_yml}")
 
 
