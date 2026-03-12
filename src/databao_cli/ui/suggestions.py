@@ -6,7 +6,6 @@ from concurrent.futures import TimeoutError as FuturesTimeoutError
 from typing import TYPE_CHECKING
 
 import streamlit as st
-from databao.duckdb import describe_duckdb_schema  # type: ignore[import-untyped]
 from langchain_core.messages import HumanMessage, SystemMessage
 from pydantic import BaseModel, Field
 
@@ -47,6 +46,8 @@ def _get_duckdb_schema(agent: "Agent") -> str | None:
     if conn is None:
         return None
     try:
+        from databao.duckdb import describe_duckdb_schema  # type: ignore[import-untyped]
+
         schema: str = describe_duckdb_schema(conn)
         if schema and schema != "(no base tables found)":
             return schema
