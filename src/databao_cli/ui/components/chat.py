@@ -3,6 +3,7 @@
 from typing import TYPE_CHECKING, cast
 
 import streamlit as st
+from databao.agent.core.agent import Agent
 
 from databao_cli.ui.components.results import render_execution_result
 from databao_cli.ui.models.chat_session import ChatMessage
@@ -74,7 +75,7 @@ def render_welcome_component(chat: "ChatSession") -> None:
     status = st.session_state.get("suggestions_status", "not_started")
 
     if status == "not_started":
-        agent = st.session_state.get("agent")
+        agent: Agent | None = st.session_state.get("agent")
         if agent is not None:
             start_suggestions_generation(agent)
             status = "loading"
@@ -364,6 +365,15 @@ def render_chat_interface(chat: "ChatSession") -> None:
     query_running = is_query_running(chat)
 
     user_input = st.chat_input("Ask a question about your data...", disabled=query_running)
+
+    agent: Agent | None = st.session_state.get("agent")
+    if agent is not None and not agent.domain.is_context_built() and not chat.messages:
+        st.markdown(
+            "⚠️ Context isn't built yet. "
+            '<a href="/context-settings#build-context" target="_self">Build context</a> '
+            "for better query results.",
+            unsafe_allow_html=True,
+        )
 
     if user_input:
         user_message = ChatMessage(role="user", content=user_input)
