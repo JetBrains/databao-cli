@@ -257,10 +257,10 @@ def render_setup_wizard_page() -> None:
             "4",
             "Build Context (Optional)",
             completed=build_started_or_done,
-            enabled=has_datasources and agent_configured,
+            enabled=has_datasources,
         )
 
-        if not has_datasources or not agent_configured:
+        if not has_datasources:
             st.caption("Complete the previous steps first.")
         elif project is None:
             st.caption("Add at least one datasource first.")
@@ -286,12 +286,7 @@ def render_setup_wizard_page() -> None:
         if not has_datasources:
             st.caption("Add at least one datasource first.")
         else:
-            if not agent_configured:
-                st.warning(
-                    "Configure your agent settings above (API key + model) before starting.",
-                    icon="⚠️",
-                )
-            elif build_status == "running":
+            if build_status == "running":
                 st.info(
                     "The build is still in progress, but you can start exploring Databao. "
                     "Some features may not work until the build completes."
