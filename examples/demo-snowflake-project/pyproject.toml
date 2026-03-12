@@ -8,6 +8,10 @@ dependencies = [
     "databao>=0.3.2",
 ]
 
+[tool.uv]
+# DuckDB Snowflake community extension hasn't been built for 1.5.0 yet
+constraint-dependencies = ["duckdb<1.5.0"]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
