@@ -1,7 +1,0 @@
-Ollama server not running. Starting Ollama server...
-Started Ollama server
-Ollama model nomic-embed-text:v1.5 not found locally. Pulling it (this may take several minutes)...
-Ollama model nomic-embed-text:v1.5 pulled successfully
-Found datasource of type "postgres" with name my_postgres
-Exported result to /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmp3ymncnz4test_databao_build_postgres/databao/domains/root/output/my_postgres.yaml
-Build complete. Processed 1 datasources.
