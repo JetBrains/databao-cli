@@ -5,7 +5,7 @@ description = "Databao demo project for Snowflake"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "databao>=0.3.2",
+    "databao",
 ]
 
 [tool.uv.sources]
