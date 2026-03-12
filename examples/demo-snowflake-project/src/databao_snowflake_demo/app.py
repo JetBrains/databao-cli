@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 SNOWFLAKE_SECRETS: dict[str, str] = {
     "openai_api_key": "OPENAI_API_KEY",
+    "anthropic_api_key": "ANTHROPIC_API_KEY",
     "snowflake_ds_account": "SNOWFLAKE_DS_ACCOUNT",
     "snowflake_ds_warehouse": "SNOWFLAKE_DS_WAREHOUSE",
     "snowflake_ds_database": "SNOWFLAKE_DS_DATABASE",

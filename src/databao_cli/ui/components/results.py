@@ -9,8 +9,8 @@ import streamlit as st
 from databao_cli.ui.services.chat_persistence import save_current_chat
 
 if TYPE_CHECKING:
-    from databao.core.executor import ExecutionResult
-    from databao.core.thread import Thread
+    from databao.agent.core.executor import ExecutionResult
+    from databao.agent.core.thread import Thread
 
     from databao_cli.ui.models.chat_session import ChatSession
 

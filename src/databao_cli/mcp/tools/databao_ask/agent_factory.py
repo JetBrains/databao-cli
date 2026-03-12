@@ -2,11 +2,11 @@
 
 from pathlib import Path
 
-from databao import Agent
-from databao import domain as create_domain
-from databao.api import agent as create_agent
-from databao.configs.llm import LLMConfig, LLMConfigDirectory
-from databao.core import Cache
+from databao.agent import Agent
+from databao.agent import domain as create_domain
+from databao.agent.api import agent as create_agent
+from databao.agent.configs.llm import LLMConfig, LLMConfigDirectory
+from databao.agent.core import Cache
 
 from databao_cli.project.layout import ProjectLayout
 from databao_cli.ui.project_utils import DatabaoProjectStatus, databao_project_status, has_build_output
@@ -16,7 +16,7 @@ def create_agent_for_tool(
     project_dir: Path,
     model: str | None = None,
     temperature: float = 0.0,
-    executor: str = "lighthouse",
+    executor: str = "claude_code",
     cache: Cache | None = None,
 ) -> Agent:
     """Create a Databao agent from a DCE project, configured for MCP tool use.
@@ -37,15 +37,25 @@ def create_agent_for_tool(
 
     llm_config: LLMConfig
     if model:
-        llm_config = LLMConfig(name=model, temperature=temperature)
+        from databao_cli.executor_utils import build_llm_config
+
+        llm_config = build_llm_config(model, temperature=temperature)
     elif temperature != 0.0:
         llm_config = LLMConfig(name=LLMConfigDirectory.DEFAULT.name, temperature=temperature)
     else:
         llm_config = LLMConfigDirectory.DEFAULT
 
-    return create_agent(
-        domain=domain,
-        llm_config=llm_config,
-        executor_type=executor,
-        cache=cache,
-    )
+    kwargs: dict[str, object] = {
+        "domain": domain,
+        "llm_config": llm_config,
+        "cache": cache,
+    }
+
+    if executor == "claude_code":
+        from databao.agent.executors import ClaudeCodeExecutor
+
+        kwargs["data_executor"] = ClaudeCodeExecutor()
+    else:
+        kwargs["executor_type"] = executor
+
+    return create_agent(**kwargs)  # type: ignore[arg-type]

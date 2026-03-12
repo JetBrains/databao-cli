@@ -5,7 +5,7 @@ import logging
 import traceback
 from typing import TYPE_CHECKING, Annotated, Any
 
-from databao.caches.in_mem_cache import InMemCache
+from databao.agent.caches.in_mem_cache import InMemCache
 from langchain_core.messages import AIMessage, HumanMessage
 from pydantic import BaseModel, Field
 from uuid6 import uuid6
@@ -62,8 +62,8 @@ def register(mcp: "FastMCP", context: "McpContext") -> None:
         ] = 0.0,
         executor: Annotated[
             str,
-            Field(description="Execution engine: 'lighthouse' (default) or 'react_duckdb'."),
-        ] = "lighthouse",
+            Field(description="Execution engine: 'claude_code' (default), 'lighthouse', 'dbt',  or 'react_duckdb'."),
+        ] = "claude_code",
         max_data_rows: Annotated[
             int,
             Field(description="Maximum number of data rows to return in the response."),

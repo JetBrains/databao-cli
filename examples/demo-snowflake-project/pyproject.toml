@@ -3,13 +3,14 @@ name = "databao-demo-snowflake-project"
 version = "0.1.0"
 description = "Databao demo project for Snowflake"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.11,<3.12"
 dependencies = [
-    "databao-cli",
+    "databao>=0.3.3.dev2",
 ]
 
-[tool.uv.sources]
-databao-cli = { workspace = true }
+[tool.uv]
+# DuckDB Snowflake community extension hasn't been built for 1.5.0 yet
+constraint-dependencies = ["duckdb<1.5.0"]
 
 [build-system]
 requires = ["hatchling"]

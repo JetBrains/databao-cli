@@ -101,7 +101,7 @@ def render_executor_selector() -> None:
     """Render executor type selector."""
     st.markdown("### ⚙️ Executor")
 
-    current = st.session_state.get("executor_type", "lighthouse")
+    current = st.session_state.get("executor_type", "claude_code")
 
     selected = st.selectbox(
         "Executor type",

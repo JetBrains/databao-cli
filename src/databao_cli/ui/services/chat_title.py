@@ -11,7 +11,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from pydantic import BaseModel, Field
 
 if TYPE_CHECKING:
-    from databao.core.agent import Agent
+    from databao.agent.core.agent import Agent
 
     from databao_cli.ui.models.chat_session import ChatSession
 

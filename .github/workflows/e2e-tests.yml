@@ -9,7 +9,7 @@ on:
 jobs:
   e2e-tests-ubuntu:
     name: "Run e2e tests on ubuntu"
-    runs-on: sre-eqx-kata
+    runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write
@@ -30,6 +30,9 @@ jobs:
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
           SNOWFLAKE_TEST_USER: ${{ secrets.SNOWFLAKE_TEST_USER }}
           SNOWFLAKE_TEST_USER_PROGRAM_TOKEN: ${{ secrets.SNOWFLAKE_TEST_USER_PROGRAM_TOKEN }}
+          BQ_PROJECT: ${{ secrets.BQ_PROJECT }}
+          BQ_DATASET: ${{ secrets.BQ_DATASET }}
+          BQ_SERVICE_ACCOUNT_JSON: ${{ secrets.BQ_SERVICE_ACCOUNT_JSON }}
         run: uv run pytest e2e-tests --alluredir=allure-results-ubuntu
 
       - name: Upload Tests artifacts

@@ -1,10 +1,11 @@
 from pathlib import Path
 
+import allure
 import pytest
 from databases.postgres_utils import PostgresDB
 from project_utils import execute_build, execute_init
 from testcontainers.postgres import PostgresContainer
-from utils.path_utils import get_all_results
+from utils.path_utils import get_datasource_result
 from utils.yaml_compare import assert_introspections_equal
 
 
@@ -18,8 +19,10 @@ def postgres_container():
         container.stop()
 
 
+@allure.title("Test databao build with Postgres")
+@allure.description("Initialize a project with Postgres and build it, then compare results with expected introspection.")
 def test_databao_build_postgres(project_folder: Path, postgres_container: PostgresContainer):
     db = PostgresDB.prepare_database(postgres_container)
     execute_init(project_folder, db)
     execute_build(project_folder)
-    assert_introspections_equal(get_all_results(project_folder), "postgres_introspections.yaml")
+    assert_introspections_equal(get_datasource_result(project_folder, db.datasource_name), "postgres_introspections.yaml")

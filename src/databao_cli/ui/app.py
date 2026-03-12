@@ -2,19 +2,22 @@
 
 import argparse
 import logging
+import os
 from collections.abc import Callable
 from pathlib import Path
 from typing import cast
 
 import streamlit as st
-from databao import domain as create_domain
-from databao.caches.disk_cache import DiskCache, DiskCacheConfig
-from databao.core.agent import Agent
+from databao.agent import domain as create_domain
+from databao.agent.caches.disk_cache import DiskCache, DiskCacheConfig
+from databao.agent.configs.llm import LLMConfig
+from databao.agent.core.agent import Agent
 from streamlit.navigation.page import StreamlitPage
 
 from databao_cli.project.layout import ProjectLayout, find_project
 from databao_cli.ui.components.status import AppStatus, set_status, status_context
 from databao_cli.ui.models.chat_session import ChatSession
+from databao_cli.ui.models.settings import LLMSettings
 from databao_cli.ui.project_utils import DatabaoProjectStatus, databao_project_status, has_build_output
 from databao_cli.ui.services.storage import get_cache_dir
 
@@ -31,6 +34,7 @@ def _load_persisted_state() -> None:
         st.session_state.app_settings = settings
 
         st.session_state.executor_type = settings.agent.executor_type
+        st.session_state.llm_settings = settings.agent.llm
 
     if "_chats_loaded" not in st.session_state:
         chats = load_all_chats()
@@ -51,9 +55,14 @@ def _save_settings_if_changed() -> None:
 
     changed = False
 
-    current_executor = st.session_state.get("executor_type", "lighthouse")
+    current_executor = st.session_state.get("executor_type", "claude_code")
     if settings.agent.executor_type != current_executor:
         settings.agent.executor_type = current_executor
+        changed = True
+
+    current_llm: LLMSettings = st.session_state.get("llm_settings", LLMSettings())
+    if settings.agent.llm != current_llm:
+        settings.agent.llm = current_llm
         changed = True
 
     if changed:
@@ -91,20 +100,32 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
         return None
 
     try:
-        executor_type = st.session_state.get("executor_type", "lighthouse")
+        executor_type = st.session_state.get("executor_type", "claude_code")
 
         cache = _get_or_create_disk_cache()
 
         with status_context(AppStatus.INITIALIZING, "Loading domain..."):
             _domain = create_domain(project.root_domain_dir)
 
-        from databao.api import agent as create_agent
+        from databao.agent.api import agent as create_agent
 
-        _agent = create_agent(
-            domain=_domain,
-            executor_type=executor_type,
-            cache=cache,
-        )
+        llm_config = _build_llm_config()
+
+        kwargs: dict[str, object] = {
+            "domain": _domain,
+            "cache": cache,
+        }
+        if llm_config is not None:
+            kwargs["llm_config"] = llm_config
+
+        if executor_type == "claude_code":
+            from databao.agent.executors import ClaudeCodeExecutor
+
+            kwargs["data_executor"] = ClaudeCodeExecutor()
+        else:
+            kwargs["executor_type"] = executor_type
+
+        _agent = create_agent(**kwargs)  # type: ignore[arg-type]
 
         st.session_state.agent = _agent
 
@@ -114,6 +135,35 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
         logger.exception("Failed to initialize agent")
         set_status(AppStatus.ERROR, f"Failed to initialize agent: {e}")
         return None
+
+
+def _build_llm_config() -> LLMConfig | None:
+    """Build an LLMConfig from session-state LLM settings, or None for defaults."""
+    from databao_cli.ui.models.settings import _ENV_VAR_MAP
+
+    llm: LLMSettings = st.session_state.get("llm_settings", LLMSettings())
+
+    if not llm.is_configured:
+        return None
+
+    config = llm.active_config
+    assert config is not None
+    provider_type = llm.active_provider
+
+    env_var = _ENV_VAR_MAP.get(provider_type)
+    if env_var and config.api_key:
+        os.environ[env_var] = config.api_key
+
+    if provider_type == "ollama" and config.base_url:
+        os.environ["OLLAMA_HOST"] = config.base_url
+
+    from databao_cli.executor_utils import build_llm_config
+
+    return build_llm_config(
+        config.model,
+        provider=provider_type,
+        base_url=config.base_url,
+    )
 
 
 def _clear_all_chat_threads() -> None:
@@ -164,14 +214,21 @@ def _load_welcome_completed(project: ProjectLayout | None) -> bool:
 
 
 def mark_welcome_completed() -> None:
-    """Persist the welcome_completed flag to settings on disk.
+    """Persist the welcome_completed flag and current agent settings to disk.
 
-    Called when the user finishes the setup wizard.
+    Called when the user finishes the setup wizard. Ensures that executor
+    type and LLM configuration (provider, model, api key, etc.) chosen
+    during setup are saved, even if the user didn't change them from defaults
+    (which means auto_apply never triggered).
     """
+    from databao_cli.ui.models.settings import LLMSettings
     from databao_cli.ui.services.settings_persistence import get_or_create_settings, save_settings
 
     settings = get_or_create_settings()
     settings.welcome_completed = True
+    settings.agent.executor_type = st.session_state.get("executor_type", "claude_code")
+    llm: LLMSettings = st.session_state.get("llm_settings", LLMSettings())
+    settings.agent.llm = llm
     save_settings(settings)
     st.session_state.welcome_completed = True
 
@@ -219,7 +276,9 @@ def init_session_state() -> None:
     if "status_message" not in st.session_state:
         st.session_state.status_message = None
     if "executor_type" not in st.session_state:
-        st.session_state.executor_type = "lighthouse"
+        st.session_state.executor_type = "claude_code"
+    if "llm_provider" not in st.session_state:
+        st.session_state.llm_provider = LLMSettings()
 
     if "suggested_questions" not in st.session_state:
         st.session_state.suggested_questions = []

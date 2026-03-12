@@ -1,79 +1,99 @@
-# Databao CLI
+[![official project](https://jb.gg/badges/official.svg)](https://github.com/JetBrains#jetbrains-on-github)
+[![PyPI version](https://img.shields.io/pypi/v/databao.svg)](https://pypi.org/project/databao)
 
-A command-line interface tool for managing Databao Agents and Context Engine (DCE) components.
+<h1 align="center">Databao CLI</h1>
 
-## Requirements
+<p align="center">A command-line interface tool for working with <a href="https://github.com/JetBrains/databao-agent">Databao Agent</a> and <a href="https://github.com/JetBrains/databao-context-engine">Databao Context Engine</a></p>
 
-- Python >= 3.11
-- [uv](https://docs.astral.sh/uv/)
 
 ## Installation
 
-To set up the project locally, clone the repository and install the dependencies:
+Databao CLI is [available on PyPI](https://pypi.org/project/databao/) 
+and can be installed with uv, pip, or another package manager.
+
+### Using uv
 
 ```bash
-uv sync
+uv add databao
 ```
 
-## Usage
-
-Once installed, you can use the `databao` command.
-
-### General Help
+### Using pip
 
 ```bash
-databao --help
+pip install databao
 ```
 
-### Agents Commands
+## Quick start
 
-To interact with agents:
+1. Create a project directory and navigate to it:
 
-```bash
-databao agents hello
-# Example output: "Hello from Agents!"
-```
+   ```bash
+   mkdir databao-project && cd databao-project
+   ```
 
-### DCE Commands
+1. Initialize the project:
 
-To interact with DCE:
+   ```bash
+   databao init
+   ```
 
-```bash
-databao dce hello
-# Example output: "Hello from DCE!"
-```
+1. When prompted, agree to configure a domain –
+   a dedicated space where data context, context, and agent chats live.
 
-## Development
+   Then follow the prompts to add one or several data sources.
 
-### Setup
+1. Build context:
 
-Install development dependencies:
+   ```bash
+   databao build
+   ```
 
-```bash
-uv sync
-```
+1. Pass your OpenAI API key as an environment variable:
 
-### Running Tests
+   ```bash
+   export OPENAI_API_KEY=<your-key>
+   ```
+   
+1. Run the Databao Agent:
 
-This project uses pytest for testing:
+   ```bash
+   databao ask
+   ```
 
-```bash
-uv run pytest
-```
+1. Ask questions about your data:
 
-### Running E2E Tests
+   ```text
+   # Example questions:
+   What is our refund rate by month?
+   What is our 90-day repeat purchase rate
+   ```
 
-E2E tests are located in a separate project under `e2e-tests/`. To run them:
+## Contributing
 
-```bash
-uv run pytest e2e-tests
-```
+We love contributions! Here’s how you can help:
 
-### Linting
+- ⭐ **Star this repo** — it helps others find us!
+- 🐛 **Found a bug?** [Open an issue](https://github.com/JetBrains/databao-cli/issues)
+- 💡 **Have an idea?** We’re all ears — create a feature request
+- 👍 **Upvote issues** you care about — helps us prioritize
+- 🔧 **Submit a PR**
+- 📝 **Improve docs** — typos, examples, tutorials — everything helps!
 
-Run ruff to check and format code:
+New to open source? No worries! We’re friendly and happy to help you get started.
 
-```bash
-uv run ruff check src tests e2e-tests
-uv run ruff format src tests e2e-tests
-```
+## License
+
+Apache 2.0 — use it however you want.
+
+[//]: # (See the [LICENSE]&#40;LICENSE.md&#41; file for details.)
+
+---
+
+<p align="center">
+ <b>Like Databao? </b> Give us a ⭐! It will help to distribute the technology.
+</p>
+
+<p align="center">
+ <a href="https://databao.app">Website</a> •
+ <a href="https://discord.gg/hEUqCcWdVh">Discord</a>
+</p>

@@ -5,11 +5,11 @@ from pathlib import Path
 
 import click
 import pandas as pd
-from databao import Agent
-from databao import domain as create_domain
-from databao.api import agent as create_agent
-from databao.configs.llm import LLMConfig, LLMConfigDirectory
-from databao.core.thread import Thread
+from databao.agent import Agent
+from databao.agent import domain as create_domain
+from databao.agent.api import agent as create_agent
+from databao.agent.configs.llm import LLMConfig, LLMConfigDirectory
+from databao.agent.core.thread import Thread
 from prettytable import PrettyTable
 
 from databao_cli.log.llm_errors import format_llm_error
@@ -37,7 +37,6 @@ def dataframe_to_prettytable(df: pd.DataFrame, max_rows: int = DEFAULT_MAX_DISPL
 
 def initialize_agent_from_dce(project_path: Path, model: str | None, temperature: float) -> Agent:
     """Initialize the Databao agent using DCE project at the given path."""
-    # Validate DCE project
     project = ProjectLayout(project_path)
 
     status = databao_project_status(project)
@@ -59,9 +58,10 @@ def initialize_agent_from_dce(project_path: Path, model: str | None, temperature
 
     _domain = create_domain(project.root_domain_dir)
 
-    # Create LLM config
     if model:
-        llm_config = LLMConfig(name=model, temperature=temperature)
+        from databao_cli.executor_utils import build_llm_config
+
+        llm_config = build_llm_config(model, temperature=temperature)
     else:
         # Use default but with custom temperature if provided
         if temperature != 0.0:
