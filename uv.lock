@@ -1005,6 +1005,7 @@ wheels = [
 
 [[package]]
 name = "databao"
+version = "0.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "adbc-driver-manager" },
@@ -1075,7 +1076,7 @@ requires-dist = [
     { name = "streamlit", extras = ["snowflake"], specifier = ">=1.53.0" },
     { name = "uuid6", specifier = ">=2024.7.10" },
 ]
-provides-extras = ["athena", "bigquery", "clickhouse", "mssql", "pdf"]
+provides-extras = ["mssql", "clickhouse", "athena", "bigquery", "pdf"]
 
 [package.metadata.requires-dev]
 dev = [
