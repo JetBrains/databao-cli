@@ -5,7 +5,6 @@ This project deploys the [Databao](https://github.com/JetBrains/databao-cli) Str
 ## Prerequisites
 
 - A Snowflake account with `ACCOUNTADMIN` privileges (for the initial setup)
-- A GitHub personal access token (PAT) with read access to the `databao-cli` repository
 - An OpenAI API key and/or an Anthropic API key
 - A second Snowflake account/user to serve as the **datasource** (the database you want to explore through Databao)
 
@@ -36,8 +35,6 @@ Open `setup.sql` and fill in the placeholder values at the top:
 
 | Variable | Description |
 |---|---|
-| `git_pat` | GitHub PAT with repo read access |
-| `git_username` | GitHub username associated with the PAT |
 | `openai_key` | OpenAI API key |
 | `anthropic_key` | Anthropic API key |
 | `sf_ds_account` | Snowflake datasource account identifier |
@@ -45,6 +42,7 @@ Open `setup.sql` and fill in the placeholder values at the top:
 | `sf_ds_database` | Database to explore |
 | `sf_ds_user` | User on the datasource account |
 | `sf_ds_password` | Password for that user |
+| `streamlit_app_name` | Name of the Streamlit app object (default: `STREAMLIT_DATABAO_DEMO_SNOWFLAKE`) |
 
 ### 2. Run the Setup Script
 
@@ -52,14 +50,12 @@ Execute the entire `setup.sql` in a Snowflake worksheet (or via SnowSQL) while c
 
 ### 3. Open the App
 
-Once the script finishes, navigate to **Streamlit** in Snowsight and open **STREAMLIT_DATABAO_DEMO_SNOWFLAKE**. The compute pool may take a minute or two to resume on first launch.
+Once the script finishes, navigate to **Streamlit** in Snowsight and open the app by the name you configured in `streamlit_app_name`. The compute pool may take a minute or two to resume on first launch.
 
 ## Local Development
 
-The project is part of the `databao-cli` uv workspace. To run it locally:
-
 ```bash
-# From the databao-cli repository root
+# From the examples/demo-snowflake-project directory
 uv sync
 
 # Set the required environment variables
@@ -72,11 +68,22 @@ export SNOWFLAKE_DS_USER="..."
 export SNOWFLAKE_DS_PASSWORD="..."
 
 # Run the Streamlit app
-uv run streamlit run examples/demo-snowflake-project/src/databao_snowflake_demo/app.py -- \
-  --project-dir examples/demo-snowflake-project
+uv run streamlit run src/databao_snowflake_demo/app.py -- \
+  --project-dir .
 ```
 
 When running locally, the Snowflake secret-loading logic is skipped (it only activates inside a Snowflake container). Environment variables must be set manually.
+
+## Updating the `databao` Package
+
+This project has its own `uv.lock` and installs `databao` from PyPI (not from the workspace). To update to a newer release:
+
+```bash
+# From the examples/demo-snowflake-project directory
+uv lock -P databao
+```
+
+To test a dev/pre-release version, update the version specifier in `pyproject.toml` to include the pre-release tag (e.g. `databao>=0.4.0.dev1`), then re-lock. Pre-release specifiers tell `uv` to allow pre-releases for that package.
 
 ## Notes
 

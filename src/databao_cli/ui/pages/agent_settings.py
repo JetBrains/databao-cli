@@ -123,11 +123,13 @@ def render_agent_settings_page(*, auto_apply: bool = False) -> None:
     api_key = ""
     if chosen_provider not in ("ollama",):
         env_var = _ENV_VAR_MAP.get(chosen_provider, "")
-        has_env_key = bool(os.environ.get(env_var))
-        label = f"API key (optional — using `{env_var}`)" if has_env_key else "API key"
+        env_key_value = os.environ.get(env_var, "")
+        has_env_key = bool(env_key_value)
+        label = f"API key (using environment variable `{env_var}` if present)" if has_env_key else "API key"
+        default_value = existing.api_key or env_key_value
         api_key = st.text_input(
             label,
-            value=existing.api_key,
+            value=default_value,
             type="password",
             help="Stored locally, sent only to the provider. Leave empty to use the key from your environment variable.",
         )

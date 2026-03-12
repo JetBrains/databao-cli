@@ -62,7 +62,7 @@ packages = ["src/databao_cli"]
 cache-keys = [{ file = "pyproject.toml" }, { git = { commit = true, tags = true }}]
 
 [tool.uv.workspace]
-members = ["examples/*"]
+members = []
 
 [dependency-groups]
 dev = [

@@ -3,8 +3,6 @@
 -- ============================================================
 
 -- Secrets
-SET git_pat             = '<YOUR_GITHUB_PAT>';
-SET git_username        = '<YOUR_GITHUB_USERNAME>';
 SET openai_key          = '<YOUR_OPENAI_API_KEY>';
 SET anthropic_key       = '<YOUR_ANTHROPIC_API_KEY>';
 SET sf_ds_account       = '<SNOWFLAKE_DATASOURCE_ACCOUNT>';
@@ -19,6 +17,7 @@ SET git_repo_name       = 'databao-cli';
 SET git_branch          = 'main';
 
 -- Streamlit app
+SET streamlit_app_name  = 'STREAMLIT_DATABAO_DEMO_SNOWFLAKE';
 SET streamlit_main_file = 'examples/demo-snowflake-project/src/databao_snowflake_demo/app.py';
 
 -- ============================================================
@@ -65,8 +64,6 @@ ALTER USER STREAMLIT_DATABAO_USER SET NETWORK_POLICY = 'STREAMLIT_DATABAO_NETWOR
 -- ============================================================
 DECLARE
   _sql           VARCHAR;
-  _git_pat       VARCHAR;
-  _git_username  VARCHAR;
   _git_origin    VARCHAR;
   _git_repo      VARCHAR;
   _openai_key    VARCHAR;
@@ -77,25 +74,18 @@ DECLARE
   _ds_user       VARCHAR;
   _ds_password   VARCHAR;
 BEGIN
-  SELECT $git_pat, $git_username, $git_repo_origin, $git_repo_name,
+  SELECT $git_repo_origin, $git_repo_name,
          $openai_key, $anthropic_key, $sf_ds_account, $sf_ds_warehouse, $sf_ds_database,
          $sf_ds_user, $sf_ds_password
-    INTO :_git_pat, :_git_username, :_git_origin, :_git_repo,
+    INTO :_git_origin, :_git_repo,
          :_openai_key, :_anthropic_key, :_ds_account, :_ds_warehouse, :_ds_database,
          :_ds_user, :_ds_password;
 
-  -- Git PAT secret
-  _sql := 'CREATE OR REPLACE SECRET STREAMLIT_DATABAO.PUBLIC.git_pat_secret'
-    || ' TYPE = PASSWORD'
-    || ' USERNAME = ''' || :_git_username || ''''
-    || ' PASSWORD = ''' || :_git_pat      || '''';
-  EXECUTE IMMEDIATE :_sql;
-
-  -- API integration for Git
+  -- API integration for Git (no credentials needed — public repo)
   _sql := 'CREATE OR REPLACE API INTEGRATION STREAMLIT_DATABAO_GIT_INTEGRATION'
     || ' API_PROVIDER = git_https_api'
     || ' API_ALLOWED_PREFIXES = (''' || :_git_origin || ''')'
-    || ' ALLOWED_AUTHENTICATION_SECRETS = (STREAMLIT_DATABAO.PUBLIC.git_pat_secret)'
+    || ' ALLOWED_AUTHENTICATION_SECRETS = ()'
     || ' ENABLED = TRUE';
   EXECUTE IMMEDIATE :_sql;
 
@@ -103,8 +93,7 @@ BEGIN
   _sql := 'CREATE OR REPLACE GIT REPOSITORY STREAMLIT_DATABAO.PUBLIC."'
     || :_git_repo || '"'
     || ' ORIGIN = ''' || :_git_origin || ''''
-    || ' API_INTEGRATION = STREAMLIT_DATABAO_GIT_INTEGRATION'
-    || ' GIT_CREDENTIALS = STREAMLIT_DATABAO.PUBLIC.git_pat_secret';
+    || ' API_INTEGRATION = STREAMLIT_DATABAO_GIT_INTEGRATION';
   EXECUTE IMMEDIATE :_sql;
 
   -- Fetch latest
@@ -210,12 +199,13 @@ DECLARE
   _sql        VARCHAR;
   _git_repo   VARCHAR;
   _git_branch VARCHAR;
+  _app_name   VARCHAR;
   _main_file  VARCHAR;
 BEGIN
-  SELECT $git_repo_name, $git_branch, $streamlit_main_file
-    INTO :_git_repo, :_git_branch, :_main_file;
+  SELECT $git_repo_name, $git_branch, $streamlit_app_name, $streamlit_main_file
+    INTO :_git_repo, :_git_branch, :_app_name, :_main_file;
 
-  _sql := 'CREATE OR REPLACE STREAMLIT STREAMLIT_DATABAO.PUBLIC.STREAMLIT_DATABAO_DEMO_SNOWFLAKE'
+  _sql := 'CREATE OR REPLACE STREAMLIT STREAMLIT_DATABAO.PUBLIC."' || :_app_name || '"'
     || ' FROM ''@"STREAMLIT_DATABAO"."PUBLIC"."' || :_git_repo || '"/branches/"' || :_git_branch || '"/'''
     || ' MAIN_FILE = ''' || :_main_file || ''''
     || ' QUERY_WAREHOUSE = ''STREAMLIT_DATABAO_WAREHOUSE'''
