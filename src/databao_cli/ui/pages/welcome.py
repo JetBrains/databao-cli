@@ -255,7 +255,7 @@ def render_setup_wizard_page() -> None:
         # ---- Section 4: Build Context ----
         _render_section_header(
             "4",
-            "Build Context",
+            "Build Context (Optional)",
             completed=build_started_or_done,
             enabled=has_datasources and agent_configured,
         )
