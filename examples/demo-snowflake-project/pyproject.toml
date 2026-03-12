@@ -8,9 +8,6 @@ dependencies = [
     "databao",
 ]
 
-[tool.uv.sources]
-databao = { workspace = true }
-
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
