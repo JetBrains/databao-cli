@@ -6,6 +6,7 @@ from concurrent.futures import TimeoutError as FuturesTimeoutError
 from typing import TYPE_CHECKING
 
 import streamlit as st
+from databao.agent.duckdb import describe_duckdb_schema
 from langchain_core.messages import HumanMessage, SystemMessage
 from pydantic import BaseModel, Field
 
@@ -40,16 +41,31 @@ class SuggestedQuestions(BaseModel):
     )
 
 
+def _ensure_sources_initialized(agent: "Agent") -> None:
+    """Ensure the executor has data sources attached to DuckDB.
+
+    The executor lazily attaches data sources on first query execution.
+    We need them earlier for schema introspection during suggestions.
+    """
+    executor = agent.executor
+    init_fn = getattr(executor, "_init_sources_from_domain", None)
+    if init_fn is None:
+        return
+    try:
+        init_fn(agent.domain)
+    except Exception:
+        logger.debug("Failed to initialize sources for suggestions", exc_info=True)
+
+
 def _get_duckdb_schema(agent: "Agent") -> str | None:
     """Try to extract the DuckDB schema from the agent's executor."""
     conn = getattr(agent.executor, "_duckdb_connection", None)
     if conn is None:
         return None
+    _ensure_sources_initialized(agent)
     try:
-        from databao.duckdb import describe_duckdb_schema  # type: ignore[import-untyped]
-
         schema: str = describe_duckdb_schema(conn)
-        if schema and schema != "(no base tables found)":
+        if schema and schema != "(no tables found)":
             return schema
     except Exception:
         logger.debug("Failed to describe DuckDB schema for suggestions", exc_info=True)
