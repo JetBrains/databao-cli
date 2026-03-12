@@ -56,10 +56,8 @@ Once the script finishes, navigate to **Streamlit** in Snowsight and open **STRE
 
 ## Local Development
 
-The project is part of the `databao-cli` uv workspace. To run it locally:
-
 ```bash
-# From the databao-cli repository root
+# From the examples/demo-snowflake-project directory
 uv sync
 
 # Set the required environment variables
@@ -72,11 +70,22 @@ export SNOWFLAKE_DS_USER="..."
 export SNOWFLAKE_DS_PASSWORD="..."
 
 # Run the Streamlit app
-uv run streamlit run examples/demo-snowflake-project/src/databao_snowflake_demo/app.py -- \
-  --project-dir examples/demo-snowflake-project
+uv run streamlit run src/databao_snowflake_demo/app.py -- \
+  --project-dir .
 ```
 
 When running locally, the Snowflake secret-loading logic is skipped (it only activates inside a Snowflake container). Environment variables must be set manually.
+
+## Updating the `databao` Package
+
+This project has its own `uv.lock` and installs `databao` from PyPI (not from the workspace). To update to a newer release:
+
+```bash
+# From the examples/demo-snowflake-project directory
+uv lock -P databao
+```
+
+To test a dev/pre-release version, update the version specifier in `pyproject.toml` to include the pre-release tag (e.g. `databao>=0.4.0.dev1`), then re-lock. Pre-release specifiers tell `uv` to allow pre-releases for that package.
 
 ## Notes
 

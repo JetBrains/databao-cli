@@ -662,7 +662,7 @@ dependencies = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "databao" }]
+requires-dist = [{ name = "databao", specifier = ">=0.3.2" }]
 
 [[package]]
 name = "dbt-adapters"
