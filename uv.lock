@@ -1061,7 +1061,7 @@ requires-dist = [
     { name = "adbc-driver-manager", specifier = ">=1.10.0" },
     { name = "adbc-driver-snowflake", specifier = ">=1.10.0" },
     { name = "click", specifier = ">=8.2.1,<9.0.0" },
-    { name = "databao-agent", specifier = "~=0.1.4.dev8" },
+    { name = "databao-agent", editable = "../databao-agent" },
     { name = "databao-context-engine", extras = ["athena"], marker = "extra == 'athena'" },
     { name = "databao-context-engine", extras = ["bigquery"], marker = "extra == 'bigquery'" },
     { name = "databao-context-engine", extras = ["clickhouse"], marker = "extra == 'clickhouse'" },
@@ -1098,8 +1098,7 @@ e2e-tests = [
 
 [[package]]
 name = "databao-agent"
-version = "0.1.4.dev8"
-source = { registry = "https://pypi.org/simple" }
+source = { editable = "../databao-agent" }
 dependencies = [
     { name = "claude-agent-sdk" },
     { name = "databao-context-engine", extra = ["mysql", "postgresql", "snowflake"] },
@@ -1127,9 +1126,53 @@ dependencies = [
     { name = "tabulate" },
     { name = "watchdog" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e4/c0/0f8a0cd0ca27d36b251bc814ab1d85cef5d9bffe726594e8673b8bc200a2/databao_agent-0.1.4.dev8.tar.gz", hash = "sha256:0f4fa37b4484c65849746f9aaf47529748778b0abf511a38a42cfbd22f7663fc", size = 1031933, upload-time = "2026-03-11T20:02:47.983Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/db/2b/53df19ae5065898c88e7fc53119b8c842525e34ec0764e3d27628b05c69b/databao_agent-0.1.4.dev8-py3-none-any.whl", hash = "sha256:00ea47f86c257b4085e47eea2a31936ae15fbc66b3d7d29b0544ed2c4d4434c5", size = 1072813, upload-time = "2026-03-11T20:02:46.326Z" },
+
+[package.metadata]
+requires-dist = [
+    { name = "anywidget", marker = "extra == 'examples'", specifier = ">=0.9.0" },
+    { name = "anywidget", marker = "extra == 'jupyter'", specifier = ">=0.9.0" },
+    { name = "claude-agent-sdk", specifier = ">=0.1.48" },
+    { name = "databao-context-engine", extras = ["mysql", "postgresql", "snowflake"], specifier = "~=0.6.0" },
+    { name = "dbt-core", specifier = "~=1.9.0" },
+    { name = "dbt-duckdb", specifier = ">=1.10.0" },
+    { name = "diskcache", specifier = ">=5.6.3" },
+    { name = "duckdb", specifier = ">=1.3.0" },
+    { name = "edaplot-vl", specifier = "~=0.1.4" },
+    { name = "jinja2", specifier = ">=3.1.6" },
+    { name = "langchain", specifier = ">=1.1.3" },
+    { name = "langchain-anthropic", specifier = ">=1.3.0" },
+    { name = "langchain-ollama", specifier = ">=1.0.0" },
+    { name = "langchain-openai", specifier = ">=1.1.3" },
+    { name = "langgraph", specifier = ">=0.6.8" },
+    { name = "matplotlib", specifier = ">=3.10.0" },
+    { name = "mcp", specifier = ">=1.0.0,<2" },
+    { name = "notebook", marker = "extra == 'examples'", specifier = ">=7.4.7" },
+    { name = "pandas", specifier = ">=2.2.2" },
+    { name = "pandas-stubs", specifier = "~=2.3.3" },
+    { name = "psycopg2-binary", specifier = ">=2.9.10" },
+    { name = "pydantic", specifier = ">=2.8.0,<3" },
+    { name = "python-dotenv", marker = "extra == 'examples'", specifier = ">=1.1.1" },
+    { name = "snowflake-sqlalchemy", specifier = ">=1.8.2" },
+    { name = "sqlalchemy", specifier = ">=2.0.45" },
+    { name = "sqlalchemy-bigquery", specifier = ">=1.11.0" },
+    { name = "tabulate", specifier = ">=0.9.0" },
+    { name = "traitlets", marker = "extra == 'examples'", specifier = ">=5.0.0" },
+    { name = "traitlets", marker = "extra == 'jupyter'", specifier = ">=5.0.0" },
+    { name = "watchdog", specifier = ">=6.0.0" },
+]
+provides-extras = ["examples", "jupyter"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "isort", specifier = ">=7.0.0" },
+    { name = "mypy", specifier = ">=1.18.2" },
+    { name = "pandas-stubs", specifier = ">=2.3.2.250926" },
+    { name = "pre-commit", specifier = ">=4.3.0" },
+    { name = "pytest", specifier = ">=7.4.0" },
+    { name = "ruff", specifier = ">=0.13.2" },
+    { name = "types-pyyaml", specifier = ">=6.0.12.20250915" },
+    { name = "typing-extensions", specifier = ">=4.15.0" },
+    { name = "vega-datasets", specifier = ">=0.9.0" },
 ]
 
 [[package]]

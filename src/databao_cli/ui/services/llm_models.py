@@ -30,7 +30,7 @@ def _fetch_openai_models(api_key: str, base_url: str = "") -> list[str]:
     """List models via the OpenAI-compatible /v1/models endpoint."""
     import openai
 
-    client = openai.OpenAI(api_key=api_key, base_url=base_url or None)
+    client = openai.OpenAI(api_key=api_key or None, base_url=base_url or None)
     response = client.models.list()
 
     chat_prefixes = ("gpt-", "o1", "o3", "o4", "chatgpt-")
@@ -58,7 +58,7 @@ def _fetch_anthropic_models(api_key: str) -> list[str]:
     """List available models via the Anthropic /v1/models endpoint."""
     import anthropic
 
-    client = anthropic.Anthropic(api_key=api_key)
+    client = anthropic.Anthropic(api_key=api_key or None)
     response = client.models.list(limit=100)
 
     chat_prefixes = ("claude-",)

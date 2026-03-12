@@ -7,6 +7,7 @@ from pathlib import Path
 import streamlit as st
 
 from databao_cli.project.layout import find_project
+from databao_cli.ui.models.settings import LLMSettings
 from databao_cli.ui.project_utils import DatabaoProjectStatus, databao_project_status
 
 logger = logging.getLogger(__name__)
@@ -227,32 +228,56 @@ def render_setup_wizard_page() -> None:
 
         st.markdown("---")
 
-        # ---- Section 3: Build Context (Optional) ----
+        # ---- Section 3: Configure Agent ----
+        llm_settings: LLMSettings = st.session_state.get("llm_settings", LLMSettings())
+        agent_configured = llm_settings.is_configured
+
         _render_section_header(
             "3",
-            "Build Context (Optional)",
-            completed=build_started_or_done,
+            "Configure Agent",
+            completed=agent_configured,
             enabled=has_datasources,
         )
 
-        if not has_datasources or project is None:
+        if not has_datasources:
+            st.caption("Add at least one datasource first.")
+        else:
+            st.markdown(
+                "Configure the execution engine and language model for the AI agent. "
+                "You'll need an API key for your chosen LLM provider."
+            )
+            from databao_cli.ui.pages.agent_settings import render_agent_settings_page
+
+            render_agent_settings_page(auto_apply=True)
+
+        st.markdown("---")
+
+        # ---- Section 4: Build Context ----
+        _render_section_header(
+            "4",
+            "Build Context",
+            completed=build_started_or_done,
+            enabled=has_datasources and agent_configured,
+        )
+
+        if not has_datasources or not agent_configured:
+            st.caption("Complete the previous steps first.")
+        elif project is None:
             st.caption("Add at least one datasource first.")
         elif read_only:
             render_build_section(project.root_domain_dir, read_only=True)
         else:
             st.markdown(
                 "Building the context indexes your datasources so Databao can better understand "
-                "your data structure and provide higher-quality answers. "
-                "You can skip this step and start using Databao right away, but building "
-                "is recommended for the best experience."
+                "your data structure and provide higher-quality answers."
             )
             render_build_section(project.root_domain_dir)
 
         st.markdown("---")
 
-        # ---- Section 4: Ready ----
+        # ---- Final Section: Start Using Databao ----
         _render_section_header(
-            "4",
+            "5",
             "Start Using Databao",
             completed=False,
             enabled=has_datasources,
@@ -261,7 +286,12 @@ def render_setup_wizard_page() -> None:
         if not has_datasources:
             st.caption("Add at least one datasource first.")
         else:
-            if build_status == "running":
+            if not agent_configured:
+                st.warning(
+                    "Configure your agent settings above (API key + model) before starting.",
+                    icon="⚠️",
+                )
+            elif build_status == "running":
                 st.info(
                     "The build is still in progress, but you can start exploring Databao. "
                     "Some features may not work until the build completes."
