@@ -6,6 +6,7 @@
 SET git_pat             = '<YOUR_GITHUB_PAT>';
 SET git_username        = '<YOUR_GITHUB_USERNAME>';
 SET openai_key          = '<YOUR_OPENAI_API_KEY>';
+SET anthropic_key       = '<YOUR_ANTHROPIC_API_KEY>';
 SET sf_ds_account       = '<SNOWFLAKE_DATASOURCE_ACCOUNT>';
 SET sf_ds_warehouse     = '<SNOWFLAKE_DATASOURCE_WAREHOUSE>';
 SET sf_ds_database      = '<SNOWFLAKE_DATASOURCE_DATABASE>';
@@ -69,6 +70,7 @@ DECLARE
   _git_origin    VARCHAR;
   _git_repo      VARCHAR;
   _openai_key    VARCHAR;
+  _anthropic_key VARCHAR;
   _ds_account    VARCHAR;
   _ds_warehouse  VARCHAR;
   _ds_database   VARCHAR;
@@ -76,10 +78,10 @@ DECLARE
   _ds_password   VARCHAR;
 BEGIN
   SELECT $git_pat, $git_username, $git_repo_origin, $git_repo_name,
-         $openai_key, $sf_ds_account, $sf_ds_warehouse, $sf_ds_database,
+         $openai_key, $anthropic_key, $sf_ds_account, $sf_ds_warehouse, $sf_ds_database,
          $sf_ds_user, $sf_ds_password
     INTO :_git_pat, :_git_username, :_git_origin, :_git_repo,
-         :_openai_key, :_ds_account, :_ds_warehouse, :_ds_database,
+         :_openai_key, :_anthropic_key, :_ds_account, :_ds_warehouse, :_ds_database,
          :_ds_user, :_ds_password;
 
   -- Git PAT secret
@@ -114,6 +116,11 @@ BEGIN
   _sql := 'CREATE OR REPLACE SECRET STREAMLIT_DATABAO.PUBLIC.openai_api_key'
     || ' TYPE = GENERIC_STRING'
     || ' SECRET_STRING = ''' || :_openai_key || '''';
+  EXECUTE IMMEDIATE :_sql;
+
+  _sql := 'CREATE OR REPLACE SECRET STREAMLIT_DATABAO.PUBLIC.anthropic_api_key'
+    || ' TYPE = GENERIC_STRING'
+    || ' SECRET_STRING = ''' || :_anthropic_key || '''';
   EXECUTE IMMEDIATE :_sql;
 
   _sql := 'CREATE OR REPLACE SECRET STREAMLIT_DATABAO.PUBLIC.snowflake_ds_account'
@@ -153,6 +160,7 @@ CREATE OR REPLACE EXTERNAL ACCESS INTEGRATION STREAMLIT_DATABAO_SECRETS_ACCESS
   ALLOWED_NETWORK_RULES = (STREAMLIT_DATABAO.PUBLIC.STREAMLIT_DATABAO_EGRESS_RULE)
   ALLOWED_AUTHENTICATION_SECRETS = (
     STREAMLIT_DATABAO.PUBLIC.openai_api_key,
+    STREAMLIT_DATABAO.PUBLIC.anthropic_api_key,
     STREAMLIT_DATABAO.PUBLIC.snowflake_ds_account,
     STREAMLIT_DATABAO.PUBLIC.snowflake_ds_warehouse,
     STREAMLIT_DATABAO.PUBLIC.snowflake_ds_database,
@@ -183,6 +191,7 @@ CREATE OR REPLACE FUNCTION STREAMLIT_DATABAO.PUBLIC.get_secret(secret_name STRIN
   EXTERNAL_ACCESS_INTEGRATIONS = (STREAMLIT_DATABAO_SECRETS_ACCESS)
   SECRETS = (
     'openai_api_key' = STREAMLIT_DATABAO.PUBLIC.openai_api_key,
+    'anthropic_api_key' = STREAMLIT_DATABAO.PUBLIC.anthropic_api_key,
     'snowflake_ds_account' = STREAMLIT_DATABAO.PUBLIC.snowflake_ds_account,
     'snowflake_ds_warehouse' = STREAMLIT_DATABAO.PUBLIC.snowflake_ds_warehouse,
     'snowflake_ds_database' = STREAMLIT_DATABAO.PUBLIC.snowflake_ds_database,
