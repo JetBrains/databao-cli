@@ -6,7 +6,7 @@ This project deploys the [Databao](https://github.com/JetBrains/databao-cli) Str
 
 - A Snowflake account with `ACCOUNTADMIN` privileges (for the initial setup)
 - A GitHub personal access token (PAT) with read access to the `databao-cli` repository
-- An OpenAI API key
+- An OpenAI API key and/or an Anthropic API key
 - A second Snowflake account/user to serve as the **datasource** (the database you want to explore through Databao)
 
 ## How It Works
@@ -16,13 +16,13 @@ This project deploys the [Databao](https://github.com/JetBrains/databao-cli) Str
    - Network rules and external access integrations for outbound HTTPS
    - A service user with a permissive network policy
    - A Git repository object pointing at `databao-cli` on GitHub
-   - Snowflake secrets for the OpenAI API key and datasource credentials
+   - Snowflake secrets for the OpenAI and Anthropic API keys and datasource credentials
    - A Python UDF (`get_secret`) that reads those secrets at runtime
    - The Streamlit app itself, running on a container runtime (`CPU_X64_M`)
 
 2. **`app.py`** is the Streamlit entry point that adapts `databao-cli`'s UI for Snowflake:
    - Detects whether it is running inside Snowflake (via `/snowflake/session/token`)
-   - Calls `get_secret()` through a Snowflake SQL session to load secrets into environment variables (`OPENAI_API_KEY`, `SNOWFLAKE_DS_*`)
+   - Calls `get_secret()` through a Snowflake SQL session to load secrets into environment variables (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `SNOWFLAKE_DS_*`)
    - Locates and configures the ADBC Snowflake driver shared library so DuckDB's Snowflake extension can find it
    - Launches the standard Databao UI in **read-only domain** mode
 
@@ -39,6 +39,7 @@ Open `setup.sql` and fill in the placeholder values at the top:
 | `git_pat` | GitHub PAT with repo read access |
 | `git_username` | GitHub username associated with the PAT |
 | `openai_key` | OpenAI API key |
+| `anthropic_key` | Anthropic API key |
 | `sf_ds_account` | Snowflake datasource account identifier |
 | `sf_ds_warehouse` | Warehouse on the datasource account |
 | `sf_ds_database` | Database to explore |
@@ -63,6 +64,7 @@ uv sync
 
 # Set the required environment variables
 export OPENAI_API_KEY="..."
+export ANTHROPIC_API_KEY="..."
 export SNOWFLAKE_DS_ACCOUNT="..."
 export SNOWFLAKE_DS_WAREHOUSE="..."
 export SNOWFLAKE_DS_DATABASE="..."
@@ -80,4 +82,4 @@ When running locally, the Snowflake secret-loading logic is skipped (it only act
 
 - The app runs in **read-only domain** mode — datasource configuration and domain builds are disabled in the UI. All domain setup is done ahead of time via the files in `databao/domains/root/`.
 - The compute pool uses `CPU_X64_M` instances with auto-suspend after 5 minutes and auto-resume enabled.
-- Network egress is allowed on ports 80 and 443 to enable OpenAI API calls and Snowflake datasource connections.
+- Network egress is allowed on ports 80 and 443 to enable OpenAI/Anthropic API calls and Snowflake datasource connections.
