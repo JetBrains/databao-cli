@@ -4,7 +4,7 @@ import allure
 import pytest
 from databases.sqlite_utils import SqliteDB
 from project_utils import execute_build, execute_init
-from utils.path_utils import get_all_results
+from utils.path_utils import get_datasource_result
 from utils.yaml_compare import assert_introspections_equal
 
 
@@ -20,4 +20,4 @@ def test_databao_build_sqlite(project_folder: Path, temp_sqlite_file: Path):
     db = SqliteDB.prepare_database(temp_sqlite_file)
     execute_init(project_folder, db)
     execute_build(project_folder)
-    assert_introspections_equal(get_all_results(project_folder), "sqlite_introspections.yaml")
+    assert_introspections_equal(get_datasource_result(project_folder, db.datasource_name), "sqlite_introspections.yaml")

@@ -4,7 +4,7 @@ import allure
 import pytest
 from databases.duckdb_utils import DuckdbDB
 from project_utils import execute_build, execute_init
-from utils.path_utils import get_all_results
+from utils.path_utils import get_datasource_result
 from utils.yaml_compare import assert_introspections_equal
 
 
@@ -20,4 +20,4 @@ def test_databao_build_duckdb(project_folder: Path, temp_duckdb_file: Path):
     db = DuckdbDB.prepare_database(temp_duckdb_file)
     execute_init(project_folder, db)
     execute_build(project_folder)
-    assert_introspections_equal(get_all_results(project_folder), "duckdb_introspections.yaml")
+    assert_introspections_equal(get_datasource_result(project_folder, db.datasource_name), "duckdb_introspections.yaml")

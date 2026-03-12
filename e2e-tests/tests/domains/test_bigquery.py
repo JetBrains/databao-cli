@@ -11,7 +11,7 @@ from databases.bigquery_utils import (
     BigQueryServiceAccountKeyFileAuth,
 )
 from project_utils import execute_build, execute_init
-from utils.path_utils import get_all_results
+from utils.path_utils import get_datasource_result
 from utils.yaml_compare import assert_introspections_equal
 
 
@@ -26,7 +26,7 @@ def test_databao_build_bigquery_datasource_from_init_config_from_json(project_fo
     )
     execute_init(project_folder, db)
     execute_build(project_folder)
-    assert_introspections_equal(get_all_results(project_folder), "bigquery_introspections.yaml")
+    assert_introspections_equal(get_datasource_result(project_folder, db.datasource_name), "bigquery_introspections.yaml")
 
 
 @allure.title("Test databao build with BigQuery using BigQueryServiceAccountKeyFileAuth auth type")
@@ -43,4 +43,4 @@ def test_databao_build_bigquery_datasource_from_init_config_from_json_file_path(
     )
     execute_init(project_folder, db)
     execute_build(project_folder)
-    assert_introspections_equal(get_all_results(project_folder), "bigquery_introspections.yaml")
+    assert_introspections_equal(get_datasource_result(project_folder, db.datasource_name), "bigquery_introspections.yaml")
