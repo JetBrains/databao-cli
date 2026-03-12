@@ -25,7 +25,7 @@ def render_agent_settings_page() -> None:
         """
     )
 
-    current = st.session_state.get("executor_type", "lighthouse")
+    current = st.session_state.get("executor_type", "claude_code")
 
     selected = st.selectbox(
         "Executor type",
@@ -36,13 +36,12 @@ def render_agent_settings_page() -> None:
     )
 
     if selected == "lighthouse":
-        st.info(
+        st.warning(
             """
-            **LighthouseExecutor** is the default and recommended executor.
-            It uses a sophisticated graph-based approach with planning and validation steps.
+            **LighthouseExecutor** uses a sophisticated graph-based approach with planning and validation steps.
             Best for complex queries requiring multiple steps.
             """,
-            icon="💡",
+            icon="⚠️",
         )
     elif selected == "react_duckdb":
         st.warning(
@@ -63,13 +62,13 @@ def render_agent_settings_page() -> None:
             icon="⚠️",
         )
     elif selected == "claude_code":
-        st.warning(
+        st.info(
             """
-            **ClaudeCodeExecutor** is experimental.
+            **ClaudeCodeExecutor** is the default and recommended executor.
             It uses Claude Code as the execution backend for queries.
             Requires a valid Anthropic API key configured in the LLM settings.
             """,
-            icon="⚠️",
+            icon="💡",
         )
 
     if selected != current and st.button("✓ Apply Changes", type="primary", key="apply_executor"):
@@ -91,7 +90,7 @@ def render_agent_settings_page() -> None:
     provider_keys = list(LLM_PROVIDERS.keys())
     current_provider = llm.active_provider if llm.active_provider in provider_keys else "openai"
 
-    is_claude_code = st.session_state.get("executor_type", "lighthouse") == "claude_code"
+    is_claude_code = st.session_state.get("executor_type", "claude_code") == "claude_code"
 
     if is_claude_code:
         chosen_provider = "anthropic"

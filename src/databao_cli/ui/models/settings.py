@@ -50,7 +50,7 @@ class LLMSettings:
 class AgentSettings:
     """Agent-related settings."""
 
-    executor_type: str = "lighthouse"
+    executor_type: str = "claude_code"
     llm: LLMSettings = field(default_factory=LLMSettings)
 
 
@@ -102,7 +102,7 @@ class Settings:
 
         return cls(
             agent=AgentSettings(
-                executor_type=agent_data.get("executor_type", "lighthouse"),
+                executor_type=agent_data.get("executor_type", "claude_code"),
                 llm=LLMSettings(
                     active_provider=llm_data.get("active_provider", "openai"),
                     providers=providers,

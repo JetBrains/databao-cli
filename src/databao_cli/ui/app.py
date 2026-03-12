@@ -55,7 +55,7 @@ def _save_settings_if_changed() -> None:
 
     changed = False
 
-    current_executor = st.session_state.get("executor_type", "lighthouse")
+    current_executor = st.session_state.get("executor_type", "claude_code")
     if settings.agent.executor_type != current_executor:
         settings.agent.executor_type = current_executor
         changed = True
@@ -100,7 +100,7 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
         return None
 
     try:
-        executor_type = st.session_state.get("executor_type", "lighthouse")
+        executor_type = st.session_state.get("executor_type", "claude_code")
 
         cache = _get_or_create_disk_cache()
 
@@ -273,7 +273,7 @@ def init_session_state() -> None:
     if "status_message" not in st.session_state:
         st.session_state.status_message = None
     if "executor_type" not in st.session_state:
-        st.session_state.executor_type = "lighthouse"
+        st.session_state.executor_type = "claude_code"
     if "llm_provider" not in st.session_state:
         st.session_state.llm_provider = LLMSettings()
 

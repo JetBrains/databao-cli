@@ -16,7 +16,7 @@ def create_agent_for_tool(
     project_dir: Path,
     model: str | None = None,
     temperature: float = 0.0,
-    executor: str = "lighthouse",
+    executor: str = "claude_code",
     cache: Cache | None = None,
 ) -> Agent:
     """Create a Databao agent from a DCE project, configured for MCP tool use.

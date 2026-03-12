@@ -62,8 +62,8 @@ def register(mcp: "FastMCP", context: "McpContext") -> None:
         ] = 0.0,
         executor: Annotated[
             str,
-            Field(description="Execution engine: 'lighthouse' (default) or 'react_duckdb'."),
-        ] = "lighthouse",
+            Field(description="Execution engine: 'claude_code' (default), 'lighthouse', 'dbt',  or 'react_duckdb'."),
+        ] = "claude_code",
         max_data_rows: Annotated[
             int,
             Field(description="Maximum number of data rows to return in the response."),
