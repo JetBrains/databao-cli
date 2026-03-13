@@ -6,10 +6,9 @@ import streamlit as st
 from databao.agent import Agent
 
 from databao_cli.project.layout import ProjectLayout
-from databao_cli.ui.app import _clear_all_chat_threads, is_read_only_domain
+from databao_cli.ui.app import invalidate_agent, is_read_only_domain
 from databao_cli.ui.components.datasource_manager import render_datasource_manager
 from databao_cli.ui.components.icons import get_db_type_and_icon
-from databao_cli.ui.components.status import AppStatus, set_status
 from databao_cli.ui.project_utils import DatabaoProjectStatus, databao_project_status
 from databao_cli.ui.services.build_service import render_build_section
 from databao_cli.ui.services.dce_operations import get_status_info
@@ -50,10 +49,7 @@ def render_context_settings_page() -> None:
         st.info("No Databao project detected. Initialize one from the Setup page.")
 
     if reload_clicked:
-        st.session_state.databao_project = None
-        st.session_state.agent = None
-        _clear_all_chat_threads()
-        set_status(AppStatus.INITIALIZING, "Reloading project...")
+        invalidate_agent("Reloading project...")
         st.rerun()
 
     # ---- Datasource Management section ----

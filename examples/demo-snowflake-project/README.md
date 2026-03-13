@@ -11,7 +11,7 @@ This project deploys the [Databao](https://github.com/JetBrains/databao-cli) Str
 ## How It Works
 
 1. **`setup.sql`** provisions everything needed inside Snowflake:
-   - A dedicated database (`STREAMLIT_DATABAO`+suffix), warehouse, and compute pool
+   - A dedicated database (`STREAMLIT_DATABAO_DB_`+suffix), warehouse, and compute pool
    - Network rules and external access integrations for outbound HTTPS
    - A service user with a permissive network policy
    - A Git repository object pointing at `databao-cli` on GitHub

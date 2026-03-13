@@ -11,6 +11,7 @@ from typing import Any, cast
 import streamlit as st
 from databao_context_engine import ConfiguredDatasource, DatasourceConnectionStatus
 
+from databao_cli.ui.app import invalidate_agent
 from databao_cli.ui.components.datasource_form import render_datasource_config_form
 from databao_cli.ui.services.dce_operations import (
     add_datasource,
@@ -216,6 +217,7 @@ def _render_existing_datasource(project_dir: Path, ds: ConfiguredDatasource, idx
                         try:
                             remove_datasource(project_dir, ds_id)
                             st.session_state.pop(f"_confirm_remove_{idx}", None)
+                            invalidate_agent("Datasource removed, reinitializing agent...")
                             st.rerun()
                         except Exception as e:
                             st.error(f"Remove failed: {e}")

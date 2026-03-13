@@ -20,10 +20,10 @@ def cli(ctx: Context, project_dir: Path | None) -> None:
     """Databao Common CLI"""
     project_path = Path.cwd() if project_dir is None else project_dir.expanduser().resolve()
 
-    configure_logging()
-
     ctx.ensure_object(dict)
     ctx.obj["project_dir"] = project_path
+
+    configure_logging(find_project(project_path))
 
 
 @cli.command()
