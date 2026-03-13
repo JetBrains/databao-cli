@@ -570,7 +570,7 @@ wheels = [
 
 [[package]]
 name = "databao"
-version = "0.3.3.dev2"
+version = "0.3.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "adbc-driver-manager" },
@@ -585,9 +585,9 @@ dependencies = [
     { name = "streamlit", extra = ["snowflake"] },
     { name = "uuid6" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/42/34/6a685f09db94344e23c74931160bd6947e41802b138ba8a5476b88aebdb4/databao-0.3.3.dev2.tar.gz", hash = "sha256:e42f324c7e3128d18f5888951e59817049cafce9b0989c2f0e8144799288a138", size = 619028, upload-time = "2026-03-12T20:57:46.652Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/55/ab/4e2bf317115c2317909aa73dd77d74161ff9c61d3aec4cf75e7812238997/databao-0.3.3.tar.gz", hash = "sha256:13b399cb0f4d03c53b08ba5132fcf5d7fd1d453de4912c02125b38b989125b44", size = 631424, upload-time = "2026-03-13T13:29:00.351Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e1/48/eff3ff9ccde22c4da9fcf654afc78b340b16f4740a1a4ff42b6ed594bbd1/databao-0.3.3.dev2-py3-none-any.whl", hash = "sha256:bed8e89d7bf503dda6f145d6f1a84b907af72da6031287265ba80ebb808850b1", size = 138980, upload-time = "2026-03-12T20:57:45.482Z" },
+    { url = "https://files.pythonhosted.org/packages/7e/da/855272254818e60df994e694c147e207ad55b338a2a3fdc0bcb813b49f46/databao-0.3.3-py3-none-any.whl", hash = "sha256:2550df9296da553c8931979ac0ecdc07894481fc7d15d3c088fce5368e9a3368", size = 143343, upload-time = "2026-03-13T13:28:59.001Z" },
 ]
 
 [[package]]
@@ -665,7 +665,7 @@ dependencies = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "databao", specifier = ">=0.3.3.dev2" }]
+requires-dist = [{ name = "databao", specifier = ">=0.3.3" }]
 
 [[package]]
 name = "dbt-adapters"
