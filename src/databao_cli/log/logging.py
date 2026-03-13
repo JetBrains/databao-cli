@@ -9,17 +9,9 @@ from databao_cli.project.layout import ProjectLayout
 def configure_logging(project_layout: ProjectLayout | None) -> None:
     log_config = {
         "version": 1,
-        "formatters": {
-            "file": {
-                "format": "%(asctime)s %(levelname)s %(name)s: %(message)s"
-            }
-        },
+        "formatters": {"file": {"format": "%(asctime)s %(levelname)s %(name)s: %(message)s"}},
         "handlers": {
-            "stdout": {
-                "class": "logging.StreamHandler",
-                "stream": "ext://sys.stdout",
-                "level": "INFO"
-            },
+            "stdout": {"class": "logging.StreamHandler", "stream": "ext://sys.stdout", "level": "INFO"},
             "stderr": {
                 "class": "logging.StreamHandler",
                 "stream": "ext://sys.stderr",
@@ -58,6 +50,7 @@ def _get_logging_file_handler(logs_dir: Path) -> dict[str, Any]:
         "backupCount": 12,
         "level": "DEBUG",
     }
+
 
 def _get_current_log_filename() -> str:
     # Creates a new log file every month
