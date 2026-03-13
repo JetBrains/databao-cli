@@ -1009,6 +1009,7 @@ dependencies = [
     { name = "nh3" },
     { name = "prettytable" },
     { name = "pyyaml" },
+    { name = "rich" },
     { name = "streamlit", extra = ["snowflake"] },
     { name = "uuid6" },
 ]
@@ -1065,6 +1066,7 @@ requires-dist = [
     { name = "nh3", specifier = ">=0.2.15" },
     { name = "prettytable", specifier = ">=3.10.0" },
     { name = "pyyaml", specifier = ">=6.0" },
+    { name = "rich", specifier = ">=14.3.3" },
     { name = "streamlit", extras = ["snowflake"], specifier = ">=1.53.0" },
     { name = "uuid6", specifier = ">=2024.7.10" },
 ]
