@@ -15,7 +15,7 @@ from utils.path_utils import get_datasource_result
 from utils.yaml_compare import assert_introspections_equal
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def postgres_container():
     container = PostgresContainer("postgres:18.0", driver=None)
     container.start()
