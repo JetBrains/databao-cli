@@ -1,0 +1,5 @@
+Ollama model nomic-embed-text:v1.5 not found locally. Pulling it (this may take several minutes)...
+Ollama model nomic-embed-text:v1.5 pulled successfully
+Found datasource of type "duckdb" with name test duckdb conn
+Exported result to /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmpmtuwp5ibtest_databao_build_duckdb/databao/domains/root/output/test duckdb conn.yaml
+Build complete. Processed 1 datasources.
