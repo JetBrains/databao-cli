@@ -30,6 +30,10 @@ class ProjectLayout:
         return self.databao_dir / "domains"
 
     @property
+    def logs_dir(self) -> Path:
+        return self.databao_dir / "logs"
+
+    @property
     def root_domain_dir(self) -> Path:
         """
         Root domain is the domain which is used by default unless domain parameter is specified
