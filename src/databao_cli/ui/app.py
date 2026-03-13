@@ -530,7 +530,7 @@ def main() -> None:
         "--hide-build-context-hint",
         action="store_true",
         default=False,
-        help="Hide the 'Context isn't built yet' warning on the empty chat screen and skip the Build Context step in the setup wizard",
+        help="Hide the 'Context isn't built yet' warning and skip the Build Context step in the setup wizard",
     )
     try:
         args = parser.parse_args()
