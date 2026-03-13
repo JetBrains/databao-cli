@@ -10,13 +10,13 @@ VERSION = "0.1.0"
 
 # Each entry is (text, color | None, bold)
 BAO_ART: list[list[tuple[str, str | None, bool]]] = [
-    [("     ╭─────────╮  ", "magenta", False)],
-    [("    ╭╯  ", "magenta", False), ("◕   ◕", "white", False), ("  ╰╮ ", "magenta", False)],
-    [("    │    ", "magenta", False), ("╰ω╯", "white", True), ("    │ ", "magenta", False)],
-    [("    │  ", "magenta", False), ("databao", "green", True), ("  │ ", "magenta", False)],
-    [("    ╰╮         ╭╯ ", "magenta", False)],
-    [("     ╰─────────╯  ", "magenta", False)],
-    [("      ░░░░░░░░░   ", "magenta", False)],
+    [('   .-""""-.   ', "magenta", False)],
+    [(" .-'        '-. ", "magenta", False)],
+    [("/              \\", "magenta", False)],
+    [("|    ", "magenta", False), ("●     ●", "white", True), ("     |", "magenta", False)],
+    [("|      ", "magenta", False), ("◡◡", "white", False), ("        |", "magenta", False)],
+    [("\\              /", "magenta", False)],
+    [("  '-.________.-'  ", "magenta", False)],
 ]
 
 
