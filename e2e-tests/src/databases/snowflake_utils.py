@@ -23,9 +23,9 @@ class SnowflakeKeyPairAuth:
 
     def apply(self, child) -> None:
         child_answer(child, r"connection\.auth\.type\?", "SnowflakeKeyPairAuth")
-        child_answer_safe(child, r"connection\.auth\.private_key_file\? \(Optional\) :", self.private_key_file)
-        child_answer_safe(child, r"connection\.auth\.private_key_file_pwd\? \(Optional\) :", self.private_key_file_pwd)
-        child_answer_safe(child, r"connection\.auth\.private_key\? \(Optional\) :", self.private_key)
+        child_answer_safe(child, r"connection\.auth\.private_key_file\? \(Optional\):", self.private_key_file)
+        child_answer_safe(child, r"connection\.auth\.private_key_file_pwd\? \(Optional\):", self.private_key_file_pwd)
+        child_answer_safe(child, r"connection\.auth\.private_key\? \(Optional\):", self.private_key)
 
 
 @dataclass(frozen=True)
@@ -55,9 +55,9 @@ def get_working_snowflake_connection() -> SnowflakeDB:
     return SnowflakeDB(
         datasource_name="my_test_snowflake",
         account="""{{ env_var("SNOWFLAKE_ACCOUNT") }}""",
-        warehouse="DEMO_WH",
-        database="DATALORE",
+        warehouse="""{{ env_var("SNOWFLAKE_WAREHOUSE") }}""",
+        database="""{{ env_var("SNOWFLAKE_DATABASE") }}""",
         user="""{{ env_var("SNOWFLAKE_TEST_USER") }}""",
-        auth=SnowflakePasswordAuth(password="""{{ env_var("SNOWFLAKE_TEST_USER_PROGRAM_TOKEN") }}"""),
+        auth=SnowflakeKeyPairAuth(private_key="""{{ env_var("SNOWFLAKE_PRIVATE_TOKEN") }}"""),
         check_connection=True,
     )

@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import allure
-import pytest
 from databases.snowflake_utils import get_working_snowflake_connection
 from project_utils import execute_build, execute_init
 from utils.path_utils import get_datasource_result
@@ -12,7 +11,6 @@ from utils.yaml_compare import assert_introspections_equal
 @allure.description(
     "Initialize a project with Snowflake using interactive configuration and verify the generated config file."
 )
-@pytest.mark.skip(reason="Temporarily disabled")
 def test_databao_build_snowflake_datasource_from_init_config(project_folder: Path):
     db = get_working_snowflake_connection()
     execute_init(project_folder, db)

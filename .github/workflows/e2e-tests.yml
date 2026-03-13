@@ -28,8 +28,11 @@ jobs:
       - name: Run e2e tests
         env:
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+          SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
           SNOWFLAKE_TEST_USER: ${{ secrets.SNOWFLAKE_TEST_USER }}
-          SNOWFLAKE_TEST_USER_PROGRAM_TOKEN: ${{ secrets.SNOWFLAKE_TEST_USER_PROGRAM_TOKEN }}
+          SNOWFLAKE_PRIVATE_TOKEN: ${{ secrets.SNOWFLAKE_PRIVATE_TOKEN }}
+
           BQ_PROJECT: ${{ secrets.BQ_PROJECT }}
           BQ_DATASET: ${{ secrets.BQ_DATASET }}
           BQ_SERVICE_ACCOUNT_JSON: ${{ secrets.BQ_SERVICE_ACCOUNT_JSON }}
