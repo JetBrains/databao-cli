@@ -81,5 +81,9 @@ if "--project-dir" not in sys.argv:
 
 if "--read-only-domain" not in sys.argv:
     sys.argv.append("--read-only-domain")
+if "--hide-suggested-questions" not in sys.argv:
+    sys.argv.append("--hide-suggested-questions")
+if "--hide-build-context-hint" not in sys.argv:
+    sys.argv.append("--hide-build-context-hint")
 
 main()
