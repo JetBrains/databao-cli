@@ -16,6 +16,7 @@ def _interactive_menu(project_dir: Path) -> None:
         choices=[
             questionary.Choice("Open Claude Code with Databao", value="claude"),
             questionary.Choice("Start web interface", value="app"),
+            questionary.Choice("Sync introspections", value="sync"),
             questionary.Choice("Re-initialize project", value="init"),
         ],
     ).ask()
@@ -29,6 +30,9 @@ def _interactive_menu(project_dir: Path) -> None:
     elif action == "claude":
         from databao_mock.commands.claude import claude_impl
         claude_impl(project_dir)
+    elif action == "sync":
+        from databao_mock.commands.sync import sync_impl
+        sync_impl(project_dir)
     elif action == "init":
         from databao_mock.commands.init import init_impl
         # Remove databao.yml so init_impl doesn't block re-init
@@ -85,6 +89,14 @@ def claude(ctx: Context) -> None:
     """Open Claude Code with Databao skill."""
     from databao_mock.commands.claude import claude_impl
     claude_impl(ctx.obj["project_dir"])
+
+
+@cli.command()
+@click.pass_context
+def sync(ctx: Context) -> None:
+    """Sync source schemas and introspections."""
+    from databao_mock.commands.sync import sync_impl
+    sync_impl(ctx.obj["project_dir"])
 
 
 if __name__ == "__main__":

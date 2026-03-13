@@ -334,8 +334,8 @@ def _generate_sources(dbt_dir: Path, project_name: str, tables: list[str], new_p
         "version": 2,
         "sources": [{
             "name": project_name,
-            "database": "{{ env_var('DBT_DATABASE', 'default') }}",
-            "schema": "{{ env_var('DBT_SCHEMA', 'public') }}",
+            "database": "{{ env_var('DBT_DATABASE', 'shopify') }}",
+            "schema": "{{ env_var('DBT_SCHEMA', 'main') }}",
             "tables": table_entries,
         }],
     }

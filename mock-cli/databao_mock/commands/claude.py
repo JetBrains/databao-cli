@@ -12,9 +12,9 @@ SKILL_CONTENT = """\
 name: databao
 description: >
   Answer data questions using the connected dbt project. Generates SQL and
-  semantic layer views as needed. Also supports /databao test and /databao sync.
+  semantic layer views as needed. Also supports /databao test and /databao generate.
   Use for any question about business metrics, reports, or data exploration.
-argument-hint: "[data question | test [file] | sync | generate [what]]"
+argument-hint: "[data question | test [file] | generate [what]]"
 allowed-tools: Bash, Read, Write, Glob, Grep
 ---
 
@@ -58,20 +58,6 @@ Run regression tests against known good questions and SQL.
 
 If a file path was passed, append passing
 rows into `test_questions.csv` in the databao folder for future regression runs.
-
----
-
-### /databao sync
-
-Update schemas and introspections for all sources in the dbt project.
-
-1. Read `databao.yml` for connection details
-2. For each source table in `models/staging/_sources.yml`:
-   - Re-introspect columns: unique values, null %, data type
-   - Update the `meta` block for each column
-3. Detect any new tables in the database not yet in sources — list them
-4. Save updated `_sources.yml`
-5. Report: X tables synced, Y columns updated, Z new tables detected
 
 ---
 
