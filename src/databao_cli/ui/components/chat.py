@@ -523,11 +523,12 @@ def render_chat_interface(chat: "ChatSession") -> None:
     _process_pending_overwrite(chat)
 
     agent: Agent | None = st.session_state.get("agent")
+    hide_build_context_hint: bool = bool(st.session_state.get("_hide_build_context_hint"))
     if (
         agent is not None
         and not agent.domain.is_context_built()
         and not chat.messages
-        and not st.session_state.get("_hide_build_context_hint")
+        and not hide_build_context_hint
     ):
         st.markdown(
             "⚠️ Context isn't built yet. "

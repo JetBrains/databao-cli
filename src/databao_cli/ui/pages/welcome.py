@@ -128,7 +128,7 @@ def render_setup_wizard_page() -> None:
     2. Configure Datasources
     3. Configure Agent
     4. Build Context (optional; can be hidden via feature flag)
-    5. Ready
+    5. Start Using Databao
 
     When read-only-domain mode is active, editing sections are disabled with
     an explanation banner.
