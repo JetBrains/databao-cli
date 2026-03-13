@@ -9,6 +9,7 @@ from databao_cli.project.layout import ROOT_DOMAIN, ProjectLayout, find_project
 
 
 @click.group()
+@click.option("-v", "--verbose", is_flag=True, help="Enable debug logging")
 @click.option(
     "-p",
     "--project-dir",
@@ -16,14 +17,14 @@ from databao_cli.project.layout import ROOT_DOMAIN, ProjectLayout, find_project
     help="Location of your Databao project",
 )
 @click.pass_context
-def cli(ctx: Context, project_dir: Path | None) -> None:
+def cli(ctx: Context, verbose: bool, project_dir: Path | None) -> None:
     """Databao Common CLI"""
     project_path = Path.cwd() if project_dir is None else project_dir.expanduser().resolve()
 
     ctx.ensure_object(dict)
     ctx.obj["project_dir"] = project_path
 
-    configure_logging(find_project(project_path))
+    configure_logging(find_project(project_path), verbose=verbose)
 
 
 @cli.command()
@@ -271,6 +272,8 @@ def mcp(ctx: click.Context, transport: str, host: str, port: int) -> None:
     """
     from databao_cli.commands.mcp import mcp_impl
 
+    if transport == "stdio":
+        configure_logging(find_project(ctx.obj["project_dir"]), quiet=True)
     mcp_impl(ctx.obj["project_dir"], transport, host, port)
 
 

@@ -6,15 +6,15 @@ from typing import Any
 from databao_cli.project.layout import ProjectLayout
 
 
-def configure_logging(project_layout: ProjectLayout | None) -> None:
+def configure_logging(project_layout: ProjectLayout | None, verbose: bool = False, quiet: bool = False) -> None:
     log_config = {
         "version": 1,
         "formatters": {"file": {"format": "%(asctime)s %(levelname)s %(name)s: %(message)s"}},
         "handlers": {
-            "stdout": {"class": "logging.StreamHandler", "stream": "ext://sys.stdout", "level": "INFO"},
-            "stderr": {
+            "stdout": {
                 "class": "logging.StreamHandler",
-                "stream": "ext://sys.stderr",
+                "stream": "ext://sys.stdout",
+                "level": "DEBUG" if verbose else "INFO",
             },
         },
         "loggers": {
@@ -24,9 +24,9 @@ def configure_logging(project_layout: ProjectLayout | None) -> None:
                 "handlers": ["stdout"],
             },
             "databao_cli": {
-                "level": "INFO",
+                "level": "DEBUG",
                 "propagate": False,
-                "handlers": ["stderr"],
+                "handlers": ["stdout"],
             },
         },
     }
@@ -38,6 +38,11 @@ def configure_logging(project_layout: ProjectLayout | None) -> None:
         file_handler_name = "logFile"
         log_config["handlers"][file_handler_name] = _get_logging_file_handler(logs_dir)  # type: ignore[index]
         log_config["loggers"]["databao_context_engine"]["handlers"].append(file_handler_name)  # type: ignore[index]
+
+    if quiet:
+        for logger in log_config["loggers"].values():  # type: ignore
+            if "handlers" in logger:
+                logger["handlers"].remove("stdout")
     dictConfig(log_config)
 
 
