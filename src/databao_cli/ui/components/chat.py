@@ -77,8 +77,9 @@ def render_welcome_component(chat: "ChatSession") -> None:
     - ready: shows questions with appropriate subtitle
     """
     status = st.session_state.get("suggestions_status", "not_started")
+    hide_suggested_questions = bool(st.session_state.get("_hide_suggested_questions"))
 
-    if status == "not_started":
+    if status == "not_started" and not hide_suggested_questions:
         agent: Agent | None = st.session_state.get("agent")
         if agent is not None:
             start_suggestions_generation(agent)
@@ -98,7 +99,7 @@ def render_welcome_component(chat: "ChatSession") -> None:
         unsafe_allow_html=True,
     )
 
-    if status == "loading":
+    if status == "loading" and not hide_suggested_questions:
         st.markdown(
             "<p style='text-align: center; color: #888; font-size: 0.9em; margin-top: 1em;'>"
             "🔄 Analyzing your data to suggest questions..."
@@ -110,7 +111,7 @@ def render_welcome_component(chat: "ChatSession") -> None:
     questions: list[str] = st.session_state.get("suggested_questions", [])
     is_llm_generated: bool = st.session_state.get("suggestions_are_llm_generated", False)
 
-    if questions and not st.session_state.get("_hide_suggested_questions"):
+    if questions and not hide_suggested_questions:
         if is_llm_generated:
             st.markdown(
                 "<p style='text-align: center; color: #888; font-size: 0.9em; margin-top: 1em;'>"

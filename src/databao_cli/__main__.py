@@ -225,7 +225,10 @@ def ask(
     "--hide-build-context-hint",
     is_flag=True,
     default=False,
-    help="Hide the 'Context isn't built yet' warning on the empty chat screen",
+    help=(
+        "Hide the 'Context isn't built yet' warning on the empty chat screen and "
+        "remove the Build Context step from the setup wizard"
+    ),
 )
 @click.pass_context
 def app(ctx: click.Context, read_only_domain: bool, hide_suggested_questions: bool, hide_build_context_hint: bool) -> None:

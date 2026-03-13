@@ -122,11 +122,13 @@ def render_welcome_page() -> None:
 def render_setup_wizard_page() -> None:
     """Render the setup wizard for first-time project configuration.
 
-    Four sections, all visible, disabled based on prerequisites:
+    The wizard is organized into up to five sections, which are disabled
+    based on prerequisites:
     1. Initialize Project
     2. Configure Datasources
-    3. Build Context
-    4. Ready
+    3. Configure Agent
+    4. Build Context (optional; can be hidden via feature flag)
+    5. Ready
 
     When read-only-domain mode is active, editing sections are disabled with
     an explanation banner.
