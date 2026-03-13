@@ -234,7 +234,9 @@ BEGIN
     || ' EXTERNAL_ACCESS_INTEGRATIONS = (' || :_eai || ')'
     || ' COMMENT = ''Databao Snowflake Demo UI''';
   EXECUTE IMMEDIATE :_sql;
-
-  -- Clean up the bootstrap warehouse
-  DROP WAREHOUSE IF EXISTS STREAMLIT_DATABAO_BOOTSTRAP_WH;
 END;
+
+-- Clean up the bootstrap warehouse
+DROP WAREHOUSE IF EXISTS STREAMLIT_DATABAO_BOOTSTRAP_WH;
+
+SELECT 'Streamlit app STREAMLIT_DATABAO_APP_' || $suffix || ' created successfully.' AS STATUS;

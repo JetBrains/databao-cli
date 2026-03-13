@@ -7,6 +7,13 @@ SET suffix = 'DEMO';
 
 USE ROLE ACCOUNTADMIN;
 
+-- Bootstrap warehouse: needed for expression evaluation in the scripting block.
+CREATE WAREHOUSE IF NOT EXISTS STREAMLIT_DATABAO_BOOTSTRAP_WH
+  WAREHOUSE_SIZE = 'XSMALL'
+  AUTO_SUSPEND = 60
+  AUTO_RESUME = TRUE;
+USE WAREHOUSE STREAMLIT_DATABAO_BOOTSTRAP_WH;
+
 DECLARE
   _sql             VARCHAR;
 
@@ -44,3 +51,7 @@ BEGIN
   -- Warehouse
   EXECUTE IMMEDIATE 'DROP WAREHOUSE IF EXISTS ' || :_wh;
 END;
+
+DROP WAREHOUSE IF EXISTS STREAMLIT_DATABAO_BOOTSTRAP_WH;
+
+SELECT 'Streamlit app STREAMLIT_DATABAO_APP_' || $suffix || ' cleaned up successfully.' AS STATUS;
