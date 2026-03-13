@@ -36,8 +36,8 @@ def configure_logging(project_layout: ProjectLayout | None) -> None:
         logs_dir.mkdir(exist_ok=True)
 
         file_handler_name = "logFile"
-        log_config["handlers"][file_handler_name] = _get_logging_file_handler(logs_dir)
-        log_config["loggers"]["databao_context_engine"]["handlers"].append(file_handler_name)
+        log_config["handlers"][file_handler_name] = _get_logging_file_handler(logs_dir)  # type: ignore[index]
+        log_config["loggers"]["databao_context_engine"]["handlers"].append(file_handler_name)  # type: ignore[index]
     dictConfig(log_config)
 
 
