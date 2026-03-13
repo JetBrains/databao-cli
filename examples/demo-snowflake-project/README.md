@@ -11,7 +11,7 @@ This project deploys the [Databao](https://github.com/JetBrains/databao-cli) Str
 ## How It Works
 
 1. **`setup.sql`** provisions everything needed inside Snowflake:
-   - A dedicated database (`STREAMLIT_DATABAO`), warehouse, and compute pool
+   - A dedicated database (`STREAMLIT_DATABAO`+suffix), warehouse, and compute pool
    - Network rules and external access integrations for outbound HTTPS
    - A service user with a permissive network policy
    - A Git repository object pointing at `databao-cli` on GitHub
@@ -35,6 +35,7 @@ Open `setup.sql` and fill in the placeholder values at the top:
 
 | Variable | Description |
 |---|---|
+| `suffix` | Name suffix appended to all Snowflake objects. Set to e.g. `V2` to create a fully independent copy (objects will be named `STREAMLIT_DATABAO_DB_V2`, etc.). |
 | `openai_key` | OpenAI API key |
 | `anthropic_key` | Anthropic API key |
 | `sf_ds_account` | Snowflake datasource account identifier |
@@ -42,7 +43,6 @@ Open `setup.sql` and fill in the placeholder values at the top:
 | `sf_ds_database` | Database to explore |
 | `sf_ds_user` | User on the datasource account |
 | `sf_ds_password` | Password for that user |
-| `streamlit_app_name` | Name of the Streamlit app object (default: `STREAMLIT_DATABAO_DEMO_SNOWFLAKE`) |
 
 ### 2. Run the Setup Script
 
@@ -50,7 +50,7 @@ Execute the entire `setup.sql` in a Snowflake worksheet (or via SnowSQL) while c
 
 ### 3. Open the App
 
-Once the script finishes, navigate to **Streamlit** in Snowsight and open the app by the name you configured in `streamlit_app_name`. The compute pool may take a minute or two to resume on first launch.
+Once the script finishes, navigate to **Streamlit** in Snowsight and open the app (default name: `STREAMLIT_DATABAO_APP_<suffix>`, e.g. `STREAMLIT_DATABAO_APP_V1`). The compute pool may take a minute or two to resume on first launch.
 
 ## Local Development
 
