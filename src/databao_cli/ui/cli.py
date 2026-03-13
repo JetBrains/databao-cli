@@ -21,6 +21,8 @@ def bootstrap_streamlit_app(
     streamlit_args: list[str] | None = None,
     *,
     read_only_domain: bool = False,
+    hide_suggested_questions: bool = False,
+    hide_build_context_hint: bool = False,
 ) -> None:
     """Bootstrap the UI."""
 
@@ -32,6 +34,10 @@ def bootstrap_streamlit_app(
     app_args = ["--project-dir", str(project_path)]
     if read_only_domain:
         app_args.append("--read-only-domain")
+    if hide_suggested_questions:
+        app_args.append("--hide-suggested-questions")
+    if hide_build_context_hint:
+        app_args.append("--hide-build-context-hint")
 
     subprocess.run(
         [sys.executable, "-m", "streamlit", "run", app_path, *streamlit_args, "--", *app_args],

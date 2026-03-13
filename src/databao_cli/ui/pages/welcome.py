@@ -131,7 +131,7 @@ def render_setup_wizard_page() -> None:
     When read-only-domain mode is active, editing sections are disabled with
     an explanation banner.
     """
-    from databao_cli.ui.app import _create_new_chat, is_read_only_domain
+    from databao_cli.ui.app import _create_new_chat, is_hide_build_context_hint, is_read_only_domain
     from databao_cli.ui.components.datasource_manager import render_datasource_manager
     from databao_cli.ui.services.build_service import (
         get_build_status,
@@ -141,6 +141,7 @@ def render_setup_wizard_page() -> None:
 
     project_dir: Path = st.session_state.get("_project_dir", Path.cwd())
     read_only = is_read_only_domain()
+    hide_build_context = is_hide_build_context_hint()
 
     _col1, col2, _col3 = st.columns([1, 3, 1])
 
@@ -253,31 +254,33 @@ def render_setup_wizard_page() -> None:
         st.markdown("---")
 
         # ---- Section 4: Build Context ----
-        _render_section_header(
-            "4",
-            "Build Context (Optional)",
-            completed=build_started_or_done,
-            enabled=has_datasources,
-        )
-
-        if not has_datasources:
-            st.caption("Complete the previous steps first.")
-        elif project is None:
-            st.caption("Add at least one datasource first.")
-        elif read_only:
-            render_build_section(project.root_domain_dir, read_only=True)
-        else:
-            st.markdown(
-                "Building the context indexes your datasources so Databao can better understand "
-                "your data structure and provide higher-quality answers."
+        if not hide_build_context:
+            _render_section_header(
+                "4",
+                "Build Context (Optional)",
+                completed=build_started_or_done,
+                enabled=has_datasources,
             )
-            render_build_section(project.root_domain_dir)
 
-        st.markdown("---")
+            if not has_datasources:
+                st.caption("Complete the previous steps first.")
+            elif project is None:
+                st.caption("Add at least one datasource first.")
+            elif read_only:
+                render_build_section(project.root_domain_dir, read_only=True)
+            else:
+                st.markdown(
+                    "Building the context indexes your datasources so Databao can better understand "
+                    "your data structure and provide higher-quality answers."
+                )
+                render_build_section(project.root_domain_dir)
+
+            st.markdown("---")
 
         # ---- Final Section: Start Using Databao ----
+        final_step = "4" if hide_build_context else "5"
         _render_section_header(
-            "5",
+            final_step,
             "Start Using Databao",
             completed=False,
             enabled=has_datasources,
@@ -286,12 +289,12 @@ def render_setup_wizard_page() -> None:
         if not has_datasources:
             st.caption("Add at least one datasource first.")
         else:
-            if build_status == "running":
+            if not hide_build_context and build_status == "running":
                 st.info(
                     "The build is still in progress, but you can start exploring Databao. "
                     "Some features may not work until the build completes."
                 )
-            elif not build_started_or_done:
+            elif not hide_build_context and not build_started_or_done:
                 st.markdown(
                     "You're ready to start using Databao! Consider building the context above for the best experience."
                 )

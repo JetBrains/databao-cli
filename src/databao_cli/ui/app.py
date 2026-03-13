@@ -194,6 +194,11 @@ def is_read_only_domain() -> bool:
     return cast(bool, st.session_state.get("_read_only_domain", False))
 
 
+def is_hide_build_context_hint() -> bool:
+    """Check whether the build context hint and step are hidden."""
+    return cast(bool, st.session_state.get("_hide_build_context_hint", False))
+
+
 def _is_project_ready(project_dir: Path) -> bool:
     """Check if the Databao project is fully set up and ready for normal use."""
     project = find_project(project_dir)
@@ -515,11 +520,28 @@ def main() -> None:
         default=False,
         help="Disable all domain-editing operations (init, datasources, build)",
     )
+    parser.add_argument(
+        "--hide-suggested-questions",
+        action="store_true",
+        default=False,
+        help="Hide the suggested questions on the empty chat screen",
+    )
+    parser.add_argument(
+        "--hide-build-context-hint",
+        action="store_true",
+        default=False,
+        help="Hide the 'Context isn't built yet' warning on the empty chat screen",
+    )
     try:
         args = parser.parse_args()
     except SystemExit:
         st.warning("Failed to parse arguments. Using current directory as project directory.")
-        args = argparse.Namespace(project_dir=None, read_only_domain=False)
+        args = argparse.Namespace(
+            project_dir=None,
+            read_only_domain=False,
+            hide_suggested_questions=False,
+            hide_build_context_hint=False,
+        )
 
     project_dir = Path(args.project_dir) if args.project_dir else Path.cwd()
 
@@ -527,6 +549,10 @@ def main() -> None:
 
     if "_read_only_domain" not in st.session_state:
         st.session_state._read_only_domain = args.read_only_domain
+    if "_hide_suggested_questions" not in st.session_state:
+        st.session_state._hide_suggested_questions = args.hide_suggested_questions
+    if "_hide_build_context_hint" not in st.session_state:
+        st.session_state._hide_build_context_hint = args.hide_build_context_hint
 
     if "_setup_mode_active" not in st.session_state:
         project = find_project(project_dir)
