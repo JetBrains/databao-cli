@@ -175,7 +175,7 @@ def render_sidebar_chat_content(project: ProjectLayout | None) -> None:
 
     if current_chat_id and current_chat_id in chats:
         chat = chats[current_chat_id]
-        if st.button("🗑️ Remove Chat", use_container_width=True, type="primary"):
+        if st.button("🗑️ Remove chat", use_container_width=True, type="primary"):
             _confirm_delete_chat(current_chat_id, chat.display_title)
 
     st.markdown("---")

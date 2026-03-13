@@ -1,4 +1,4 @@
-"""Context Settings page - DCE project configuration, datasource management, and build."""
+"""Context settings page - DCE project configuration, datasource management, and build."""
 
 import logging
 
@@ -17,13 +17,13 @@ logger = logging.getLogger(__name__)
 
 
 def render_context_settings_page() -> None:
-    """Render the Context Settings page."""
-    st.title("Context Settings")
+    """Render the Context settings page."""
+    st.title("Context settings")
     st.markdown("Configure your data context and sources.")
 
     project: ProjectLayout | None = st.session_state.get("databao_project")
 
-    # ---- DCE Status section ----
+    # ---- DCE status section ----
     st.markdown("---")
     st.subheader("📋 Status")
 
@@ -52,9 +52,9 @@ def render_context_settings_page() -> None:
         invalidate_agent("Reloading project...")
         st.rerun()
 
-    # ---- Datasource Management section ----
+    # ---- Data sources section ----
     st.markdown("---")
-    st.subheader("🔗 Datasource Management")
+    st.subheader("🔗 Data sources")
 
     if project is not None:
         status = databao_project_status(project)
@@ -63,29 +63,29 @@ def render_context_settings_page() -> None:
         else:
             render_datasource_manager(project.root_domain_dir, read_only=is_read_only_domain())
     else:
-        st.caption("Configure a project to manage datasources.")
+        st.caption("Configure a project to manage data sources.")
 
     # ---- Build section ----
     st.markdown("---")
-    st.subheader("🔨 Build Context")
+    st.subheader("🔨 Build context")
 
     if project is not None:
         status = databao_project_status(project)
         if status in (DatabaoProjectStatus.NOT_INITIALIZED, DatabaoProjectStatus.NO_DATASOURCES):
-            st.caption("Add at least one datasource before building.")
+            st.caption("Add at least one data source before building context.")
         else:
             if not is_read_only_domain():
                 st.markdown(
-                    "Build indexes your datasources so Databao can understand your data "
+                    "Build creates indexes of your datasources so Databao can understand your data "
                     "structure and answer questions about it."
                 )
             render_build_section(project.root_domain_dir, read_only=is_read_only_domain())
     else:
         st.caption("Configure a project to build context.")
 
-    # ---- Connected Sources (from Agent) ----
+    # ---- Connected sources (from Agent) ----
     st.markdown("---")
-    st.subheader("📡 Active Agent Sources")
+    st.subheader("📡 Active data sources")
 
     agent = st.session_state.get("agent")
     if agent is None:
@@ -109,7 +109,7 @@ def _render_project_info(project: ProjectLayout) -> bool:
     elif status == DatabaoProjectStatus.NOT_INITIALIZED:
         st.error("Project not initialized", icon="❌")
     elif status == DatabaoProjectStatus.NO_DATASOURCES:
-        st.warning("No datasources configured", icon="⚠️")
+        st.warning("No data sources configured", icon="⚠️")
 
     reload_clicked = st.button("🔄 Reload")
 
@@ -122,7 +122,7 @@ def _render_sources(agent: Agent) -> None:
     dfs = agent.dfs
 
     if not dbs and not dfs:
-        st.caption("No sources configured in this project.")
+        st.caption("No data sources configured in this project.")
         return
 
     if dbs:
