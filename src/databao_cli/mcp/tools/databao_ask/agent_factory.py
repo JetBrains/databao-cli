@@ -19,7 +19,7 @@ def create_agent_for_tool(
     executor: str = "lighthouse",
     cache: Cache | None = None,
 ) -> Agent:
-    """Create a Databao agent from a DCE project, configured for MCP tool use.
+    """Create a Databao agent from a Context Engine project, configured for MCP tool use.
 
     Raises ValueError if the project is not ready (no datasources, no build).
     """
@@ -27,11 +27,11 @@ def create_agent_for_tool(
 
     status = databao_project_status(project)
     if status == DatabaoProjectStatus.NOT_INITIALIZED:
-        raise ValueError("Databao project is not initialized. Run 'databao init' first.")
+        raise ValueError("Databao project is not initialized. Run 'databao init' first")
     if status == DatabaoProjectStatus.NO_DATASOURCES:
-        raise ValueError("No datasources configured. Run 'databao datasource add' first.")
+        raise ValueError("No data sources configured. Run 'databao datasource add' first")
     if not has_build_output(project):
-        raise ValueError("Project has no build output. Run 'databao build' first.")
+        raise ValueError("Project has no build output. Run 'databao build' first")
 
     domain = create_domain(project.root_domain_dir)
 

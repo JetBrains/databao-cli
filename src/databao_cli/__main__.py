@@ -7,6 +7,9 @@ from click import Context
 from databao_cli.log.logging import configure_logging
 from databao_cli.project.layout import ROOT_DOMAIN, ProjectLayout, find_project
 
+from databao_cli.labels import LABELS
+from databao_cli.utils import ask_confirm, register_labels
+
 
 @click.group()
 @click.option(
@@ -24,6 +27,8 @@ def cli(ctx: Context, project_dir: Path | None) -> None:
 
     ctx.ensure_object(dict)
     ctx.obj["project_dir"] = project_path
+
+    register_labels(LABELS)
 
 
 @cli.command()
@@ -48,7 +53,7 @@ def init(ctx: Context) -> None:
     try:
         project_layout = init_impl(project_dir)
     except ProjectDirDoesnotExistError:
-        if click.confirm(
+        if ask_confirm(
             f"The directory {project_dir.resolve()} does not exist. Do you want to create it?",
             default=True,
         ):
@@ -68,12 +73,12 @@ def init(ctx: Context) -> None:
     # except RuntimeError as e:
     #     click.echo(str(e), err=True)
 
-    if not click.confirm("\nDo you want to configure a domain now?"):
+    if not ask_confirm("Do you want to configure a domain now?", default=False):
         return
 
     add_datasource_config_interactive_impl(project_layout, ROOT_DOMAIN)
 
-    while click.confirm("\nDo you want to add more datasources?"):
+    while ask_confirm("Do you want to add more datasources?", default=False):
         add_datasource_config_interactive_impl(project_layout, ROOT_DOMAIN)
 
 
