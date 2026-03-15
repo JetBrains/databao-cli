@@ -308,13 +308,17 @@ def render_visualization_and_actions(
     *,
     is_latest: bool = False,
 ) -> None:
-    """Fragment that renders visualization and action buttons together.
+    """Fragment that renders visualization status and action buttons.
 
-    This is a fragment so that when action buttons trigger updates (e.g., Generate Plot),
-    only this fragment reruns, showing the new visualization without a full app rerun.
+    Re-reads ``has_visualization``, ``visualization_data``, ``viz_pending``
+    and ``viz_error`` from ``chat.messages[message_index]`` on every run so
+    it reflects the latest state.
 
-    The fragment reads has_visualization and visualization_data from chat.messages
-    so it can see updates made by button click handlers on fragment rerun.
+    When a manual "Generate Plot" is pending (flagged via session state),
+    this fragment only renders a placeholder; the actual blocking
+    ``thread.plot()`` call is executed by ``execute_pending_plot`` in the
+    main script — after the input bar has been rendered — to keep the UI
+    responsive and the input visibly disabled.
     """
     current_chat = _get_current_chat()
     if current_chat is None:
@@ -337,11 +341,15 @@ def render_visualization_and_actions(
         viz_pending = False
         viz_error = None
 
+    if st.session_state.get("pending_plot_message_index") == message_index:
+        st.info("Generating visualization...", icon="📈")
+        return
+
     if viz_pending:
         st.info("Generating visualization...", icon="📈")
     elif viz_error:
         st.error(f"Failed to generate visualization: {viz_error}")
-    elif has_visualization or thread._visualization_result is not None or visualization_data is not None:
+    elif has_visualization or visualization_data is not None or (is_latest and thread._visualization_result is not None):
         render_visualization_section(thread, visualization_data)
 
     if is_latest and not viz_pending and not viz_error:
@@ -354,9 +362,11 @@ def _render_and_handle_action_buttons(
     message_index: int,
     has_visualization: bool,
 ) -> None:
-    """Render action buttons and handle clicks inline.
+    """Render action buttons and handle clicks.
 
-    Called from within the fragment, so button clicks can trigger fragment-scoped reruns.
+    "Generate Plot" sets a session-state flag and triggers a full app
+    rerun so that the input bar is rendered as disabled before the
+    blocking ``thread.plot()`` call begins.
     """
     from databao_cli.ui.services import is_query_running
 
@@ -377,31 +387,38 @@ def _render_and_handle_action_buttons(
         button_key = f"action_generate_plot_{message_index}"
         clicked = st.button("📈 Generate Plot", key=button_key, width="stretch", disabled=is_processing)
         if clicked and not is_processing:
-            _handle_generate_plot(chat, message_index)
+            st.session_state["pending_plot_message_index"] = message_index
+            st.rerun(scope="app")
 
 
-def _handle_generate_plot(chat: "ChatSession", message_index: int) -> None:
-    """Handle Generate Plot button click.
+def execute_pending_plot(chat: "ChatSession") -> None:
+    """Execute a pending manual "Generate Plot" request.
 
-    Called from within a fragment, so st.rerun() will only rerun the fragment.
+    Must be called **after** the input bar has been rendered (disabled)
+    so the user sees a locked UI while the blocking ``thread.plot()``
+    runs.  On completion (or error) triggers a full app rerun.
     """
     thread = chat.thread
     if thread is None:
         return
 
-    with st.spinner("Generating visualization..."):
-        try:
-            thread.plot()
+    message_index: int = st.session_state.pop("pending_plot_message_index")
 
-            messages = chat.messages
-            if message_index < len(messages):
-                messages[message_index].has_visualization = True
-                messages[message_index].visualization_data = _extract_visualization_data(thread)
-                save_current_chat()
+    try:
+        thread.plot()
 
-            st.rerun()
-        except Exception as e:
-            st.error(f"Failed to generate visualization: {e}")
+        messages = chat.messages
+        if message_index < len(messages):
+            messages[message_index].has_visualization = True
+            messages[message_index].visualization_data = _extract_visualization_data(thread)
+            save_current_chat()
+    except Exception as e:
+        logger.exception("Failed to generate visualization")
+        if message_index < len(chat.messages):
+            chat.messages[message_index].metadata["viz_error"] = str(e)
+            save_current_chat()
+
+    st.rerun(scope="app")
 
 
 def render_execution_result(

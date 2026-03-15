@@ -37,7 +37,6 @@ def dataframe_to_prettytable(df: pd.DataFrame, max_rows: int = DEFAULT_MAX_DISPL
 
 def initialize_agent_from_dce(project_path: Path, model: str | None, temperature: float) -> Agent:
     """Initialize the Databao agent using a Context Engine project at the given path."""
-    # Validate a Context Engine project
     project = ProjectLayout(project_path)
 
     status = databao_project_status(project)
@@ -59,9 +58,10 @@ def initialize_agent_from_dce(project_path: Path, model: str | None, temperature
 
     _domain = create_domain(project.root_domain_dir)
 
-    # Create LLM config
     if model:
-        llm_config = LLMConfig(name=model, temperature=temperature)
+        from databao_cli.executor_utils import build_llm_config
+
+        llm_config = build_llm_config(model, temperature=temperature)
     else:
         # Use default but with custom temperature if provided
         if temperature != 0.0:

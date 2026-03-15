@@ -34,7 +34,7 @@ class BigQueryServiceAccountJsonAuth:
 
     def apply(self, child) -> None:
         child_answer(child, r"connection\.auth\.type\?", "BigQueryServiceAccountJsonAuth")
-        child_answer_safe(child, r"connection\.auth\.credentials_json\? \(Optional\)", self.credentials_json)
+        child_answer_safe(child, r"connection\.auth\.credentials_json\?:", self.credentials_json)
 
 
 @dataclass()

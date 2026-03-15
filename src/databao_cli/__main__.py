@@ -12,6 +12,7 @@ from databao_cli.utils import ask_confirm, register_labels
 
 
 @click.group()
+@click.option("-v", "--verbose", is_flag=True, help="Enable debug logging")
 @click.option(
     "-p",
     "--project-dir",
@@ -19,16 +20,16 @@ from databao_cli.utils import ask_confirm, register_labels
     help="Location of your Databao project",
 )
 @click.pass_context
-def cli(ctx: Context, project_dir: Path | None) -> None:
+def cli(ctx: Context, verbose: bool, project_dir: Path | None) -> None:
     """Databao Common CLI"""
     project_path = Path.cwd() if project_dir is None else project_dir.expanduser().resolve()
-
-    configure_logging()
 
     ctx.ensure_object(dict)
     ctx.obj["project_dir"] = project_path
 
     register_labels(LABELS)
+
+    configure_logging(find_project(project_path), verbose=verbose)
 
 
 @cli.command()
@@ -220,8 +221,23 @@ def ask(
     default=False,
     help="Disable all domain-editing operations (init, datasources, build) in the UI",
 )
+@click.option(
+    "--hide-suggested-questions",
+    is_flag=True,
+    default=False,
+    help="Hide the suggested questions on the empty chat screen",
+)
+@click.option(
+    "--hide-build-context-hint",
+    is_flag=True,
+    default=False,
+    help=(
+        "Hide the 'Context isn't built yet' warning on the empty chat screen and "
+        "remove the Build Context step from the setup wizard"
+    ),
+)
 @click.pass_context
-def app(ctx: click.Context, read_only_domain: bool) -> None:
+def app(ctx: click.Context, read_only_domain: bool, hide_suggested_questions: bool, hide_build_context_hint: bool) -> None:
     """Launch the Databao Streamlit web interface.
 
     All additional arguments are passed directly to streamlit run.
@@ -236,6 +252,8 @@ def app(ctx: click.Context, read_only_domain: bool) -> None:
     from databao_cli.commands.app import app_impl
 
     ctx.obj["read_only_domain"] = read_only_domain
+    ctx.obj["hide_suggested_questions"] = hide_suggested_questions
+    ctx.obj["hide_build_context_hint"] = hide_build_context_hint
     app_impl(ctx)
 
 
@@ -276,6 +294,8 @@ def mcp(ctx: click.Context, transport: str, host: str, port: int) -> None:
     """
     from databao_cli.commands.mcp import mcp_impl
 
+    if transport == "stdio":
+        configure_logging(find_project(ctx.obj["project_dir"]), quiet=True)
     mcp_impl(ctx.obj["project_dir"], transport, host, port)
 
 

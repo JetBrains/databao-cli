@@ -1,14 +1,13 @@
-# ===== sn_con.yaml =====
 datasource_id: my_test_snowflake.yaml
 datasource_type: snowflake
-context_built_at: 2026-02-19 16:04:32.560891
+context_built_at: 2026-03-13 17:38:22.254348
 context:
   catalogs:
-  - name: DATALORE
+  - name: E2ETESTDB
     schemas:
-    - name: DEMO
+    - name: PUBLIC
       tables:
-      - name: SCREENCAST
+      - name: ALL_TYPES_EXAMPLE
         columns:
         - name: ID
           type: NUMBER
@@ -17,216 +16,234 @@ context:
           default_expression: null
           generated: null
           checks: []
-        - name: Invoice ID
-          type: TEXT
-          nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
-        - name: Branch
-          type: TEXT
-          nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
-        - name: City
-          type: TEXT
-          nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
-        - name: Customer type
-          type: TEXT
-          nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
-        - name: Gender
-          type: TEXT
-          nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
-        - name: Product line
-          type: TEXT
-          nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
-        - name: Unit price
-          type: FLOAT
-          nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
-        - name: Quantity
+          stats: null
+        - name: INT_COL
           type: NUMBER
           nullable: true
           description: null
           default_expression: null
           generated: null
           checks: []
-        - name: Tax 5%
+          stats: null
+        - name: BIGINT_COL
+          type: NUMBER
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: SMALLINT_COL
+          type: NUMBER
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: DECIMAL_COL
+          type: NUMBER
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: FLOAT_COL
           type: FLOAT
           nullable: true
           description: null
           default_expression: null
           generated: null
           checks: []
-        - name: Total
+          stats: null
+        - name: DOUBLE_COL
           type: FLOAT
           nullable: true
           description: null
           default_expression: null
           generated: null
           checks: []
-        - name: Date
+          stats: null
+        - name: BOOL_COL
+          type: BOOLEAN
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: VARCHAR_COL
           type: TEXT
           nullable: true
           description: null
           default_expression: null
           generated: null
           checks: []
-        - name: Time
+          stats: null
+        - name: CHAR_COL
           type: TEXT
           nullable: true
           description: null
           default_expression: null
           generated: null
           checks: []
-        - name: Payment
+          stats: null
+        - name: TEXT_COL
           type: TEXT
           nullable: true
           description: null
           default_expression: null
           generated: null
           checks: []
-        - name: COGS
-          type: FLOAT
+          stats: null
+        - name: BINARY_COL
+          type: BINARY
           nullable: true
           description: null
           default_expression: null
           generated: null
           checks: []
-        - name: gross margin percentage
-          type: FLOAT
+          stats: null
+        - name: DATE_COL
+          type: DATE
           nullable: true
           description: null
           default_expression: null
           generated: null
           checks: []
-        - name: gross income
-          type: FLOAT
+          stats: null
+        - name: TIME_COL
+          type: TIME
           nullable: true
           description: null
           default_expression: null
           generated: null
           checks: []
-        - name: Rating
-          type: FLOAT
+          stats: null
+        - name: TIMESTAMP_COL
+          type: TIMESTAMP_NTZ
           nullable: true
           description: null
           default_expression: null
           generated: null
           checks: []
+          stats: null
+        - name: TIMESTAMP_LTZ_COL
+          type: TIMESTAMP_LTZ
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: TIMESTAMP_NTZ_COL
+          type: TIMESTAMP_NTZ
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: TIMESTAMP_TZ_COL
+          type: TIMESTAMP_TZ
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: VARIANT_COL
+          type: VARIANT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: OBJECT_COL
+          type: OBJECT
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: ARRAY_COL
+          type: ARRAY
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: GEOGRAPHY_COL
+          type: GEOGRAPHY
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: GEOMETRY_COL
+          type: GEOMETRY
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
         samples:
-        - id: 0
-          invoice id: 750-67-8428
-          branch: A
-          city: Yangon
-          customer type: Member
-          gender: Female
-          product line: Health and beauty
-          unit price: 74.69
-          quantity: 7
-          tax 5%: 26.1415
-          total: 548.9715
-          date: 1/5/2019
-          time: '13:08'
-          payment: Ewallet
-          cogs: 522.83
-          gross margin percentage: 4.761904762
-          gross income: 26.1415
-          rating: 9.1
         - id: 1
-          invoice id: 226-31-3081
-          branch: C
-          city: Naypyitaw
-          customer type: Normal
-          gender: Female
-          product line: Electronic accessories
-          unit price: 15.28
-          quantity: 5
-          tax 5%: 3.82
-          total: 80.22
-          date: 3/8/2019
-          time: '10:29'
-          payment: Cash
-          cogs: 76.4
-          gross margin percentage: 4.761904762
-          gross income: 3.82
-          rating: 9.6
-        - id: 2
-          invoice id: 631-41-3108
-          branch: A
-          city: Yangon
-          customer type: Normal
-          gender: Male
-          product line: Home and lifestyle
-          unit price: 46.33
-          quantity: 7
-          tax 5%: 16.2155
-          total: 340.5255
-          date: 3/3/2019
-          time: '13:23'
-          payment: Credit card
-          cogs: 324.31
-          gross margin percentage: 4.761904762
-          gross income: 16.2155
-          rating: 7.4
-        - id: 3
-          invoice id: 123-19-1176
-          branch: A
-          city: Yangon
-          customer type: Member
-          gender: Male
-          product line: Health and beauty
-          unit price: 58.22
-          quantity: 8
-          tax 5%: 23.288
-          total: 489.048
-          date: 1/27/2019
-          time: '20:33'
-          payment: Ewallet
-          cogs: 465.76
-          gross margin percentage: 4.761904762
-          gross income: 23.288
-          rating: 8.4
-        - id: 4
-          invoice id: 373-73-7910
-          branch: A
-          city: Yangon
-          customer type: Normal
-          gender: Male
-          product line: Sports and travel
-          unit price: 86.31
-          quantity: 7
-          tax 5%: 30.2085
-          total: 634.3785
-          date: 2/8/2019
-          time: '10:37'
-          payment: Ewallet
-          cogs: 604.17
-          gross margin percentage: 4.761904762
-          gross income: 30.2085
-          rating: 5.3
+          int_col: 10
+          bigint_col: 10000000000
+          smallint_col: 5
+          decimal_col: '123.45'
+          float_col: 1.23
+          double_col: 2.34
+          bool_col: true
+          varchar_col: hello
+          char_col: char
+          text_col: long text example
+          binary_col: bytearray(b'\xff')
+          date_col: 2026-03-13
+          time_col: '12:34:56'
+          timestamp_col: '2026-03-13T03:54:40.856000'
+          timestamp_ltz_col: '2026-03-13T03:54:40.856000-07:00'
+          timestamp_ntz_col: '2026-03-13T03:54:40.856000'
+          timestamp_tz_col: '2026-03-13T03:54:40.856000-07:00'
+          variant_col: "{\n  \"key\": \"value\"\n}"
+          object_col: "{\n  \"a\": 1,\n  \"b\": 2\n}"
+          array_col: "[\n  1,\n  2,\n  3\n]"
+          geography_col: "{\n  \"coordinates\": [\n    -122.35,\n    37.55\n  ],\n\
+            \  \"type\": \"Point\"\n}"
+          geometry_col: "{\n  \"coordinates\": [\n    1.000000000000000e+00,\n   \
+            \ 2.000000000000000e+00\n  ],\n  \"type\": \"Point\"\n}"
+        - id: 11
+          int_col: 1230
+          bigint_col: 1000000000
+          smallint_col: 54
+          decimal_col: '1234.45'
+          float_col: 14.23
+          double_col: 24.34
+          bool_col: true
+          varchar_col: hello
+          char_col: char
+          text_col: long text example
+          binary_col: bytearray(b'\xff')
+          date_col: 2026-03-13
+          time_col: '12:34:56'
+          timestamp_col: '2026-03-13T03:55:00.230000'
+          timestamp_ltz_col: '2026-03-13T03:55:00.230000-07:00'
+          timestamp_ntz_col: '2026-03-13T03:55:00.230000'
+          timestamp_tz_col: '2026-03-13T03:55:00.230000-07:00'
+          variant_col: "{\n  \"key\": \"value\"\n}"
+          object_col: "{\n  \"a\": 1,\n  \"b\": 2\n}"
+          array_col: "[\n  1,\n  2,\n  3\n]"
+          geography_col: "{\n  \"coordinates\": [\n    -122.35,\n    37.55\n  ],\n\
+            \  \"type\": \"Point\"\n}"
+          geometry_col: "{\n  \"coordinates\": [\n    1.000000000000000e+00,\n   \
+            \ 2.000000000000000e+00\n  ],\n  \"type\": \"Point\"\n}"
         partition_info: null
         description: null
         kind: table
@@ -235,180 +252,438 @@ context:
         checks: []
         indexes: []
         foreign_keys: []
-      description: null
-    - name: TEST
-      tables:
-      - name: 5mSalesRecords
+        stats:
+          row_count: 2
+          approximate: true
+      - name: SALESRECORDSSMALL
         columns:
-        - name: Region
+        - name: REGION
           type: TEXT
           nullable: true
           description: null
           default_expression: null
           generated: null
           checks: []
-        - name: Country
+          stats:
+            null_count: 4287
+            non_null_count: 1970600
+            distinct_count: 7
+            cardinality_kind: 5-9
+            min_value: Asia
+            max_value: Sub-Saharan Africa
+            top_values:
+            - - Europe
+              - 5138
+            - - Sub-Saharan Africa
+              - 5070
+            - - Asia
+              - 2936
+            - - Middle East and North Africa
+              - 2435
+            - - Central America and the Caribbean
+              - 2050
+            total_row_count: 1974887
+        - name: COUNTRY
           type: TEXT
           nullable: true
           description: null
           default_expression: null
           generated: null
           checks: []
-        - name: Item Type
+          stats:
+            null_count: 4287
+            non_null_count: 1970600
+            distinct_count: null
+            cardinality_kind: 100-999
+            min_value: Afghanistan
+            max_value: Zimbabwe
+            top_values:
+            - - Cape Verde
+              - 154
+            - - Portugal
+              - 150
+            - - Chad
+              - 150
+            - - Barbados
+              - 146
+            - - Cambodia
+              - 145
+            total_row_count: 1974887
+        - name: ITEMTYPE
           type: TEXT
           nullable: true
           description: null
           default_expression: null
           generated: null
           checks: []
-        - name: Sales Channel
+          stats:
+            null_count: 4287
+            non_null_count: 1970600
+            distinct_count: 12
+            cardinality_kind: 10-19
+            min_value: Baby Food
+            max_value: Vegetables
+            top_values:
+            - - Vegetables
+              - 1711
+            - - Snacks
+              - 1704
+            - - Cereal
+              - 1700
+            - - Fruits
+              - 1648
+            - - Office Supplies
+              - 1646
+            total_row_count: 1974887
+        - name: SALESCHANNEL
           type: TEXT
           nullable: true
           description: null
           default_expression: null
           generated: null
           checks: []
-        - name: Order Priority
+          stats:
+            null_count: 4287
+            non_null_count: 1970600
+            distinct_count: 2
+            cardinality_kind: 2-4
+            min_value: Offline
+            max_value: Online
+            top_values:
+            - - Offline
+              - 9945
+            - - Online
+              - 9761
+            total_row_count: 1974887
+        - name: ORDERPRIORITY
           type: TEXT
           nullable: true
           description: null
           default_expression: null
           generated: null
           checks: []
-        - name: Order Date
-          type: TEXT
+          stats:
+            null_count: 4287
+            non_null_count: 1970600
+            distinct_count: 4
+            cardinality_kind: 2-4
+            min_value: C
+            max_value: M
+            top_values:
+            - - M
+              - 5032
+            - - L
+              - 4938
+            - - C
+              - 4883
+            - - H
+              - 4853
+            total_row_count: 1974887
+        - name: ORDER_DATE
+          type: DATE
           nullable: true
           description: null
           default_expression: null
           generated: null
           checks: []
-        - name: Order ID
+          stats:
+            null_count: 4287
+            non_null_count: 1970600
+            distinct_count: null
+            cardinality_kind: 1000+
+            min_value: '2010-01-01'
+            max_value: '2020-09-10'
+            top_values:
+            - - '2017-01-31'
+              - 50
+            - - '2015-12-04'
+              - 49
+            - - '2015-10-09'
+              - 49
+            - - '2016-03-25'
+              - 48
+            - - '2010-10-04'
+              - 48
+            total_row_count: 1974887
+        - name: ORDERID
           type: NUMBER
           nullable: true
           description: null
           default_expression: null
           generated: null
           checks: []
-        - name: Ship Date
-          type: TEXT
+          stats:
+            null_count: 4287
+            non_null_count: 1970600
+            distinct_count: null
+            cardinality_kind: 1000+
+            min_value: '100005042'
+            max_value: '999994313'
+            top_values:
+            - - 572139489
+              - 26
+            - - 654742515
+              - 26
+            - - 162716376
+              - 26
+            - - 354081475
+              - 26
+            - - 831967866
+              - 26
+            total_row_count: 1974887
+        - name: SHIPDATE
+          type: DATE
           nullable: true
           description: null
           default_expression: null
           generated: null
           checks: []
-        - name: Units Sold
+          stats:
+            null_count: 4287
+            non_null_count: 1970600
+            distinct_count: null
+            cardinality_kind: 1000+
+            min_value: '2010-01-02'
+            max_value: '2020-10-25'
+            top_values:
+            - - '2016-05-23'
+              - 62
+            - - '2016-11-21'
+              - 56
+            - - '2013-01-11'
+              - 56
+            - - '2020-06-02'
+              - 50
+            - - '2011-07-25'
+              - 48
+            total_row_count: 1974887
+        - name: UNITSSOLD
           type: NUMBER
           nullable: true
           description: null
           default_expression: null
           generated: null
           checks: []
-        - name: Unit Price
+          stats:
+            null_count: 4287
+            non_null_count: 1970600
+            distinct_count: null
+            cardinality_kind: 1000+
+            min_value: '1'
+            max_value: '10000'
+            top_values:
+            - - 4325
+              - 49
+            - - 9051
+              - 49
+            - - 7358
+              - 48
+            - - 3442
+              - 43
+            - - 4173
+              - 43
+            total_row_count: 1974887
+        - name: UNITPRICE
+          type: NUMBER
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats:
+            null_count: 4287
+            non_null_count: 1970600
+            distinct_count: 12
+            cardinality_kind: 10-19
+            min_value: '9.33'
+            max_value: '668.27'
+            top_values:
+            - - 154.06
+              - 1711
+            - - 152.58
+              - 1704
+            - - 205.7
+              - 1700
+            - - 9.33
+              - 1648
+            - - 651.21
+              - 1646
+            total_row_count: 1974887
+        - name: UNITCOST
+          type: NUMBER
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats:
+            null_count: 4287
+            non_null_count: 1970600
+            distinct_count: 12
+            cardinality_kind: 10-19
+            min_value: '6.92'
+            max_value: '524.96'
+            top_values:
+            - - 90.93
+              - 1711
+            - - 97.44
+              - 1704
+            - - 117.11
+              - 1700
+            - - 6.92
+              - 1648
+            - - 524.96
+              - 1646
+            total_row_count: 1974887
+        - name: TOTALREVENUE
+          type: NUMBER
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats:
+            null_count: 4287
+            non_null_count: 1970600
+            distinct_count: null
+            cardinality_kind: 1000+
+            min_value: '27.99'
+            max_value: '6678022.11'
+            top_values:
+            - - 71318.52
+              - 26
+            - - 1146083.05
+              - 26
+            - - 26992.16
+              - 26
+            - - 2407800.96
+              - 26
+            - - 314830.75
+              - 26
+            total_row_count: 1974887
+        - name: TOTALCOST
+          type: NUMBER
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats:
+            null_count: 4287
+            non_null_count: 1970600
+            distinct_count: null
+            cardinality_kind: 1000+
+            min_value: '20.76'
+            max_value: '5249600.00'
+            top_values:
+            - - 52896.48
+              - 26
+            - - 861856.1
+              - 26
+            - - 8852.48
+              - 26
+            - - 1503649.44
+              - 26
+            - - 210926.65
+              - 26
+            total_row_count: 1974887
+        - name: TOTALPROFIT
           type: FLOAT
           nullable: true
           description: null
           default_expression: null
           generated: null
           checks: []
-        - name: Unit Cost
-          type: FLOAT
-          nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
-        - name: Total Revenue
-          type: FLOAT
-          nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
-        - name: Total Cost
-          type: FLOAT
-          nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
-        - name: Total Profit
-          type: FLOAT
-          nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
+          stats:
+            null_count: 4287
+            non_null_count: 1970600
+            distinct_count: null
+            cardinality_kind: 1000+
+            min_value: '7.23'
+            max_value: '1738526.13'
+            top_values:
+            - - 18422.04
+              - 26
+            - - 284226.95
+              - 26
+            - - 18139.68
+              - 26
+            - - 904151.52
+              - 26
+            - - 103904.1
+              - 26
+            total_row_count: 1974887
         samples:
         - region: Australia and Oceania
           country: Palau
-          item type: Office Supplies
-          sales channel: Online
-          order priority: H
-          order date: 3/6/2016
-          order id: 517073523
-          ship date: 3/26/2016
-          units sold: 2401
-          unit price: 651.21
-          unit cost: 524.96
-          total revenue: 1563555.21
-          total cost: 1260428.96
-          total profit: 303126.25
+          itemtype: Office Supplies
+          saleschannel: Online
+          orderpriority: H
+          order_date: 2016-03-06
+          orderid: 517073523
+          shipdate: 2016-03-26
+          unitssold: 2401
+          unitprice: '651.21'
+          unitcost: '524.96'
+          totalrevenue: '1563555.21'
+          totalcost: '1260428.96'
+          totalprofit: 303126.25
         - region: Europe
           country: Poland
-          item type: Beverages
-          sales channel: Online
-          order priority: L
-          order date: 4/18/2010
-          order id: 380507028
-          ship date: 5/26/2010
-          units sold: 9340
-          unit price: 47.45
-          unit cost: 31.79
-          total revenue: 443183.0
-          total cost: 296918.6
-          total profit: 146264.4
+          itemtype: Beverages
+          saleschannel: Online
+          orderpriority: L
+          order_date: 2010-04-18
+          orderid: 380507028
+          shipdate: 2010-05-26
+          unitssold: 9340
+          unitprice: '47.45'
+          unitcost: '31.79'
+          totalrevenue: '443183.00'
+          totalcost: '296918.60'
+          totalprofit: 146264.4
         - region: North America
           country: Canada
-          item type: Cereal
-          sales channel: Online
-          order priority: M
-          order date: 1/8/2015
-          order id: 504055583
-          ship date: 1/31/2015
-          units sold: 103
-          unit price: 205.7
-          unit cost: 117.11
-          total revenue: 21187.1
-          total cost: 12062.33
-          total profit: 9124.77
+          itemtype: Cereal
+          saleschannel: Online
+          orderpriority: M
+          order_date: 2015-01-08
+          orderid: 504055583
+          shipdate: 2015-01-31
+          unitssold: 103
+          unitprice: '205.70'
+          unitcost: '117.11'
+          totalrevenue: '21187.10'
+          totalcost: '12062.33'
+          totalprofit: 9124.77
         - region: Europe
           country: Belarus
-          item type: Snacks
-          sales channel: Online
-          order priority: C
-          order date: 1/19/2014
-          order id: 954955518
-          ship date: 2/27/2014
-          units sold: 1414
-          unit price: 152.58
-          unit cost: 97.44
-          total revenue: 215748.12
-          total cost: 137780.16
-          total profit: 77967.96
+          itemtype: Snacks
+          saleschannel: Online
+          orderpriority: C
+          order_date: 2014-01-19
+          orderid: 954955518
+          shipdate: 2014-02-27
+          unitssold: 1414
+          unitprice: '152.58'
+          unitcost: '97.44'
+          totalrevenue: '215748.12'
+          totalcost: '137780.16'
+          totalprofit: 77967.96
         - region: Middle East and North Africa
           country: Oman
-          item type: Cereal
-          sales channel: Offline
-          order priority: H
-          order date: 4/26/2019
-          order id: 970755660
-          ship date: 6/2/2019
-          units sold: 7027
-          unit price: 205.7
-          unit cost: 117.11
-          total revenue: 1445453.9
-          total cost: 822931.97
-          total profit: 622521.93
+          itemtype: Cereal
+          saleschannel: Offline
+          orderpriority: H
+          order_date: 2019-04-26
+          orderid: 970755660
+          shipdate: 2019-06-02
+          unitssold: 7027
+          unitprice: '205.70'
+          unitcost: '117.11'
+          totalrevenue: '1445453.90'
+          totalcost: '822931.97'
+          totalprofit: 622521.93
         partition_info: null
         description: null
         kind: table
@@ -417,191 +692,8 @@ context:
         checks: []
         indexes: []
         foreign_keys: []
-      - name: DTGRP_TESTING
-        columns:
-        - name: ID
-          type: NUMBER
-          nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
-        - name: TEXT
-          type: TEXT
-          nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
-        samples:
-        - id: 1
-          text: test1
-        - id: 2
-          text: test2
-        - id: 3
-          text: test3
-        - id: 4
-          text: test4
-        - id: 5
-          text: test5
-        partition_info: null
-        description: null
-        kind: table
-        primary_key: null
-        unique_constraints: []
-        checks: []
-        indexes: []
-        foreign_keys: []
-      - name: MY_FIRST_DBT_MODEL
-        columns:
-        - name: ID
-          type: NUMBER
-          nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
-        samples:
-        - id: 1
-        - id: null
-        partition_info: null
-        description: null
-        kind: table
-        primary_key: null
-        unique_constraints: []
-        checks: []
-        indexes: []
-        foreign_keys: []
-      - name: MY_SECOND_DBT_MODEL
-        columns:
-        - name: ID
-          type: NUMBER
-          nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
-        samples:
-        - id: 1
-        partition_info: null
-        description: null
-        kind: view
-        primary_key: null
-        unique_constraints: []
-        checks: []
-        indexes: []
-        foreign_keys: []
-      - name: TEMP_TEST_VIEW_1
-        columns:
-        - name: TEST_VALUE_1
-          type: NUMBER
-          nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
-        samples:
-        - test_value_1: 10
-        partition_info: null
-        description: null
-        kind: view
-        primary_key: null
-        unique_constraints: []
-        checks: []
-        indexes: []
-        foreign_keys: []
-      - name: V3
-        columns:
-        - name: C1
-          type: NUMBER
-          nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
-        samples:
-        - c1: 1
-        partition_info: null
-        description: null
-        kind: view
-        primary_key: null
-        unique_constraints: []
-        checks: []
-        indexes: []
-        foreign_keys: []
-      description: null
-    - name: VB_TEST
-      tables:
-      - name: T1
-        columns:
-        - name: C1
-          type: NUMBER
-          nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
-        - name: C2
-          type: TEXT
-          nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
-        samples:
-        - c1: 0
-          c2: fMxH280Y8IgMD10jZPsDOyLAeV7dCDnKBuLQoe4rQKN6FoZBdPmxKXfeWPPuanEqqjD6V8RHGpXZaNCJmLa7NTIkXayZQE6RHUyV
-        - c1: 1
-          c2: VHOdcq7G4tBixUz1UuD2z3PE31FjrnUGdzy7vUpPnVMFh22F0Y7gCzD3S3y4UsCppiOIvr985TFlJzSdMviXkO2hnqISe3N2KUwI
-        - c1: 2
-          c2: vfLC1XLh7eOh8tr6FdPZWWCr5zTBmf1Y72bSf9WhLMYZvQWfK7Yf5OR5vykKIRBBcj6JSL1cWQYQ1sfXW7rRrxqwohjSlKwZ3017
-        - c1: 3
-          c2: dy3lRzabp56vaUFkqvOUXpUCB5MwMaBmN5pIyF4BQNcfOfdNyP0hz9mJ6Sv5px58HYxUnESGr4nzJbE5jKRDTW8JkVwFTq8aa1Hr
-        - c1: 4
-          c2: 3dXiF52JAhLnzLjlzmcTyju05WX3kbekq1GjEqnEQ97fBZ8lgnEUDW9xmO5VDNKPYCzyh39GAE53Cmo0O1U5izYhDul8xF8IUbkL
-        partition_info: null
-        description: null
-        kind: table
-        primary_key: null
-        unique_constraints: []
-        checks: []
-        indexes: []
-        foreign_keys: []
-      - name: T2
-        columns:
-        - name: C1
-          type: NUMBER
-          nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
-        - name: C2
-          type: TEXT
-          nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
-        samples:
-        - c1: 0
-          c2: n3ZDqeoQTsZL9T2b2I5TcQU2V7G3KGuPZe4r1w7bU7V0Iwj5yVspHTBwF9KAMhLDR5JaZMfFG65XuxQhHfJUaIM4lgMKX6FjQLb1
-        - c1: 1
-          c2: AlQyva9LRYiXsOGUGqEV7LaEgtFH1YFMrU0m87f9cgYX2ZbQMK26f6zN6ewPCNbKI2h7XG4CHhpX6lMCAZLk9BxcjaG2LvCRf0u7
-        - c1: 2
-          c2: w4XZTlx7TBtkKkWwQjX1bXUCDDEAClW5YTUIONUo5SVcVOCo439noSRhx22zjq9rzslpVBg8ZTE13CGMFwVqqcec2cmg0M5C6TMV
-        - c1: 3
-          c2: IKQNbmKKtjGHdok8WdF8AWrThUqDfC7Blgxka1Xpg2jS48DLDmsE83aQPWTYZSrhvruzvy853yiIZv7fk87hLj4nnoEBzE4uNxze
-        - c1: 4
-          c2: dXMgcGlDPYF9oIT5LOCzANe1wyG2wr3XD7e3BuxkIxxA1uip8jes77hcn4zM9xh5PvokVA0RifRkCGjZK3uWD7HPrdOevzmjwNEP
-        partition_info: null
-        description: null
-        kind: table
-        primary_key: null
-        unique_constraints: []
-        checks: []
-        indexes: []
-        foreign_keys: []
+        stats:
+          row_count: 1974887
+          approximate: true
       description: null
     description: null
-

@@ -18,6 +18,7 @@ from databao_cli.ui.services.query_executor import (
     get_query_phase,
     is_query_running,
     start_query_execution,
+    stop_query,
 )
 from databao_cli.ui.services.settings_persistence import (
     delete_settings,
@@ -55,5 +56,6 @@ __all__ = [
     "save_current_chat",
     "save_settings",
     "start_query_execution",
+    "stop_query",
     "trigger_title_generation",
 ]

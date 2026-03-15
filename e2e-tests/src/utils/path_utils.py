@@ -9,8 +9,8 @@ ARTIFACT_DIR = get_root() / "artifacts"
 TEST_RESOURCES_DIR = get_root() / "tests" / "resources"
 
 
-def get_all_results(project_path: Path):
-    return project_path.joinpath("databao", "domains", "root", "output", "all_results.yaml")
+def get_datasource_result(project_path: Path, datasource_name: str):
+    return project_path.joinpath("databao", "domains", "root", "output", f"{datasource_name}.yaml")
 
 
 def get_src_folder(project_path: Path):

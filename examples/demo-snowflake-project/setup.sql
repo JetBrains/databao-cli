@@ -2,10 +2,15 @@
 -- CONFIGURATION: Set these values before running the script
 -- ============================================================
 
+-- Name suffix: change this to create a fully independent set of all
+-- Snowflake objects (database, warehouse, compute pool, integrations, etc.).
+-- Leave empty for the default installation.
+-- Example: SET suffix = 'V2';
+SET suffix              = 'DEMO';
+
 -- Secrets
-SET git_pat             = '<YOUR_GITHUB_PAT>';
-SET git_username        = '<YOUR_GITHUB_USERNAME>';
 SET openai_key          = '<YOUR_OPENAI_API_KEY>';
+SET anthropic_key       = '<YOUR_ANTHROPIC_API_KEY>';
 SET sf_ds_account       = '<SNOWFLAKE_DATASOURCE_ACCOUNT>';
 SET sf_ds_warehouse     = '<SNOWFLAKE_DATASOURCE_WAREHOUSE>';
 SET sf_ds_database      = '<SNOWFLAKE_DATASOURCE_DATABASE>';
@@ -21,198 +26,217 @@ SET git_branch          = 'main';
 SET streamlit_main_file = 'examples/demo-snowflake-project/src/databao_snowflake_demo/app.py';
 
 -- ============================================================
--- 1. Role, Database, Schema, Warehouse
+-- SETUP (everything below is derived from the configuration above)
 -- ============================================================
 USE ROLE ACCOUNTADMIN;
 
-CREATE OR REPLACE DATABASE STREAMLIT_DATABAO;
-USE DATABASE STREAMLIT_DATABAO;
-USE SCHEMA PUBLIC;
-
-CREATE OR REPLACE WAREHOUSE STREAMLIT_DATABAO_WAREHOUSE
+-- Bootstrap warehouse: Snowflake needs an active warehouse to evaluate
+-- expressions in the scripting block below. This gets dropped at the end.
+CREATE WAREHOUSE IF NOT EXISTS STREAMLIT_DATABAO_BOOTSTRAP_WH
   WAREHOUSE_SIZE = 'XSMALL'
   AUTO_SUSPEND = 60
   AUTO_RESUME = TRUE;
-USE WAREHOUSE STREAMLIT_DATABAO_WAREHOUSE;
+USE WAREHOUSE STREAMLIT_DATABAO_BOOTSTRAP_WH;
 
--- ============================================================
--- 2. Networking
--- ============================================================
-CREATE OR REPLACE NETWORK RULE STREAMLIT_DATABAO.PUBLIC.STREAMLIT_DATABAO_EGRESS_RULE
-  MODE = EGRESS
-  TYPE = HOST_PORT
-  VALUE_LIST = ('0.0.0.0:443', '0.0.0.0:80');
-
--- Unset policy from our user first so CREATE OR REPLACE succeeds on re-runs
-ALTER USER IF EXISTS STREAMLIT_DATABAO_USER UNSET NETWORK_POLICY;
-
-CREATE OR REPLACE NETWORK POLICY STREAMLIT_DATABAO_NETWORK_POLICY
-  ALLOWED_IP_LIST = ('0.0.0.0/0')
-  COMMENT = 'Allow all network connections';
-
--- ============================================================
--- 3. Service User
--- ============================================================
-CREATE OR REPLACE USER STREAMLIT_DATABAO_USER
-  TYPE = SERVICE
-  DEFAULT_ROLE = 'PUBLIC';
-
-ALTER USER STREAMLIT_DATABAO_USER SET NETWORK_POLICY = 'STREAMLIT_DATABAO_NETWORK_POLICY';
-
--- ============================================================
--- 4. Git Repository + 5. Application Secrets
--- ============================================================
 DECLARE
-  _sql           VARCHAR;
-  _git_pat       VARCHAR;
-  _git_username  VARCHAR;
-  _git_origin    VARCHAR;
-  _git_repo      VARCHAR;
-  _openai_key    VARCHAR;
-  _ds_account    VARCHAR;
-  _ds_warehouse  VARCHAR;
-  _ds_database   VARCHAR;
-  _ds_user       VARCHAR;
-  _ds_password   VARCHAR;
-BEGIN
-  SELECT $git_pat, $git_username, $git_repo_origin, $git_repo_name,
-         $openai_key, $sf_ds_account, $sf_ds_warehouse, $sf_ds_database,
-         $sf_ds_user, $sf_ds_password
-    INTO :_git_pat, :_git_username, :_git_origin, :_git_repo,
-         :_openai_key, :_ds_account, :_ds_warehouse, :_ds_database,
-         :_ds_user, :_ds_password;
+  _sql             VARCHAR;
 
-  -- Git PAT secret
-  _sql := 'CREATE OR REPLACE SECRET STREAMLIT_DATABAO.PUBLIC.git_pat_secret'
-    || ' TYPE = PASSWORD'
-    || ' USERNAME = ''' || :_git_username || ''''
-    || ' PASSWORD = ''' || :_git_pat      || '''';
+  -- Configuration
+  _openai_key      VARCHAR DEFAULT $openai_key;
+  _anthropic_key   VARCHAR DEFAULT $anthropic_key;
+  _ds_account      VARCHAR DEFAULT $sf_ds_account;
+  _ds_warehouse    VARCHAR DEFAULT $sf_ds_warehouse;
+  _ds_database     VARCHAR DEFAULT $sf_ds_database;
+  _ds_user         VARCHAR DEFAULT $sf_ds_user;
+  _ds_password     VARCHAR DEFAULT $sf_ds_password;
+  _git_origin      VARCHAR DEFAULT $git_repo_origin;
+  _git_repo        VARCHAR DEFAULT $git_repo_name;
+  _git_branch      VARCHAR DEFAULT $git_branch;
+  _main_file       VARCHAR DEFAULT $streamlit_main_file;
+
+  -- Derived object names (controlled by $suffix — do not modify)
+  _db              VARCHAR DEFAULT 'STREAMLIT_DATABAO_DB_' || $suffix;
+  _wh              VARCHAR DEFAULT 'STREAMLIT_DATABAO_WAREHOUSE_' || $suffix;
+  _egress_rule     VARCHAR DEFAULT 'STREAMLIT_DATABAO_EGRESS_RULE_' || $suffix;
+  _user            VARCHAR DEFAULT 'STREAMLIT_DATABAO_USER_' || $suffix;
+  _network_policy  VARCHAR DEFAULT 'STREAMLIT_DATABAO_NETWORK_POLICY_' || $suffix;
+  _git_integration VARCHAR DEFAULT 'STREAMLIT_DATABAO_GIT_INTEGRATION_' || $suffix;
+  _eai             VARCHAR DEFAULT 'STREAMLIT_DATABAO_EAI_' || $suffix;
+  _secrets_access  VARCHAR DEFAULT 'STREAMLIT_DATABAO_SECRETS_ACCESS_' || $suffix;
+  _compute_pool    VARCHAR DEFAULT 'STREAMLIT_DATABAO_COMPUTE_POOL_' || $suffix;
+  _app_name        VARCHAR DEFAULT 'STREAMLIT_DATABAO_APP_' || $suffix;
+BEGIN
+  -- ==========================================================
+  -- 1. Database, Schema, Warehouse
+  -- ==========================================================
+  EXECUTE IMMEDIATE 'CREATE OR REPLACE DATABASE ' || :_db;
+  EXECUTE IMMEDIATE 'USE DATABASE ' || :_db;
+  EXECUTE IMMEDIATE 'USE SCHEMA PUBLIC';
+
+  _sql := 'CREATE OR REPLACE WAREHOUSE ' || :_wh
+    || ' WAREHOUSE_SIZE = ''XSMALL'''
+    || ' AUTO_SUSPEND = 60'
+    || ' AUTO_RESUME = TRUE';
+  EXECUTE IMMEDIATE :_sql;
+  EXECUTE IMMEDIATE 'USE WAREHOUSE ' || :_wh;
+
+  -- ==========================================================
+  -- 2. Networking
+  -- ==========================================================
+  _sql := 'CREATE OR REPLACE NETWORK RULE ' || :_db || '.PUBLIC.' || :_egress_rule
+    || ' MODE = EGRESS'
+    || ' TYPE = HOST_PORT'
+    || ' VALUE_LIST = (''0.0.0.0:443'', ''0.0.0.0:80'')';
   EXECUTE IMMEDIATE :_sql;
 
-  -- API integration for Git
-  _sql := 'CREATE OR REPLACE API INTEGRATION STREAMLIT_DATABAO_GIT_INTEGRATION'
+  -- Unset policy from our user first so CREATE OR REPLACE succeeds on re-runs
+  _sql := 'ALTER USER IF EXISTS ' || :_user || ' UNSET NETWORK_POLICY';
+  EXECUTE IMMEDIATE :_sql;
+
+  _sql := 'CREATE OR REPLACE NETWORK POLICY ' || :_network_policy
+    || ' ALLOWED_IP_LIST = (''0.0.0.0/0'')'
+    || ' COMMENT = ''Allow all network connections''';
+  EXECUTE IMMEDIATE :_sql;
+
+  -- ==========================================================
+  -- 3. Service User
+  -- ==========================================================
+  _sql := 'CREATE OR REPLACE USER ' || :_user
+    || ' TYPE = SERVICE'
+    || ' DEFAULT_ROLE = ''PUBLIC''';
+  EXECUTE IMMEDIATE :_sql;
+
+  _sql := 'ALTER USER ' || :_user
+    || ' SET NETWORK_POLICY = ''' || :_network_policy || '''';
+  EXECUTE IMMEDIATE :_sql;
+
+  -- ==========================================================
+  -- 4. Git Repository
+  -- ==========================================================
+  _sql := 'CREATE OR REPLACE API INTEGRATION ' || :_git_integration
     || ' API_PROVIDER = git_https_api'
     || ' API_ALLOWED_PREFIXES = (''' || :_git_origin || ''')'
-    || ' ALLOWED_AUTHENTICATION_SECRETS = (STREAMLIT_DATABAO.PUBLIC.git_pat_secret)'
+    || ' ALLOWED_AUTHENTICATION_SECRETS = ()'
     || ' ENABLED = TRUE';
   EXECUTE IMMEDIATE :_sql;
 
-  -- Git repository
-  _sql := 'CREATE OR REPLACE GIT REPOSITORY STREAMLIT_DATABAO.PUBLIC."'
-    || :_git_repo || '"'
+  _sql := 'CREATE OR REPLACE GIT REPOSITORY ' || :_db || '.PUBLIC."' || :_git_repo || '"'
     || ' ORIGIN = ''' || :_git_origin || ''''
-    || ' API_INTEGRATION = STREAMLIT_DATABAO_GIT_INTEGRATION'
-    || ' GIT_CREDENTIALS = STREAMLIT_DATABAO.PUBLIC.git_pat_secret';
+    || ' API_INTEGRATION = ' || :_git_integration;
   EXECUTE IMMEDIATE :_sql;
 
-  -- Fetch latest
-  _sql := 'ALTER GIT REPOSITORY STREAMLIT_DATABAO.PUBLIC."'
-    || :_git_repo || '" FETCH';
+  _sql := 'ALTER GIT REPOSITORY ' || :_db || '.PUBLIC."' || :_git_repo || '" FETCH';
   EXECUTE IMMEDIATE :_sql;
 
-  -- Application secrets
-  _sql := 'CREATE OR REPLACE SECRET STREAMLIT_DATABAO.PUBLIC.openai_api_key'
+  -- ==========================================================
+  -- 5. Application Secrets
+  -- ==========================================================
+  _sql := 'CREATE OR REPLACE SECRET ' || :_db || '.PUBLIC.openai_api_key'
     || ' TYPE = GENERIC_STRING'
     || ' SECRET_STRING = ''' || :_openai_key || '''';
   EXECUTE IMMEDIATE :_sql;
 
-  _sql := 'CREATE OR REPLACE SECRET STREAMLIT_DATABAO.PUBLIC.snowflake_ds_account'
+  _sql := 'CREATE OR REPLACE SECRET ' || :_db || '.PUBLIC.anthropic_api_key'
+    || ' TYPE = GENERIC_STRING'
+    || ' SECRET_STRING = ''' || :_anthropic_key || '''';
+  EXECUTE IMMEDIATE :_sql;
+
+  _sql := 'CREATE OR REPLACE SECRET ' || :_db || '.PUBLIC.snowflake_ds_account'
     || ' TYPE = GENERIC_STRING'
     || ' SECRET_STRING = ''' || :_ds_account || '''';
   EXECUTE IMMEDIATE :_sql;
 
-  _sql := 'CREATE OR REPLACE SECRET STREAMLIT_DATABAO.PUBLIC.snowflake_ds_warehouse'
+  _sql := 'CREATE OR REPLACE SECRET ' || :_db || '.PUBLIC.snowflake_ds_warehouse'
     || ' TYPE = GENERIC_STRING'
     || ' SECRET_STRING = ''' || :_ds_warehouse || '''';
   EXECUTE IMMEDIATE :_sql;
 
-  _sql := 'CREATE OR REPLACE SECRET STREAMLIT_DATABAO.PUBLIC.snowflake_ds_database'
+  _sql := 'CREATE OR REPLACE SECRET ' || :_db || '.PUBLIC.snowflake_ds_database'
     || ' TYPE = GENERIC_STRING'
     || ' SECRET_STRING = ''' || :_ds_database || '''';
   EXECUTE IMMEDIATE :_sql;
 
-  _sql := 'CREATE OR REPLACE SECRET STREAMLIT_DATABAO.PUBLIC.snowflake_ds_user'
+  _sql := 'CREATE OR REPLACE SECRET ' || :_db || '.PUBLIC.snowflake_ds_user'
     || ' TYPE = GENERIC_STRING'
     || ' SECRET_STRING = ''' || :_ds_user || '''';
   EXECUTE IMMEDIATE :_sql;
 
-  _sql := 'CREATE OR REPLACE SECRET STREAMLIT_DATABAO.PUBLIC.snowflake_ds_password'
+  _sql := 'CREATE OR REPLACE SECRET ' || :_db || '.PUBLIC.snowflake_ds_password'
     || ' TYPE = GENERIC_STRING'
     || ' SECRET_STRING = ''' || :_ds_password || '''';
   EXECUTE IMMEDIATE :_sql;
-END;
 
--- ============================================================
--- 6. External Access Integrations
--- ============================================================
-CREATE OR REPLACE EXTERNAL ACCESS INTEGRATION STREAMLIT_DATABAO_EAI
-  ALLOWED_NETWORK_RULES = (STREAMLIT_DATABAO.PUBLIC.STREAMLIT_DATABAO_EGRESS_RULE)
-  ENABLED = TRUE;
+  -- ==========================================================
+  -- 6. External Access Integrations
+  -- ==========================================================
+  _sql := 'CREATE OR REPLACE EXTERNAL ACCESS INTEGRATION ' || :_eai
+    || ' ALLOWED_NETWORK_RULES = (' || :_db || '.PUBLIC.' || :_egress_rule || ')'
+    || ' ENABLED = TRUE';
+  EXECUTE IMMEDIATE :_sql;
 
-CREATE OR REPLACE EXTERNAL ACCESS INTEGRATION STREAMLIT_DATABAO_SECRETS_ACCESS
-  ALLOWED_NETWORK_RULES = (STREAMLIT_DATABAO.PUBLIC.STREAMLIT_DATABAO_EGRESS_RULE)
-  ALLOWED_AUTHENTICATION_SECRETS = (
-    STREAMLIT_DATABAO.PUBLIC.openai_api_key,
-    STREAMLIT_DATABAO.PUBLIC.snowflake_ds_account,
-    STREAMLIT_DATABAO.PUBLIC.snowflake_ds_warehouse,
-    STREAMLIT_DATABAO.PUBLIC.snowflake_ds_database,
-    STREAMLIT_DATABAO.PUBLIC.snowflake_ds_user,
-    STREAMLIT_DATABAO.PUBLIC.snowflake_ds_password
-  )
-  ENABLED = TRUE;
+  _sql := 'CREATE OR REPLACE EXTERNAL ACCESS INTEGRATION ' || :_secrets_access
+    || ' ALLOWED_NETWORK_RULES = (' || :_db || '.PUBLIC.' || :_egress_rule || ')'
+    || ' ALLOWED_AUTHENTICATION_SECRETS = ('
+    || :_db || '.PUBLIC.openai_api_key, '
+    || :_db || '.PUBLIC.anthropic_api_key, '
+    || :_db || '.PUBLIC.snowflake_ds_account, '
+    || :_db || '.PUBLIC.snowflake_ds_warehouse, '
+    || :_db || '.PUBLIC.snowflake_ds_database, '
+    || :_db || '.PUBLIC.snowflake_ds_user, '
+    || :_db || '.PUBLIC.snowflake_ds_password'
+    || ') ENABLED = TRUE';
+  EXECUTE IMMEDIATE :_sql;
 
--- ============================================================
--- 7. Compute Pool
--- ============================================================
-DROP COMPUTE POOL IF EXISTS STREAMLIT_DATABAO_COMPUTE_POOL;
-CREATE COMPUTE POOL STREAMLIT_DATABAO_COMPUTE_POOL
-  MIN_NODES = 1
-  MAX_NODES = 1
-  INSTANCE_FAMILY = CPU_X64_M
-  AUTO_RESUME = TRUE
-  AUTO_SUSPEND_SECS = 300;
+  -- ==========================================================
+  -- 7. Compute Pool
+  -- ==========================================================
+  EXECUTE IMMEDIATE 'DROP COMPUTE POOL IF EXISTS ' || :_compute_pool;
+  _sql := 'CREATE COMPUTE POOL ' || :_compute_pool
+    || ' MIN_NODES = 1'
+    || ' MAX_NODES = 1'
+    || ' INSTANCE_FAMILY = CPU_X64_M'
+    || ' AUTO_RESUME = TRUE'
+    || ' AUTO_SUSPEND_SECS = 300';
+  EXECUTE IMMEDIATE :_sql;
 
--- ============================================================
--- 8. UDF + Streamlit App
--- ============================================================
-CREATE OR REPLACE FUNCTION STREAMLIT_DATABAO.PUBLIC.get_secret(secret_name STRING)
-  RETURNS STRING
-  LANGUAGE PYTHON
-  RUNTIME_VERSION = 3.11
-  HANDLER = 'get_secret'
-  EXTERNAL_ACCESS_INTEGRATIONS = (STREAMLIT_DATABAO_SECRETS_ACCESS)
-  SECRETS = (
-    'openai_api_key' = STREAMLIT_DATABAO.PUBLIC.openai_api_key,
-    'snowflake_ds_account' = STREAMLIT_DATABAO.PUBLIC.snowflake_ds_account,
-    'snowflake_ds_warehouse' = STREAMLIT_DATABAO.PUBLIC.snowflake_ds_warehouse,
-    'snowflake_ds_database' = STREAMLIT_DATABAO.PUBLIC.snowflake_ds_database,
-    'snowflake_ds_user' = STREAMLIT_DATABAO.PUBLIC.snowflake_ds_user,
-    'snowflake_ds_password' = STREAMLIT_DATABAO.PUBLIC.snowflake_ds_password
-  )
-  AS
-$$
-import _snowflake
+  -- ==========================================================
+  -- 8. UDF + Streamlit App
+  -- ==========================================================
+  _sql := 'CREATE OR REPLACE FUNCTION ' || :_db || '.PUBLIC.get_secret(secret_name STRING)'
+    || ' RETURNS STRING'
+    || ' LANGUAGE PYTHON'
+    || ' RUNTIME_VERSION = 3.11'
+    || ' HANDLER = ''get_secret'''
+    || ' EXTERNAL_ACCESS_INTEGRATIONS = (' || :_secrets_access || ')'
+    || ' SECRETS = ('
+    || '  ''openai_api_key'' = ' || :_db || '.PUBLIC.openai_api_key,'
+    || '  ''anthropic_api_key'' = ' || :_db || '.PUBLIC.anthropic_api_key,'
+    || '  ''snowflake_ds_account'' = ' || :_db || '.PUBLIC.snowflake_ds_account,'
+    || '  ''snowflake_ds_warehouse'' = ' || :_db || '.PUBLIC.snowflake_ds_warehouse,'
+    || '  ''snowflake_ds_database'' = ' || :_db || '.PUBLIC.snowflake_ds_database,'
+    || '  ''snowflake_ds_user'' = ' || :_db || '.PUBLIC.snowflake_ds_user,'
+    || '  ''snowflake_ds_password'' = ' || :_db || '.PUBLIC.snowflake_ds_password'
+    || ') AS '
+    || '$$' || CHR(10)
+    || 'import _snowflake' || CHR(10)
+    || CHR(10)
+    || 'def get_secret(secret_name):' || CHR(10)
+    || '    return _snowflake.get_generic_secret_string(secret_name)' || CHR(10)
+    || '$$';
+  EXECUTE IMMEDIATE :_sql;
 
-def get_secret(secret_name):
-    return _snowflake.get_generic_secret_string(secret_name)
-$$;
-
-DECLARE
-  _sql        VARCHAR;
-  _git_repo   VARCHAR;
-  _git_branch VARCHAR;
-  _main_file  VARCHAR;
-BEGIN
-  SELECT $git_repo_name, $git_branch, $streamlit_main_file
-    INTO :_git_repo, :_git_branch, :_main_file;
-
-  _sql := 'CREATE OR REPLACE STREAMLIT STREAMLIT_DATABAO.PUBLIC.STREAMLIT_DATABAO_DEMO_SNOWFLAKE'
-    || ' FROM ''@"STREAMLIT_DATABAO"."PUBLIC"."' || :_git_repo || '"/branches/"' || :_git_branch || '"/'''
+  _sql := 'CREATE OR REPLACE STREAMLIT ' || :_db || '.PUBLIC."' || :_app_name || '"'
+    || ' FROM ''@"' || :_db || '"."PUBLIC"."' || :_git_repo || '"/branches/"' || :_git_branch || '"/'''
     || ' MAIN_FILE = ''' || :_main_file || ''''
-    || ' QUERY_WAREHOUSE = ''STREAMLIT_DATABAO_WAREHOUSE'''
-    || ' COMPUTE_POOL = ''STREAMLIT_DATABAO_COMPUTE_POOL'''
+    || ' QUERY_WAREHOUSE = ''' || :_wh || ''''
+    || ' COMPUTE_POOL = ''' || :_compute_pool || ''''
     || ' RUNTIME_NAME = ''SYSTEM$ST_CONTAINER_RUNTIME_PY3_11'''
-    || ' EXTERNAL_ACCESS_INTEGRATIONS = (STREAMLIT_DATABAO_EAI)'
+    || ' EXTERNAL_ACCESS_INTEGRATIONS = (' || :_eai || ')'
     || ' COMMENT = ''Databao Snowflake Demo UI''';
   EXECUTE IMMEDIATE :_sql;
 END;
+
+-- Clean up the bootstrap warehouse
+DROP WAREHOUSE IF EXISTS STREAMLIT_DATABAO_BOOTSTRAP_WH;
+
+SELECT 'Streamlit app STREAMLIT_DATABAO_APP_' || $suffix || ' created successfully.' AS STATUS;

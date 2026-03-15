@@ -3,6 +3,7 @@
 from typing import TYPE_CHECKING, cast
 
 import streamlit as st
+from databao.agent.core.agent import Agent
 
 from databao_cli.ui.components.results import render_execution_result
 from databao_cli.ui.models.chat_session import ChatMessage
@@ -12,6 +13,7 @@ from databao_cli.ui.services import (
     is_query_running,
     save_current_chat,
     start_query_execution,
+    stop_query,
 )
 from databao_cli.ui.suggestions import (
     check_suggestions_completion,
@@ -50,6 +52,9 @@ def render_assistant_message(
         elif message.content:
             st.error(message.content)
 
+        if message.metadata.get("stopped"):
+            st.warning("Query was stopped by user")
+
 
 def _truncate_question(question: str, max_len: int = 60) -> tuple[str, bool]:
     """Truncate a question for display, returning (display_text, was_truncated)."""
@@ -72,9 +77,10 @@ def render_welcome_component(chat: "ChatSession") -> None:
     - ready: shows questions with appropriate subtitle
     """
     status = st.session_state.get("suggestions_status", "not_started")
+    hide_suggested_questions = bool(st.session_state.get("_hide_suggested_questions"))
 
-    if status == "not_started":
-        agent = st.session_state.get("agent")
+    if status == "not_started" and not hide_suggested_questions:
+        agent: Agent | None = st.session_state.get("agent")
         if agent is not None:
             start_suggestions_generation(agent)
             status = "loading"
@@ -93,7 +99,7 @@ def render_welcome_component(chat: "ChatSession") -> None:
         unsafe_allow_html=True,
     )
 
-    if status == "loading":
+    if status == "loading" and not hide_suggested_questions:
         st.markdown(
             "<p style='text-align: center; color: #888; font-size: 0.9em; margin-top: 1em;'>"
             "🔄 Analyzing your data to suggest questions..."
@@ -105,7 +111,7 @@ def render_welcome_component(chat: "ChatSession") -> None:
     questions: list[str] = st.session_state.get("suggested_questions", [])
     is_llm_generated: bool = st.session_state.get("suggestions_are_llm_generated", False)
 
-    if questions:
+    if questions and not hide_suggested_questions:
         if is_llm_generated:
             st.markdown(
                 "<p style='text-align: center; color: #888; font-size: 0.9em; margin-top: 1em;'>"
@@ -359,21 +365,174 @@ def _should_show_welcome(chat: "ChatSession") -> bool:
     return not has_messages and not query_running
 
 
+def _has_stopped_exchange(chat: "ChatSession") -> bool:
+    """Check if the last exchange was stopped *without* producing results.
+
+    Returns False when the stop happened during the visualization phase,
+    because the data result is already available and the conversation can
+    continue normally.
+    """
+    if not chat.messages:
+        return False
+    last = chat.messages[-1]
+    return last.role == "assistant" and bool(last.metadata.get("stopped")) and last.result is None
+
+
+def _remove_stopped_exchange(chat: "ChatSession") -> None:
+    """Remove the trailing user + stopped-assistant message pair."""
+    if not chat.messages:
+        return
+    last = chat.messages[-1]
+    if last.role == "assistant" and last.metadata.get("stopped"):
+        chat.messages.pop()
+    if chat.messages and chat.messages[-1].role == "user":
+        chat.messages.pop()
+
+
+@st.dialog("Overwrite previous request?")
+def _confirm_overwrite_dialog() -> None:
+    """Modal dialog asking whether to discard the stopped exchange."""
+    st.markdown("The previous request was stopped. Sending a new request will remove it.")
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("OK", use_container_width=True, type="primary"):
+            st.session_state["overwrite_confirmed"] = True
+            st.rerun()
+    with col2:
+        if st.button("Cancel", use_container_width=True):
+            st.session_state.pop("pending_query", None)
+            st.rerun()
+
+
+def _handle_stop_click(chat: "ChatSession") -> None:
+    """Stop the running query and record the partial result.
+
+    If the data phase already produced a message (``viz_pending``), marks
+    it as stopped.  Otherwise creates a new assistant message with
+    whatever thinking text was captured so far.
+    """
+    thinking_text = stop_query(chat)
+    if thinking_text is None:
+        return
+
+    pending = _find_pending_viz_message(chat)
+    if pending is not None:
+        pending.viz_pending = False
+        pending.metadata["stopped"] = True
+    else:
+        chat.messages.append(
+            ChatMessage(
+                role="assistant",
+                thinking=thinking_text or None,
+                content="",
+                metadata={"stopped": True},
+            )
+        )
+    save_current_chat()
+
+
+def _render_chat_input_bar(chat: "ChatSession", query_running: bool) -> None:
+    """Render the chat input bar.
+
+    When ``query_running`` is False, shows an enabled text input inside a
+    form (so Enter submits) and a send button.
+
+    When ``query_running`` is True (background query **or** manual plot
+    in progress), the input is disabled and a stop button is shown
+    instead.
+    """
+    if query_running:
+        col1, col2 = st.columns([12, 1], vertical_alignment="bottom")
+        with col1:
+            st.text_input(
+                "Message",
+                placeholder="Query in progress...",
+                disabled=True,
+                label_visibility="collapsed",
+                key="chat_input_disabled",
+            )
+        with col2:
+            if st.button(
+                ":material/stop_circle:",
+                key="stop_btn",
+                use_container_width=True,
+                type="primary",
+                help="Stop the running query",
+            ):
+                _handle_stop_click(chat)
+                st.rerun()
+    else:
+        with st.form("chat_input_form", clear_on_submit=True, border=False):
+            col1, col2 = st.columns([12, 1], vertical_alignment="bottom")
+            with col1:
+                user_input = st.text_input(
+                    "Message",
+                    placeholder="Ask a question about your data...",
+                    label_visibility="collapsed",
+                    key="chat_input",
+                )
+            with col2:
+                submitted = st.form_submit_button(
+                    ":material/send:",
+                    use_container_width=True,
+                )
+
+            if submitted and user_input:
+                if _has_stopped_exchange(chat):
+                    st.session_state["pending_query"] = user_input
+                    _confirm_overwrite_dialog()
+                else:
+                    user_message = ChatMessage(role="user", content=user_input)
+                    chat.messages.append(user_message)
+                    save_current_chat()
+                    start_background_query(chat, user_input)
+                    st.rerun()
+
+
+def _process_pending_overwrite(chat: "ChatSession") -> None:
+    """Process a confirmed overwrite of a stopped exchange.
+
+    Called at the top of ``render_chat_interface`` (before any widgets are
+    rendered), so no ``st.rerun()`` is needed — the updated state is
+    picked up by the rendering that follows in the same script run.
+    """
+    if not st.session_state.pop("overwrite_confirmed", False):
+        return
+
+    pending = st.session_state.pop("pending_query", None)
+    if not pending:
+        return
+
+    _remove_stopped_exchange(chat)
+    user_message = ChatMessage(role="user", content=pending)
+    chat.messages.append(user_message)
+    save_current_chat()
+    start_background_query(chat, pending)
+
+
 def render_chat_interface(chat: "ChatSession") -> None:
-    """Render the complete chat interface."""
-    query_running = is_query_running(chat)
+    """Render the complete chat interface.
 
-    user_input = st.chat_input("Ask a question about your data...", disabled=query_running)
+    Orchestrates, in order:
+    1. Processing a confirmed overwrite of a stopped exchange.
+    2. Chat history, thinking section, and polling fragments.
+    3. The input bar (enabled or disabled).
+    4. A pending manual "Generate Plot" execution (blocking, runs last
+       so the disabled input bar is already visible).
+    """
+    _process_pending_overwrite(chat)
 
-    if user_input:
-        user_message = ChatMessage(role="user", content=user_input)
-        chat.messages.append(user_message)
+    agent: Agent | None = st.session_state.get("agent")
+    hide_build_context_hint: bool = bool(st.session_state.get("_hide_build_context_hint"))
+    if agent is not None and not agent.domain.is_context_built() and not chat.messages and not hide_build_context_hint:
+        st.markdown(
+            "⚠️ Context isn't built yet. "
+            '<a href="/context-settings#build-context" target="_self">Build context</a> '
+            "for better query results.",
+            unsafe_allow_html=True,
+        )
 
-        save_current_chat()
-
-        start_background_query(chat, user_input)
-
-        st.rerun()
+    query_running = is_query_running(chat) or "pending_plot_message_index" in st.session_state
 
     if handle_query_completion(chat):
         st.rerun()
@@ -393,3 +552,11 @@ def render_chat_interface(chat: "ChatSession") -> None:
 
         if query_running:
             _query_polling_fragment()
+
+    st.markdown("<div style='height: 2em'></div>", unsafe_allow_html=True)
+    _render_chat_input_bar(chat, query_running)
+
+    if "pending_plot_message_index" in st.session_state:
+        from databao_cli.ui.components.results import execute_pending_plot
+
+        execute_pending_plot(chat)
