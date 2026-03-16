@@ -62,8 +62,13 @@ def ask_text(message: str, default: str | None = None, allow_empty: bool = False
     """Text input. Interactive in TTY, plain click.prompt otherwise."""
     if is_interactive():
         while True:
-            result: Any = questionary.text(message, default=default or "").ask()
-            value = str(result) if result is not None else ""
+            try:
+                result: Any = questionary.text(message, default=default or "").ask()
+            except KeyboardInterrupt:
+                raise click.Abort()
+            if result is None:
+                raise click.Abort()
+            value = str(result)
             if value.strip() or allow_empty:
                 return value
             click.echo("Value cannot be empty. Please try again.")
