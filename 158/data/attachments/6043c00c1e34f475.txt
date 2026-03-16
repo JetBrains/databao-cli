@@ -1,0 +1,5 @@
+Ollama model nomic-embed-text:v1.5 not found locally. Pulling it (this may take several minutes)...
+Ollama model nomic-embed-text:v1.5 pulled successfully
+Found datasource of type "bigquery" with name my_test_bigquery
+Failed to build source at (my_test_bigquery.yaml): Ollama request to /api/embed failed: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+Build complete. Processed 1 datasources.

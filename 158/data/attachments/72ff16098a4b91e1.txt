@@ -1,0 +1,3 @@
+No existing Ollama installation detected. We will download and install Ollama.
+Downloading https://github.com/ollama/ollama/releases/download/v0.13.0/ollama-linux-amd64.tgz to /tmp/ollama-download-igg9pnbj/ollama-linux-amd64.tgz
+Verified SHA256 for ollama-linux-amd64.tgz
