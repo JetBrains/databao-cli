@@ -6,11 +6,11 @@ from databao_context_engine import (
     DatabaoContextPluginLoader,
     DatasourceType,
 )
-from databao_cli.utils import ask_confirm, ask_select, ask_text
 
 from databao_cli.commands.context_engine_cli import ClickUserInputCallback
 from databao_cli.commands.datasource.check_datasource_connection import print_connection_check_results
 from databao_cli.project.layout import ProjectLayout
+from databao_cli.utils import ask_confirm, ask_select, ask_text
 
 
 def add_datasource_config_interactive_impl(project_layout: ProjectLayout, domain: str) -> None:
@@ -51,7 +51,7 @@ def _ask_for_datasource_type(supported_datasource_types: set[DatasourceType]) ->
     config_type = ask_select(
         "What type of datasource do you want to add?",
         choices=all_datasource_types,
-        default=all_datasource_types[0] if len(all_datasource_types) == 0 else None,
+        default=all_datasource_types[0] if len(all_datasource_types) > 0 else None,
     )
 
     return DatasourceType(full_type=config_type)

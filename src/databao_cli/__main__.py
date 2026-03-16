@@ -4,10 +4,9 @@ from pathlib import Path
 import click
 from click import Context
 
+from databao_cli.labels import LABELS
 from databao_cli.log.logging import configure_logging
 from databao_cli.project.layout import ROOT_DOMAIN, ProjectLayout, find_project
-
-from databao_cli.labels import LABELS
 from databao_cli.utils import ask_confirm, register_labels
 
 

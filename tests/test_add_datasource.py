@@ -3,10 +3,10 @@ from unittest.mock import Mock
 
 import duckdb
 import pytest
+import questionary
 from click.testing import CliRunner
 
 from databao_cli.__main__ import cli
-from databao_cli.commands.datasource import add_datasource_config
 from databao_cli.commands.init import init_impl as init_databao_project
 
 
@@ -38,7 +38,7 @@ def test_databao_datasource_add(tmp_path: Path, temp_parquet_file: Path, monkeyp
 
     prompt = Mock()
     prompt.ask.return_value = "parquet"
-    monkeypatch.setattr(add_datasource_config.questionary, "select", Mock(return_value=prompt))
+    monkeypatch.setattr(questionary, "select", Mock(return_value=prompt))
 
     inputs = [
         "resources/my_parq",
