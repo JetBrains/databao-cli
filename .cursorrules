@@ -1,11 +1,15 @@
-# CLAUDE.md
+# .cursorrules
+#
+# AUTO-GENERATED — do not edit manually.
+# Regenerate with: scripts/sync-agent-context.sh
 
-Claude Code entrypoint for agent instructions in this repository.
+Cursor entrypoint for agent instructions in this repository.
 
-## Agent Delta (Claude Code)
+## Agent Delta (Cursor)
 
-- Prefer concise updates with clear file/command references.
+- Prefer concise, implementation-first responses.
 - Execute directly when safe; ask questions only if truly blocked.
+- Skill-like rules live in `.cursor/rules/*.mdc` (alwaysApply: false).
 
 ## Shared References
 
@@ -16,7 +20,7 @@ Claude Code entrypoint for agent instructions in this repository.
 
 ## Sync
 
-- This file should stay aligned with `AGENTS.md`.
+- This file should stay aligned with `CLAUDE.md` and `AGENTS.md`.
 - Canonical shared content lives in `docs/agent-shared.md`.
 - Regenerate all files with `scripts/sync-agent-context.sh`.
 

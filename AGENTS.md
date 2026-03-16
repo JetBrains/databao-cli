@@ -18,7 +18,7 @@ OpenCode entrypoint for agent instructions in this repository.
 
 - This file should stay aligned with `CLAUDE.md`.
 - Canonical shared content lives in `docs/agent-shared.md`.
-- Regenerate both files with `scripts/sync-agent-context.sh`.
+- Regenerate all files with `scripts/sync-agent-context.sh`.
 
 ## Shared Core (synced from `docs/agent-shared.md`)
 
