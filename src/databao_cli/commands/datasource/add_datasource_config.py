@@ -6,6 +6,7 @@ from databao_context_engine import (
     DatabaoContextPluginLoader,
     DatasourceType,
 )
+from pydantic import ValidationError
 
 from databao_cli.commands.context_engine_cli import ClickUserInputCallback
 from databao_cli.commands.datasource.check_datasource_connection import print_connection_check_results
@@ -32,9 +33,19 @@ def add_datasource_config_interactive_impl(project_layout: ProjectLayout, domain
             abort=True,
             default=False,
         )
-    created_datasource = domain_manager.create_datasource_config_interactively(
-        datasource_type, datasource_name, ClickUserInputCallback(), overwrite_existing=True
-    )
+
+    while True:
+        try:
+            created_datasource = domain_manager.create_datasource_config_interactively(
+                datasource_type, datasource_name, ClickUserInputCallback(), overwrite_existing=True
+            )
+            break
+        except ValidationError as e:
+            click.echo(click.style("\nValidation error:", fg="red", bold=True))
+            for error in e.errors():
+                field_path = ".".join(str(loc) for loc in error["loc"])
+                click.echo(click.style(f"  • {field_path}: {error['msg']}", fg="red"))
+            click.echo("\nPlease try again with correct values.\n")
 
     datasource_id = created_datasource.datasource.id
     click.echo(

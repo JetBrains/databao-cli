@@ -68,5 +68,4 @@ def ask_text(message: str, default: str | None = None, allow_empty: bool = False
                 return value
             click.echo("Value cannot be empty. Please try again.")
     else:
-        value: str = click.prompt(message, default=default)
-        return value
+        return str(click.prompt(message, default=default))
