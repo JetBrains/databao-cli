@@ -89,7 +89,7 @@ def remove_datasource(project_dir: Path, datasource_id: DatasourceId) -> None:
 
 
 def list_datasources(project_dir: Path) -> list[ConfiguredDatasource]:
-    """List all configured datasources in the DCE project (reads from disk)."""
+    """List all configured data sources in the DCE project (reads from disk)."""
     try:
         manager = DatabaoContextDomainManager(domain_dir=project_dir)
         return manager.get_configured_datasource_list()

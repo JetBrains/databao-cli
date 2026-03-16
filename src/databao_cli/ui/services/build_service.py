@@ -197,7 +197,7 @@ def render_build_section(project_dir: Path, *, read_only: bool = False) -> None:
 
         with col_build:
             if build_status == "not_started":
-                if st.button("Build Context", key="build_btn", type="primary"):
+                if st.button("Build context", key="build_btn", type="primary"):
                     start_build(project_dir)
                     st.rerun(scope="fragment")
             elif build_status == "running":

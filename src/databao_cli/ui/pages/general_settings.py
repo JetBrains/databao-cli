@@ -1,4 +1,4 @@
-"""General Settings page - Storage and app-wide configuration."""
+"""General settings page - Storage and app-wide configuration."""
 
 import logging
 
@@ -59,42 +59,42 @@ def _confirm_reset_settings() -> None:
 
 
 def render_general_settings_page() -> None:
-    """Render the General Settings page."""
-    st.title("General Settings")
+    """Render the General settings page."""
+    st.title("General settings")
     st.markdown("Configure application storage and manage data.")
 
     st.markdown("---")
 
-    st.subheader("📁 Storage Location")
+    st.subheader("📁 Storage location")
 
     base_path = get_storage_base_path()
     chats_dir = get_chats_dir()
     cache_dir = get_cache_dir()
 
-    st.markdown("**Base Path** (read-only)")
+    st.markdown("**Base path** (read-only)")
     st.code(str(base_path), language=None)
 
-    with st.expander("📂 Storage Details", expanded=False):
-        st.markdown("**Chats Directory**")
+    with st.expander("📂 Storage details", expanded=False):
+        st.markdown("**Chat directory**")
         st.code(str(chats_dir), language=None)
 
-        st.markdown("**Cache Directory**")
+        st.markdown("**Cache directory**")
         st.code(str(cache_dir), language=None)
 
         try:
             chats = st.session_state.get("chats", {})
             num_chats = len(chats)
-            st.metric("Saved Chats", num_chats)
+            st.metric("Saved chats", num_chats)
         except Exception:
             logger.debug("Failed to display storage statistics", exc_info=True)
 
     st.markdown("---")
 
-    st.subheader("⚠️ Data Management")
+    st.subheader("⚠️ Data management")
 
     st.markdown(
         """
-        These actions affect your stored data. Use with caution.
+        These actions affect your stored data. Use them with caution.
         """
     )
 
@@ -102,18 +102,18 @@ def render_general_settings_page() -> None:
 
     with col1:
         if st.button(
-            "🗑️ Clear All Chats",
+            "🗑️ Clear all chats",
             use_container_width=True,
             type="secondary",
-            help="Removes all chat history and cached data.",
+            help="Delete all chat history and cached data. This cannot be undone.",
         ):
             _confirm_clear_chats()
 
     with col2:
         if st.button(
-            "🔄 Reset to Defaults",
+            "🔄 Reset settings",
             use_container_width=True,
             type="secondary",
-            help="Resets settings but keeps chats.",
+            help="Restore default settings. Your chats will remain unchanged.",
         ):
             _confirm_reset_settings()

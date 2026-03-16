@@ -365,13 +365,13 @@ def build_navigation() -> None:
     )
     context_settings_page = st.Page(
         render_context_settings_page,
-        title="Context Settings",
+        title="Context settings",
         icon="📊",
         url_path="context-settings",
     )
     agent_settings_page = st.Page(
         render_agent_settings_page,
-        title="Agent Settings",
+        title="Agent settings",
         icon="⚙️",
         url_path="agent-settings",
     )
@@ -390,7 +390,7 @@ def build_navigation() -> None:
     chat_pages.append(
         st.Page(
             new_chat_action,
-            title="New Chat",
+            title="New chat",
             icon=":material/add:",
             url_path="new-chat",
         )

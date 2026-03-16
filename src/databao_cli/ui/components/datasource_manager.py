@@ -31,8 +31,8 @@ def render_datasource_manager(project_dir: Path, *, read_only: bool = False) -> 
     """Render the full datasource management UI.
 
     Shows:
-    - "Add New Datasource" section at top (hidden in read-only mode)
-    - List of existing datasources below, each with Save/Verify/Remove buttons
+    - "Add data source" section at top (hidden in read-only mode)
+    - List of existing data sources below, each with Save/Verify/Remove buttons
       (buttons hidden in read-only mode, fields disabled)
 
     Args:
@@ -50,7 +50,7 @@ def render_datasource_manager(project_dir: Path, *, read_only: bool = False) -> 
         st.caption("No datasources configured yet.")
         return
 
-    st.subheader("Configured Datasources")
+    st.subheader("Your data sources")
 
     for idx, ds in enumerate(configured):
         _render_existing_datasource(project_dir, ds, idx, read_only=read_only)
@@ -64,8 +64,8 @@ def _get_form_version() -> int:
 
 
 def _render_add_datasource_section(project_dir: Path) -> None:
-    """Render the 'Add New Datasource' section."""
-    st.subheader("Add New Datasource")
+    """Render the 'Add data source' section."""
+    st.subheader("Add data source")
 
     available_types = get_available_datasource_types()
 
@@ -104,7 +104,7 @@ def _render_add_datasource_section(project_dir: Path) -> None:
     col_add, col_verify_new = st.columns(2)
 
     with col_add:
-        if st.button("Add Datasource", key="add_ds_btn", type="primary", use_container_width=True):
+        if st.button("Add datasource", key="add_ds_btn", type="primary", use_container_width=True):
             if not ds_name or not ds_name.strip():
                 st.error("Please provide a datasource name.")
             elif not selected_type:
@@ -119,7 +119,7 @@ def _render_add_datasource_section(project_dir: Path) -> None:
                     logger.exception("Failed to add datasource")
 
     with col_verify_new:
-        if st.button("Verify Connection", key="verify_new_ds_btn", use_container_width=True):
+        if st.button("Verify connection", key="verify_new_ds_btn", use_container_width=True):
             if not ds_name or not ds_name.strip() or not selected_type:
                 st.error("Please provide a datasource name and type first.")
             else:
@@ -230,7 +230,7 @@ def _render_existing_datasource(project_dir: Path, ds: ConfiguredDatasource, idx
 
 
 def _clear_new_datasource_form() -> None:
-    """Reset the 'Add New Datasource' form by incrementing the version counter.
+    """Reset the 'Add data source' form by incrementing the version counter.
 
     This causes all form widgets to get fresh keys on the next rerun,
     so they render with their default (empty) values.

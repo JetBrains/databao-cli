@@ -1,4 +1,4 @@
-"""Agent Settings page - Executor and LLM configuration."""
+"""Agent settings page - Executor and LLM configuration."""
 
 from __future__ import annotations
 
@@ -13,13 +13,13 @@ from databao_cli.ui.models.settings import _ENV_VAR_MAP, LLMProviderConfig, LLMS
 
 
 def render_agent_settings_page(*, auto_apply: bool = False) -> None:
-    """Render the Agent Settings page."""
+    """Render the Agent settings page."""
     if not auto_apply:
-        st.title("Agent Settings")
+        st.title("Agent settings")
         st.markdown("Configure the AI agent behavior and execution engine.")
         st.markdown("---")
 
-    st.subheader("⚙️ Execution Engine")
+    st.subheader("⚙️ Execution engine")
 
     st.markdown(
         """
@@ -38,30 +38,30 @@ def render_agent_settings_page(*, auto_apply: bool = False) -> None:
     )
 
     if selected == "lighthouse":
-        st.warning(
+        st.info(
             """
             **LighthouseExecutor** uses a sophisticated graph-based approach with planning and validation steps.
             Best for complex queries requiring multiple steps.
             """,
-            icon="⚠️",
+            icon="ℹ️",
         )
     elif selected == "react_duckdb":
-        st.warning(
+        st.info(
             """
             **ReactDuckDBExecutor** is experimental.
             It uses a ReAct-style loop optimized for DuckDB queries.
             May be faster for simple queries but less reliable for complex ones.
             """,
-            icon="⚠️",
+            icon="ℹ️",
         )
     elif selected == "dbt":
-        st.warning(
+        st.info(
             """
             **DbtProjectExecutor** is experimental.
             It relies on initialized dbt project and a connected warehouse.
             Should be used in case you need to automate dbt project changes.
             """,
-            icon="⚠️",
+            icon="ℹ️",
         )
     elif selected == "claude_code":
         st.info(
@@ -87,9 +87,9 @@ def render_agent_settings_page(*, auto_apply: bool = False) -> None:
 
     st.markdown("---")
 
-    st.subheader("🤖 Language Model")
+    st.subheader("🤖 Language model")
 
-    st.markdown("Choose the LLM provider and configure its credentials.")
+    st.markdown("Choose an LLM provider and configure its credentials.")
 
     llm: LLMSettings = st.session_state.get("llm_settings", LLMSettings())
 

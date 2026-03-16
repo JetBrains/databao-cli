@@ -36,9 +36,9 @@ def render_chat_page() -> None:
     chat = _get_or_create_current_chat()
 
     if chat is None:
-        st.error("No chat session found. Please start a new chat.")
+        st.error("No chat session found. Start a new chat.")
         welcome_page = st.session_state.get("_page_welcome")
-        if welcome_page and st.button("🏠 Go to Home"):
+        if welcome_page and st.button("🏠 Back to home"):
             st.switch_page(welcome_page)
         return
 
@@ -69,7 +69,7 @@ def render_chat_page() -> None:
 
     if not _get_or_create_thread_for_chat(chat, agent):
         _render_chat_sidebar(project)
-        st.error("Failed to create conversation thread")
+        st.error("Failed to create a conversation thread")
         return
 
     _render_chat_sidebar(project)
@@ -192,12 +192,12 @@ def _render_no_project_state() -> None:
     st.title("💬 Chat")
     st.markdown("---")
 
-    st.warning("No DCE project detected.")
+    st.warning("No Context Engine project found.")
 
     st.markdown(
         """
 
-        To use Databao, you need a DCE (Databao Context Engine) project with configured datasources.
+        Databao requires a Context Engine project with configured data sources.
 
         **Set up a new project:**
         ```bash
@@ -215,22 +215,22 @@ def _render_no_project_state() -> None:
 
 
 def _render_no_datasources_state(project: ProjectLayout) -> None:
-    """Render state when no datasources are configured in the DCE project."""
+    """Render state when no data sources are configured in the DCE project."""
     st.title("💬 Chat")
     st.markdown("---")
 
-    st.warning(f"No datasources configured in project at `{project.project_dir}`.")
+    st.warning(f"No data sources configured in project at `{project.project_dir}`.")
 
     st.markdown(
         """
 
-        Add datasources to your project before using Databao.
+        Add data sources to your project before using Databao.
 
-        See the documentation for how to configure datasources.
+        See the documentation for how to configure data sources.
         """
     )
 
-    if st.button("🔄 Check Again"):
+    if st.button("🔄 Check again"):
         st.session_state.databao_project = None
         st.rerun()
 
