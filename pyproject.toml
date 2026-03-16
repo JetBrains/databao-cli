@@ -109,7 +109,9 @@ select = [
     # Prefer absolute imports over relative ones
     "TID252",
 ]
-ignore = []
+ignore = [
+    "RUF001",  # Allow ambiguous unicode characters (emojis in UI)
+]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101"]  # assert is standard in pytest
