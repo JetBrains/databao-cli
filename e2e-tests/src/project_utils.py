@@ -40,7 +40,13 @@ def execute_build(project_dir: Path):
         child = pexpect.spawn("uv run databao build", cwd=project_dir, encoding="utf-8", timeout=30, logfile=logfile)
         try:
             # Wait for Ollama download/installation with extended timeout
-            if child.expect([r"Ollama model .+ not found locally\.", "Found datasource of type"], timeout=5) == 0:
+            if child.expect([
+                r"Ollama model .+ not found locally\.",
+                r"No existing Ollama installation detected",
+                r"We will download and install Ollama.",
+                r"Downloading .*ollama.*\.tgz",
+                r"Found datasource of type",
+            ], timeout=5) == 0:
                 with allure.step("Ollama model not found locally, installing..."):
                     child.expect("Ollama model .+ pulled successfully", timeout=900)
             child.expect(r"Build complete\. Processed \d+ datasources\.")
