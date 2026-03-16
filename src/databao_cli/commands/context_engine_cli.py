@@ -25,11 +25,11 @@ class ClickUserInputCallback(UserInputCallback):
             if is_interactive:
                 from databao_cli.labels import LABELS
 
-                choices = [
-                    questionary.Choice(title=LABELS.get(choice, choice), value=choice) for choice in type.choices
-                ]
+                choices = [questionary.Choice(title=LABELS.get(choice, choice), value=choice) for choice in type.choices]
                 result = questionary.select(
-                    text, choices=choices, default=default_value if default_value in type.choices else None
+                    text,
+                    choices=choices,
+                    default=default_value if default_value is not None and default_value in type.choices else None,
                 ).ask()
                 if result is None:
                     raise click.Abort()
@@ -52,10 +52,7 @@ class ClickUserInputCallback(UserInputCallback):
 
         is_interactive = sys.stdin.isatty() and sys.stdout.isatty()
         if is_interactive and final_type is str:
-            if is_secret:
-                prompt_func = questionary.password
-            else:
-                prompt_func = questionary.text
+            prompt_func = questionary.password if is_secret else questionary.text
 
             if not is_optional and final_default is None:
                 while True:
