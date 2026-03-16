@@ -46,7 +46,7 @@ def execute_build(project_dir: Path):
                 r"We will download and install Ollama.",
                 r"Downloading .*ollama.*\.tgz",
                 r"Found datasource of type",
-            ], timeout=5) == 0:
+            ], timeout=5) < 4:
                 with allure.step("Ollama model not found locally, installing..."):
                     child.expect("Ollama model .+ pulled successfully", timeout=900)
             child.expect(r"Build complete\. Processed \d+ datasources\.", timeout=30)
