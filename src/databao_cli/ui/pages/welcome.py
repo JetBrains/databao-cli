@@ -59,12 +59,12 @@ def render_welcome_page() -> None:
 
         st.markdown("---")
 
-        st.subheader("Quick Actions")
+        st.subheader("Quick actions")
 
         action_col1, action_col2 = st.columns(2)
 
         with action_col1:
-            if st.button("💬 Start New Chat", width="stretch", type="primary"):
+            if st.button("💬 New chat", width="stretch", type="primary"):
                 _create_new_chat()
                 st.rerun()
 
@@ -75,7 +75,7 @@ def render_welcome_page() -> None:
                     st.switch_page(context_settings_page)
 
         st.markdown("---")
-        st.subheader("Getting Started")
+        st.subheader("Get started")
 
         with st.expander("📖 How to use Databao", expanded=False):
             st.markdown(
@@ -94,7 +94,7 @@ def render_welcome_page() -> None:
 
         if chats:
             st.markdown("---")
-            st.subheader("Recent Chats")
+            st.subheader("Recent chats")
 
             sorted_chats = sorted(
                 chats.values(),
@@ -124,11 +124,11 @@ def render_setup_wizard_page() -> None:
 
     The wizard is organized into up to five sections, which are disabled
     based on prerequisites:
-    1. Initialize Project
-    2. Configure Datasources
-    3. Configure Agent
-    4. Build Context (optional; can be hidden via feature flag)
-    5. Start Using Databao
+    1. Initialize project
+    2. Configure datasources
+    3. Configure agent
+    4. Build context (optional; can be hidden via feature flag)
+    5. Start using databao
 
     When read-only-domain mode is active, editing sections are disabled with
     an explanation banner.
@@ -255,11 +255,11 @@ def render_setup_wizard_page() -> None:
 
         st.markdown("---")
 
-        # ---- Section 4: Build Context ----
+        # ---- Section 4: Build context ----
         if not hide_build_context:
             _render_section_header(
                 "4",
-                "Build Context (Optional)",
+                "Build context (optional)",
                 completed=build_started_or_done,
                 enabled=has_datasources,
             )
