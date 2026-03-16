@@ -58,11 +58,15 @@ def ask_confirm(message: str, default: bool = True, abort: bool = False) -> bool
         return click.confirm(message, default=default, abort=abort)
 
 
-def ask_text(message: str, default: str | None = None) -> str:
+def ask_text(message: str, default: str | None = None, allow_empty: bool = False) -> str:
     """Text input. Interactive in TTY, plain click.prompt otherwise."""
     if is_interactive():
-        result: Any = questionary.text(message, default=default or "").ask()
-        return str(result)
+        while True:
+            result: Any = questionary.text(message, default=default or "").ask()
+            value = str(result) if result is not None else ""
+            if value.strip() or allow_empty:
+                return value
+            click.echo("Value cannot be empty. Please try again.")
     else:
         value: str = click.prompt(message, default=default)
         return value
