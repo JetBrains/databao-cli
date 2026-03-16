@@ -62,7 +62,7 @@ def _ask_for_datasource_type(supported_datasource_types: set[DatasourceType]) ->
     config_type = ask_select(
         "What type of datasource do you want to add?",
         choices=all_datasource_types,
-        default=all_datasource_types[0] if len(all_datasource_types) > 0 else None,
+        default=None,
     )
 
     return DatasourceType(full_type=config_type)
