@@ -23,7 +23,7 @@ def add_datasource_config_interactive_impl(project_layout: ProjectLayout, domain
 
     datasource_type = _ask_for_datasource_type(plugin_loader.get_all_supported_datasource_types(exclude_file_plugins=True))
 
-    datasource_name = ask_text("Datasource name")
+    datasource_name = ask_text("Datasource name?")
 
     datasource_id = domain_manager.datasource_config_exists(datasource_name=datasource_name)
     if datasource_id is not None:
