@@ -65,7 +65,7 @@ def ask_text(message: str, default: str | None = None, allow_empty: bool = False
             try:
                 result: Any = questionary.text(message, default=default or "").ask()
             except KeyboardInterrupt:
-                raise click.Abort()
+                raise click.Abort() from None
             if result is None:
                 raise click.Abort()
             value = str(result)
