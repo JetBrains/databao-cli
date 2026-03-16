@@ -37,7 +37,7 @@ def execute_init(project_dir: Path, db: PostgresDB | MysqlDB | SnowflakeDB | Big
 def execute_build(project_dir: Path):
     log_file_path = project_dir / "cli.log"
     with open(log_file_path, "w") as logfile:
-        child = pexpect.spawn("uv run databao build", cwd=project_dir, encoding="utf-8", timeout=30, logfile=logfile)
+        child = pexpect.spawn("uv run databao build", cwd=project_dir, encoding="utf-8", timeout=900, logfile=logfile)
         try:
             # Wait for Ollama download/installation with extended timeout
             if child.expect([
@@ -49,7 +49,7 @@ def execute_build(project_dir: Path):
             ], timeout=5) == 0:
                 with allure.step("Ollama model not found locally, installing..."):
                     child.expect("Ollama model .+ pulled successfully", timeout=900)
-            child.expect(r"Build complete\. Processed \d+ datasources\.")
+            child.expect(r"Build complete\. Processed \d+ datasources\.", timeout=30)
             child.expect(pexpect.EOF)
         finally:
             if log_file_path.exists():
