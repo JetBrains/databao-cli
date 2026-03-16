@@ -10,6 +10,7 @@ from databao_context_engine.progress.progress import (
     ProgressCallback,
     ProgressEvent,
     ProgressKind,
+    ProgressStep,
 )
 
 
@@ -20,8 +21,9 @@ def _noop_progress_cb(_: ProgressEvent) -> None:
 class _UIState(TypedDict):
     datasource_index: int | None
     datasource_total: int | None
-    total_steps: int | None
-    completed_steps: int
+    step_plan: tuple[ProgressStep, ...] | None
+    completed_steps: set[ProgressStep]
+    active_step: ProgressStep | None
     current_units_completed: int | None
     current_units_total: int | None
     last_percent: float
@@ -89,8 +91,9 @@ def cli_progress() -> Iterator[ProgressCallback]:
     progress_state: _UIState = {
         "datasource_index": None,
         "datasource_total": None,
-        "total_steps": None,
-        "completed_steps": 0,
+        "step_plan": None,
+        "completed_steps": set(),
+        "active_step": None,
         "current_units_completed": None,
         "current_units_total": None,
         "last_percent": 0.0,
@@ -136,19 +139,25 @@ def cli_progress() -> Iterator[ProgressCallback]:
             progress.update(task_ids["overall"], description=f"Datasources {idx}/{total}")
 
     def _compute_percent() -> float | None:
-        total_steps = progress_state["total_steps"]
-        if total_steps is None or total_steps <= 0:
+        step_plan = progress_state["step_plan"]
+        if not step_plan:
             return None
 
+        completed_count = sum(1 for step in step_plan if step in progress_state["completed_steps"])
+
         fraction = 0.0
+        active_step = progress_state["active_step"]
         if (
-            progress_state["current_units_completed"] is not None
+            active_step is not None
+            and active_step in step_plan
+            and active_step not in progress_state["completed_steps"]
+            and progress_state["current_units_completed"] is not None
             and progress_state["current_units_total"] is not None
             and progress_state["current_units_total"] > 0
         ):
             fraction = progress_state["current_units_completed"] / progress_state["current_units_total"]
 
-        return ((progress_state["completed_steps"] + fraction) / total_steps) * 100.0
+        return ((completed_count + fraction) / len(step_plan)) * 100.0
 
     def _update_datasource_percent() -> None:
         percent = _compute_percent()
@@ -170,8 +179,9 @@ def cli_progress() -> Iterator[ProgressCallback]:
             case ProgressKind.DATASOURCE_STARTED:
                 progress_state["datasource_index"] = ev.datasource_index
                 progress_state["datasource_total"] = ev.datasource_total
-                progress_state["total_steps"] = None
-                progress_state["completed_steps"] = 0
+                progress_state["step_plan"] = None
+                progress_state["completed_steps"] = set()
+                progress_state["active_step"] = None
                 progress_state["current_units_completed"] = None
                 progress_state["current_units_total"] = None
                 progress_state["last_percent"] = 0.0
@@ -184,32 +194,29 @@ def cli_progress() -> Iterator[ProgressCallback]:
                 progress.reset(task_id, completed=0, total=None, description=f"    {ev.datasource_id or 'datasource'}")
                 return
 
-            case ProgressKind.DATASOURCE_TOTAL_STEPS_SET:
-                progress_state["total_steps"] = ev.total_steps
+            case ProgressKind.DATASOURCE_STEP_PLAN_SET:
+                progress_state["step_plan"] = ev.step_plan
                 _update_datasource_percent()
                 return
 
             case ProgressKind.DATASOURCE_STEP_COMPLETED:
-                progress_state["completed_steps"] += ev.step_increment or 1
-                progress_state["current_units_completed"] = None
-                progress_state["current_units_total"] = None
+                if ev.step is not None:
+                    progress_state["completed_steps"].add(ev.step)
+                    if progress_state["active_step"] == ev.step:
+                        progress_state["active_step"] = None
+                        progress_state["current_units_completed"] = None
+                        progress_state["current_units_total"] = None
                 _update_datasource_percent()
                 return
 
-            case ProgressKind.DATASOURCE_CURRENT_STEP_PROGRESS:
+            case ProgressKind.DATASOURCE_STEP_PROGRESS:
+                progress_state["active_step"] = ev.step
                 progress_state["current_units_completed"] = ev.current_units_completed
                 progress_state["current_units_total"] = ev.current_units_total
                 _update_datasource_percent()
                 return
 
             case ProgressKind.DATASOURCE_FINISHED:
-                idx = ev.datasource_index or 0
-                total = ev.datasource_total or 0
-                ds = ev.datasource_id or "(unknown datasource)"
-                status = ev.status or "done"
-
-                progress.console.print(f"{status.upper()} {idx}/{total}: {ds}")
-
                 _set_datasource_percent(100.0)
 
                 _get_or_create_overall_task(ev.datasource_total)
