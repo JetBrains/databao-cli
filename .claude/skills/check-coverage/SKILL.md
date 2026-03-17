@@ -1,3 +1,8 @@
+---
+name: check-coverage
+description: Run test coverage measurement, analyze results, and fix gaps when coverage falls below the 80% threshold.
+---
+
 # Check Coverage
 
 Run test coverage measurement, analyze results, and fix gaps when coverage

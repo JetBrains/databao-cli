@@ -1,3 +1,9 @@
+---
+name: setup-environment
+description: Set up or verify the local development environment. Use when starting work in a fresh clone, when commands fail with missing dependencies, or before running checks for the first time.
+disable-model-invocation: true
+---
+
 # Setup Environment
 
 Set up or verify the local development environment.

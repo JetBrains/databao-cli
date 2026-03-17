@@ -1,3 +1,8 @@
+---
+name: sync-context
+description: Regenerate CLAUDE.md and .cursorrules from docs/agent-shared.md. Use mid-session after editing shared guidance.
+---
+
 # Sync Agent Context
 
 Regenerate agent entrypoint files (`CLAUDE.md`, `.cursorrules`) from the

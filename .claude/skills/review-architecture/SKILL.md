@@ -1,3 +1,8 @@
+---
+name: review-architecture
+description: Review architecture quality, maintainability, and developer experience before or after significant changes.
+---
+
 # Review Architecture
 
 Use this skill to review architecture quality, maintainability, and developer

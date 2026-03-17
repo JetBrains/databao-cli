@@ -1,3 +1,8 @@
+---
+name: eval-skills
+description: Run structured agent-in-the-loop evaluations on skills to measure quality and track improvements. Use after modifying SKILL.md files or agent guidance docs.
+---
+
 # Eval Skills
 
 Run structured evaluations on agent skills to measure quality and track
