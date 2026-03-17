@@ -5,10 +5,9 @@ Always run checks and tests locally before pushing code.
 ## Quick Start
 
 ```bash
-uv sync --dev                        # install/update deps (once)
+make setup                           # install deps, hooks, verify toolchain (once)
 make check                           # lint + type-check (ruff + mypy)
 make test                            # unit tests
-uv run databao --help                # smoke-test the CLI entrypoint
 ```
 
 ## Verification Workflow
@@ -58,6 +57,7 @@ Run the smallest relevant slice first, then broaden before finalizing:
 
 | Target         | Command                                              | What it does               |
 |----------------|------------------------------------------------------|----------------------------|
+| `make setup`        | `uv sync --dev` + pre-commit + verify                | One-time environment setup        |
 | `make check`        | `uv run pre-commit run --all-files`                  | Ruff lint + mypy                  |
 | `make test`         | `uv run pytest tests/ -v` (sources `.env` if present)| Unit tests                        |
 | `make test-cov`     | `uv run pytest ... --cov`                            | Coverage report (no threshold)    |
@@ -88,8 +88,8 @@ Agents should **always** run verification locally:
 - Run `uv run databao --help` after modifying CLI entrypoints, commands, or
   top-level imports.
 - If a test fails, diagnose and fix — do not skip or ignore failures.
-- If the environment is not set up, run `uv sync --dev` to set it up rather
-  than falling back to a smoke-test-only mode.
+- If the environment is not set up, run `make setup` rather than falling
+  back to a smoke-test-only mode.
 - Run full `make test` before finalizing larger changes that touch multiple
   modules.
 - After code changes, run `make test-cov-check` to verify coverage ≥80%.

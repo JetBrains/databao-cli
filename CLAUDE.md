@@ -58,6 +58,7 @@ Key directories:
 
 ## Build, Lint, Test Commands
 
+- Environment setup: `make setup` (installs deps, pre-commit hooks, verifies toolchain)
 - Pre-commit (ruff + mypy): `make check` or `uv run pre-commit run --all-files`
 - Ruff lint: `uv run ruff check src/databao_cli`
 - Ruff format: `uv run ruff format src/databao_cli`

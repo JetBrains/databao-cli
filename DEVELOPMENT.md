@@ -1,5 +1,15 @@
 # Development Guidelines
 
+## Quick Setup
+
+```bash
+make setup
+```
+
+This single command installs all dependencies, pre-commit hooks, and verifies
+that the linter, type-checker, CLI entrypoint, and test collection all work.
+Requires Python >=3.11 and [uv](https://docs.astral.sh/uv/).
+
 ## Recommended Tools
 
 ### GitHub CLI
