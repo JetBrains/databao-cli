@@ -1,5 +1,0 @@
-Ollama model nomic-embed-text:v1.5 not found locally. Pulling it (this may take several minutes)...
-Ollama model nomic-embed-text:v1.5 pulled successfully
-Found datasource of type "mysql" with name test_mysql_conn
-Failed to build source at (test_mysql_conn.yaml): Ollama request to /api/embed failed: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
-Build complete. Processed 1 datasources.
