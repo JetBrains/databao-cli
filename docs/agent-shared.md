@@ -84,20 +84,33 @@ Key directories:
   full scope before writing any code.
 - If no ticket exists for the work, propose one (show summary, description, and
   type) and wait for explicit user approval before creating it.
+- When starting work on a ticket, move it to **Develop** state using
+  `update_issue` (set `State` field).
+- After creating a PR, move the ticket to **Review** state and add the
+  PR URL as a comment.
 - Prefix every commit message with the ticket ID:
   `[DBA-123] Description of change`.
 
 ## After Completing Work
 
-- Run `make check` then `make test` and fix any failures.
-- Once checks pass, suggest creating a branch, commit, and PR — but wait for
-  user confirmation before proceeding.
-- Branch naming convention: `<nickname>/<descriptive-branch-name>`.
-  Detect the user's nickname from existing remote branches:
-  ```bash
-  git branch -r | sed -nE 's|^ *origin/([^/]+)/.*|\1|p' | grep -vE '^(dependabot|HEAD|revert-)' | sort | uniq -c | sort -rn
-  ```
-- Never commit directly to `main`.
+1. **Test & lint** — run `make check` then `make test-cov-check`. Fix any
+   failures before proceeding.
+2. **Architecture review** — run the `review-architecture` skill on the
+   changed code. Fix any High-severity issues it raises.
+3. **Branch** — create a branch following `<nickname>/<descriptive-branch-name>`.
+   Detect the user's nickname from existing remote branches:
+   ```bash
+   git branch -r | sed -nE 's|^ *origin/([^/]+)/.*|\1|p' | grep -vE '^(dependabot|HEAD|revert-)' | sort | uniq -c | sort -rn
+   ```
+4. **Commit** — stage and commit with `[DBA-123] Description of change`.
+5. **Pause** — present the user with a summary of what will be pushed and
+   the draft PR description. Wait for explicit confirmation before
+   proceeding.
+6. **Push & PR** — push with `-u` flag, create PR using the standard
+   format (see Pull Request Format section).
+7. **Update YouTrack** — move the ticket to **Review** state and add
+   a comment with the PR URL.
+8. Never commit directly to `main`.
 
 ## Pull Request Format
 
