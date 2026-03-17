@@ -1,9 +1,0 @@
-No existing Ollama installation detected. We will download and install Ollama.
-Downloading https://github.com/ollama/ollama/releases/download/v0.13.0/ollama-linux-amd64.tgz to /tmp/ollama-download-1mc88f1u/ollama-linux-amd64.tgz
-Verified SHA256 for ollama-linux-amd64.tgz
-Ollama installed at /home/runner/.dce/ollama/bin/ollama
-Ollama server not running. Starting Ollama server...
-Started Ollama server
-Ollama model nomic-embed-text:v1.5 not found locally. Pulling it (this may take several minutes)...
-Ollama model nomic-embed-text:v1.5 pulled successfully
-Found datasource of type "bigquery" with name my_test_bigquery
