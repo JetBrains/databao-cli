@@ -75,7 +75,8 @@ Use these targeted checks when the diff touches the corresponding area:
 
 Good validation options:
 
-- targeted test runs for modified areas
+- the full test suite when it is practical for the repo and review scope
+- targeted test runs for modified areas when they give a faster or more relevant signal
 - non-mutating lint checks
 - non-mutating formatter checks
 - type checks
@@ -91,7 +92,7 @@ Examples, when configured in the current repo:
 - `uv run mypy <targeted paths>`
 - `uv lock --check`
 
-Do run the entire test suite unless the user explicitly wants to only run targeted tests.
+Default to running the full test suite when it is practical and likely to add useful confidence. Use targeted tests instead when the diff is narrow and a focused run is the better fit.
 
 Avoid mutating validation in review mode:
 
