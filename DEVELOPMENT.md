@@ -105,3 +105,17 @@ To run only tests that don't require API keys:
 ```bash
 uv run pytest -v -m "not apikey"
 ```
+
+### What Runs Where
+
+| What | CI / Pre-commit | Manual / Agentic |
+|------|:---:|:---:|
+| Lint + type-check (`make check`) | Yes | Yes |
+| Unit tests (`make test`) | Yes | Yes |
+| Skill validation (`make lint-skills`) | Yes | Yes |
+| Skill smoke tests (`make smoke-skills`) | — | Yes |
+| E2E tests (`make e2e-test`) | CI only | — |
+| Tier 3 skill evals (`eval-skills`) | — | Yes |
+| `databao ask` (LLM) | — | Yes |
+
+Nothing that spends LLM tokens runs in CI or pre-commit hooks.

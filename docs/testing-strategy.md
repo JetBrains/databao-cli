@@ -23,8 +23,6 @@ Follow this order when making changes:
    query execution, and datasource checks.
 4. **Smoke test** — `uv run databao --help`. Confirms the CLI entrypoint
    loads without import errors.
-5. **E2E tests** — `make e2e-test` (requires Docker / external services).
-   Run when changing datasource integrations or the build pipeline.
 
 ## Narrowing Scope While Iterating
 
@@ -43,16 +41,6 @@ Run the smallest relevant slice first, then broaden before finalizing:
 - Add a regression test for every bug fix when feasible.
 - Test files mirror source modules (e.g., `test_init.py` tests `commands/init.py`).
 
-## E2E Tests (`e2e-tests/`)
-
-- Use `pexpect`, `testcontainers`, and `allure-pytest`.
-- Domain-specific tests live under `e2e-tests/tests/domains/` (SQLite, Postgres,
-  DuckDB, MySQL, BigQuery, Snowflake).
-- Introspection fixtures live under `e2e-tests/tests/resources/`.
-- Run with: `uv run --group e2e-tests pytest e2e-tests`.
-- These require Docker and sometimes cloud credentials — not expected to pass
-  on every local machine, but always run in CI.
-
 ## Make Targets
 
 | Target         | Command                                              | What it does               |
@@ -62,7 +50,21 @@ Run the smallest relevant slice first, then broaden before finalizing:
 | `make test`         | `uv run pytest tests/ -v` (sources `.env` if present)| Unit tests                        |
 | `make test-cov`     | `uv run pytest ... --cov`                            | Coverage report (no threshold)    |
 | `make test-cov-check`| `uv run pytest ... --cov --cov-fail-under=80`       | Coverage with 80% enforcement     |
-| `make e2e-test`     | `uv run --group e2e-tests pytest e2e-tests`          | End-to-end tests (Docker)         |
+| `make lint-skills`   | `scripts/validate-agent-guidance.sh`                 | Static checks on agent guidance   |
+| `make smoke-skills`  | `scripts/smoke-test-skills.sh`                       | Functional skill verification     |
+
+## What Does NOT Run in CI / Pre-commit
+
+Everything above (lint, type-check, unit tests, skill validation) is
+**LLM-free** and runs automatically in CI and pre-commit hooks.
+
+The following require LLM access and are **manual or agentic only**:
+
+- **Tier 3 skill evals** (`eval-skills` skill) — agent-in-the-loop evaluation
+- **E2E tests** (`make e2e-test`) — require Docker and cloud credentials
+- **`databao ask`** — requires OpenAI API key
+
+Never add these to pre-commit hooks or CI without explicit team decision.
 
 ## Coverage
 
@@ -73,8 +75,8 @@ Configuration lives in `pyproject.toml` under `[tool.coverage.*]` sections.
 **What to cover**: CLI commands, MCP tools, query execution, datasource checks,
 project management, and utility functions.
 
-**What is excluded**: Streamlit UI (`src/databao_cli/ui/`) is tested via e2e
-tests, not unit coverage. The `__main__.py` entrypoint wrapper is also excluded.
+**What is excluded**: Streamlit UI (`src/databao_cli/ui/`) and the
+`__main__.py` entrypoint wrapper are excluded from unit coverage.
 
 **When coverage drops**: See the `check-coverage` skill for the decision
 procedure on whether to fix code or fix tests.

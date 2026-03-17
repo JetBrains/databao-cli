@@ -39,7 +39,7 @@ Shared operating context for all coding agents in this repository.
 - Dependency management: `pyproject.toml` + `uv`
 - Build backend: `hatchling` + `uv-dynamic-versioning` (git tags)
 - Dev tools: `ruff`, `mypy`, `pytest`, `pre-commit`
-- Unit tests in `tests/`, end-to-end tests in `e2e-tests/`
+- Unit tests in `tests/`
 
 Key directories:
 
@@ -64,7 +64,6 @@ Key directories:
 - Ruff format: `uv run ruff format src/databao_cli`
 - Mypy: `uv run mypy src/databao_cli`
 - Unit tests: `make test` or `uv run pytest tests/ -v`
-- E2E tests: `make e2e-test` or `uv run --group e2e-tests pytest e2e-tests`
 - Smoke test: `uv run databao --help`
 - Single test file: `uv run pytest tests/test_foo.py -v`
 - Single test: `uv run pytest tests/test_foo.py::test_bar -v`
