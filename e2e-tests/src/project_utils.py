@@ -55,7 +55,7 @@ def execute_build(project_dir: Path):
                     < 4
                 ):
                     with allure.step("Ollama model not found locally, installing..."):
-                        child.expect("Ollama model .+ pulled successfully", timeout=900)
+                        child.expect("Ollama model .+ pulled successfully", timeout=1800)
             with allure.step("Waiting for build to complete"):
                 child.expect(r"Build complete\. Processed \d+ datasources\.", timeout=30)
                 child.expect(pexpect.EOF)
