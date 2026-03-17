@@ -6,28 +6,26 @@ alwaysApply: false
 
 # Sync Agent Context
 
-Regenerate all agent entrypoint files from the single source of truth in
-`docs/agent-shared.md`.
+Regenerate agent entrypoint files (`CLAUDE.md`, `.cursorrules`) from the
+single source of truth in `docs/agent-shared.md`.
 
 ## When to use
 
-- After editing `docs/agent-shared.md`.
-- After editing delta headers in `scripts/sync-agent-context.sh`.
-- Before committing agent configuration changes.
+- Mid-session, after editing `docs/agent-shared.md` or the delta headers in
+  `scripts/sync-agent-context.sh`, so that subsequent work sees fresh context.
+- Note: commit-time sync is handled automatically by a pre-commit hook — you
+  only need this skill for mid-session updates.
 
 ## Steps
 
-1. Run `scripts/sync-agent-context.sh`
-2. Verify output: `git diff --stat` — expect changes in `CLAUDE.md`, `.cursorrules`
-3. Spot-check shared core is identical across all three files
-4. Stage: `git add CLAUDE.md .cursorrules`
+```bash
+scripts/sync-agent-context.sh
+```
+
+Verify with `git diff --stat` — expect changes in `CLAUDE.md` and `.cursorrules`.
 
 ## Failure handling
 
-- "Missing shared core" → ensure `docs/agent-shared.md` exists
-- Divergent output → compare `docs/agent-shared.md` against "Shared Core" sections
-
-## Scope
-
-- Does NOT edit `docs/agent-shared.md` — make changes there first
-- Does NOT sync `.cursor/rules/*.mdc` files
+- "Missing shared core" → ensure `docs/agent-shared.md` exists and is not empty.
+- Divergent output → compare `docs/agent-shared.md` against the "Shared Core"
+  sections in the generated files.

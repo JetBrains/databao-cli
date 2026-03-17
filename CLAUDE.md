@@ -94,6 +94,9 @@ Key directories:
 - Run `make test-cov-check` after changing code in `src/databao_cli/` to
   verify coverage ≥80%. If existing tests break, fix the production code —
   do not weaken tests. If newly written tests are wrong, fix the tests.
+- Agent context files (`CLAUDE.md`, `.cursorrules`) are auto-synced on commit
+  via pre-commit hook. Run `scripts/sync-agent-context.sh` manually if you
+  need updated context mid-session.
 
 ## YouTrack Ticket Workflow
 

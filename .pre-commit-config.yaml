@@ -32,3 +32,11 @@ repos:
         entry: uv run mypy
         language: system
         pass_filenames: false
+
+      - id: sync-agent-context
+        name: sync-agent-context
+        description: Regenerate CLAUDE.md and .cursorrules from docs/agent-shared.md
+        entry: scripts/sync-agent-context.sh
+        language: script
+        pass_filenames: false
+        files: ^(docs/agent-shared\.md|scripts/sync-agent-context\.sh)$
