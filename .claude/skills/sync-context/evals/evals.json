@@ -25,11 +25,11 @@
     {
       "id": 3,
       "prompt": "I need to update the agent context but docs/agent-shared.md is missing.",
-      "expected_output": "Agent reports the missing file and does not attempt to create a dummy one.",
+      "expected_output": "Agent identifies the missing file and either recovers it from git or reconstructs it from existing generated files.",
       "assertions": [
         "Agent identifies that docs/agent-shared.md is the source of truth",
         "Agent reports the missing file error clearly",
-        "Agent does NOT create a new docs/agent-shared.md from scratch"
+        "Agent proposes a recovery strategy (git checkout or reconstruct from CLAUDE.md/.cursorrules)"
       ]
     }
   ]
