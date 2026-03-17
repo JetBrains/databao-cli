@@ -1,7 +1,7 @@
 # Sync Agent Context
 
-Regenerate all agent entrypoint files (`CLAUDE.md`, `AGENTS.md`, `.cursorrules`)
-from the single source of truth in `docs/agent-shared.md`.
+Regenerate agent entrypoint files (`CLAUDE.md`, `.cursorrules`) from the single
+source of truth in `docs/agent-shared.md`.
 
 ## When to use
 
@@ -19,12 +19,11 @@ from the single source of truth in `docs/agent-shared.md`.
 scripts/sync-agent-context.sh
 ```
 
-This regenerates three files from `docs/agent-shared.md`:
+This regenerates two files from `docs/agent-shared.md`:
 
 | Generated file   | Consumer   |
 |------------------|------------|
 | `CLAUDE.md`      | Claude Code |
-| `AGENTS.md`      | OpenCode   |
 | `.cursorrules`   | Cursor     |
 
 Each file gets an agent-specific header (delta) prepended before the shared core.
@@ -36,7 +35,7 @@ Each file gets an agent-specific header (delta) prepended before the shared core
 git diff --stat
 
 # Spot-check that the shared core section matches
-grep -c "Shared Core" CLAUDE.md AGENTS.md .cursorrules
+grep -c "Shared Core" CLAUDE.md .cursorrules
 # Expected: each file reports 1 match
 ```
 
@@ -53,7 +52,7 @@ Skim the generated diffs to confirm:
 If everything looks good, stage the regenerated files:
 
 ```bash
-git add CLAUDE.md AGENTS.md .cursorrules
+git add CLAUDE.md .cursorrules
 ```
 
 ## Failure handling

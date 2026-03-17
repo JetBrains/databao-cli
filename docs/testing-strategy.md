@@ -58,9 +58,26 @@ Run the smallest relevant slice first, then broaden before finalizing:
 
 | Target         | Command                                              | What it does               |
 |----------------|------------------------------------------------------|----------------------------|
-| `make check`   | `uv run pre-commit run --all-files`                  | Ruff lint + mypy           |
-| `make test`    | `uv run pytest tests/ -v` (sources `.env` if present)| Unit tests                 |
-| `make e2e-test`| `uv run --group e2e-tests pytest e2e-tests`          | End-to-end tests (Docker)  |
+| `make check`        | `uv run pre-commit run --all-files`                  | Ruff lint + mypy                  |
+| `make test`         | `uv run pytest tests/ -v` (sources `.env` if present)| Unit tests                        |
+| `make test-cov`     | `uv run pytest ... --cov`                            | Coverage report (no threshold)    |
+| `make test-cov-check`| `uv run pytest ... --cov --cov-fail-under=80`       | Coverage with 80% enforcement     |
+| `make e2e-test`     | `uv run --group e2e-tests pytest e2e-tests`          | End-to-end tests (Docker)         |
+
+## Coverage
+
+Unit test coverage is measured with `pytest-cov` and enforced at **80%**.
+
+Configuration lives in `pyproject.toml` under `[tool.coverage.*]` sections.
+
+**What to cover**: CLI commands, MCP tools, query execution, datasource checks,
+project management, and utility functions.
+
+**What is excluded**: Streamlit UI (`src/databao_cli/ui/`) is tested via e2e
+tests, not unit coverage. The `__main__.py` entrypoint wrapper is also excluded.
+
+**When coverage drops**: See the `check-coverage` skill for the decision
+procedure on whether to fix code or fix tests.
 
 ## Agent Behavior
 
@@ -75,3 +92,4 @@ Agents should **always** run verification locally:
   than falling back to a smoke-test-only mode.
 - Run full `make test` before finalizing larger changes that touch multiple
   modules.
+- After code changes, run `make test-cov-check` to verify coverage ≥80%.

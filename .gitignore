@@ -19,6 +19,7 @@ env/
 
 # Pytest
 .pytest_cache/
+htmlcov/
 
 # IDE
 .idea/

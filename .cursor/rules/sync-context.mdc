@@ -1,5 +1,5 @@
 ---
-description: Regenerate agent entrypoints (CLAUDE.md, AGENTS.md, .cursorrules) from docs/agent-shared.md
+description: Regenerate agent entrypoints (CLAUDE.md, .cursorrules) from docs/agent-shared.md
 globs:
 alwaysApply: false
 ---
@@ -18,9 +18,9 @@ Regenerate all agent entrypoint files from the single source of truth in
 ## Steps
 
 1. Run `scripts/sync-agent-context.sh`
-2. Verify output: `git diff --stat` — expect changes in `CLAUDE.md`, `AGENTS.md`, `.cursorrules`
+2. Verify output: `git diff --stat` — expect changes in `CLAUDE.md`, `.cursorrules`
 3. Spot-check shared core is identical across all three files
-4. Stage: `git add CLAUDE.md AGENTS.md .cursorrules`
+4. Stage: `git add CLAUDE.md .cursorrules`
 
 ## Failure handling
 
