@@ -40,3 +40,11 @@ repos:
         language: script
         pass_filenames: false
         files: ^(docs/agent-shared\.md|scripts/sync-agent-context\.sh)$
+
+      - id: validate-agent-guidance
+        name: validate-agent-guidance
+        description: Validate agent skills and guidance docs structure
+        entry: scripts/validate-agent-guidance.sh
+        language: script
+        pass_filenames: false
+        files: ^(\.claude/skills/|\.cursor/rules/|docs/(agent-shared|coding-guidelines|architecture|testing-strategy)\.md|scripts/(sync-agent-context|validate-agent-guidance)\.sh)$

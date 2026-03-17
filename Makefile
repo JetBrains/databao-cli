@@ -27,3 +27,9 @@ test-cov-check:
 
 e2e-test:
 	uv run --group e2e-tests pytest e2e-tests
+
+lint-skills:
+	scripts/validate-agent-guidance.sh
+
+smoke-skills:
+	scripts/smoke-test-skills.sh

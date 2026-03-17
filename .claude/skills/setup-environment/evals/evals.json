@@ -1,0 +1,36 @@
+{
+  "skill_name": "setup-environment",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I just cloned the repo. Set up my environment so I can start working.",
+      "expected_output": "Agent runs make setup and reports success or diagnoses a specific failure.",
+      "assertions": [
+        "Agent runs `make setup` as the primary command",
+        "Agent does NOT manually run individual install commands (uv sync, pre-commit install) separately",
+        "Agent reports success or provides specific diagnosis if setup fails",
+        "Agent does NOT modify pyproject.toml or add new dependencies"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I'm getting an import error when I try to run databao --help. Fix my environment.",
+      "expected_output": "Agent runs make setup to re-verify the environment, then diagnoses the import error.",
+      "assertions": [
+        "Agent runs `make setup` to verify/repair environment",
+        "Agent investigates the specific import error if setup passes",
+        "Agent does NOT skip straight to editing source code without checking environment first"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Set up the dev environment. I don't have uv installed yet.",
+      "expected_output": "Agent detects missing uv and provides install instructions before running make setup.",
+      "assertions": [
+        "Agent identifies uv as missing prerequisite",
+        "Agent provides uv install command (curl -LsSf https://astral.sh/uv/install.sh | sh)",
+        "Agent attempts make setup after uv is available"
+      ]
+    }
+  ]
+}

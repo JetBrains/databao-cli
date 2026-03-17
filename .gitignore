@@ -40,6 +40,7 @@ build/
 
 .cursor/debug.log
 .cursor/plans/
+.claude/evals-workspace/
 
 *.code-workspace
 

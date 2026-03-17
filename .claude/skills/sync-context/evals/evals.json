@@ -1,0 +1,36 @@
+{
+  "skill_name": "sync-context",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I just edited docs/agent-shared.md to add a new coding guideline. Sync the agent context files.",
+      "expected_output": "Agent runs the sync script and verifies the output files were updated.",
+      "assertions": [
+        "Agent runs `scripts/sync-agent-context.sh`",
+        "Agent verifies output with `git diff --stat` or equivalent",
+        "Agent does NOT manually edit CLAUDE.md or .cursorrules",
+        "Agent confirms both CLAUDE.md and .cursorrules were updated"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "The CLAUDE.md file seems out of date compared to docs/agent-shared.md. Fix it.",
+      "expected_output": "Agent uses the sync script to regenerate, not manual editing.",
+      "assertions": [
+        "Agent runs `scripts/sync-agent-context.sh` to fix the drift",
+        "Agent does NOT manually edit CLAUDE.md",
+        "Agent explains that CLAUDE.md is auto-generated from docs/agent-shared.md"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I need to update the agent context but docs/agent-shared.md is missing.",
+      "expected_output": "Agent reports the missing file and does not attempt to create a dummy one.",
+      "assertions": [
+        "Agent identifies that docs/agent-shared.md is the source of truth",
+        "Agent reports the missing file error clearly",
+        "Agent does NOT create a new docs/agent-shared.md from scratch"
+      ]
+    }
+  ]
+}

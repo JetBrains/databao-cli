@@ -46,6 +46,8 @@ Key directories:
 - Single test: `uv run pytest tests/test_foo.py::test_bar -v`
 - Coverage check: `make test-cov-check` (fails if below 80%)
 - Coverage report: `make test-cov` (terminal + HTML in `htmlcov/`)
+- Skill validation: `make lint-skills` (static checks on agent guidance)
+- Skill smoke tests: `make smoke-skills` (functional verification of skill commands)
 
 ## Coding Guidelines
 
@@ -73,6 +75,9 @@ Key directories:
 - Agent context files (`CLAUDE.md`, `.cursorrules`) are auto-synced on commit
   via pre-commit hook. Run `scripts/sync-agent-context.sh` manually if you
   need updated context mid-session.
+- When modifying agent guidance files (skills, `docs/agent-shared.md`,
+  coding-guidelines), run `make lint-skills` to validate consistency.
+  The pre-commit hook runs this automatically on commit.
 
 ## YouTrack Ticket Workflow
 
