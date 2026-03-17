@@ -47,4 +47,4 @@ repos:
         entry: scripts/validate-agent-guidance.sh
         language: script
         pass_filenames: false
-        files: ^(\.claude/skills/|docs/(agent-shared|coding-guidelines|architecture|testing-strategy)\.md|scripts/(sync-agent-context|validate-agent-guidance)\.sh)$
+        files: ^(\.claude/skills/|\.cursor/rules/|docs/(agent-shared|coding-guidelines|architecture|testing-strategy)\.md|scripts/(sync-agent-context|validate-agent-guidance)\.sh)$

@@ -1,6 +1,9 @@
-# AGENTS.md
+---
+description: Shared operating context for this repository
+alwaysApply: true
+---
 
-Agent entrypoint for Cursor and other compatible tools.
+# Project Context
 
 ## Agent Delta (Cursor)
 

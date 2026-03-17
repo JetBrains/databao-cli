@@ -98,8 +98,8 @@ Key directories:
 - `CLAUDE.md` is auto-synced from `docs/agent-shared.md` on commit via
   pre-commit hook. Run `.claude/skills/sync-context/scripts/sync.sh`
   manually (or use the `/sync-context` skill) if you need updated context
-  mid-session. `AGENTS.md` (Cursor entrypoint) references docs via `@file`
-  syntax and does not need syncing.
+  mid-session. Cursor context is in `.cursor/rules/project-context.mdc`
+  (uses `@file` references, does not need syncing).
 - When modifying agent guidance files (skills, `docs/agent-shared.md`,
   coding-guidelines), run `make lint-skills` to validate consistency.
   The pre-commit hook runs this automatically on commit.

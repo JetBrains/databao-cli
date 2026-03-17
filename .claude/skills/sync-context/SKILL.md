@@ -6,7 +6,7 @@ description: Regenerate CLAUDE.md from docs/agent-shared.md. Use mid-session aft
 # Sync Agent Context
 
 Regenerate `CLAUDE.md` from the single source of truth in `docs/agent-shared.md`.
-(`AGENTS.md` uses `@file` references and does not need syncing.)
+(`.cursor/rules/project-context.mdc` uses `@file` references and does not need syncing.)
 
 ## When to use
 
