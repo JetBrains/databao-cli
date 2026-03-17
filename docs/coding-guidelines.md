@@ -7,7 +7,7 @@ Practical coding rules for contributors and coding agents.
 - Python version target: `>=3.11`.
 - Dependency/runtime management: `uv` + `pyproject.toml`.
 - Run project commands through `uv run`.
-- Local install/update: `uv sync --dev`
+- Local install/update: `make setup` (or `uv sync --dev` for deps only)
 - Do not introduce ad-hoc dependency files (`requirements.txt`, etc.) unless
   explicitly requested.
 
@@ -15,12 +15,13 @@ Practical coding rules for contributors and coding agents.
 
 Run the narrowest relevant command first, then broaden scope.
 
-- Pre-commit: `uv run pre-commit run --all-files`
+- Pre-commit (ruff + mypy): `make check`
 - Ruff lint: `uv run ruff check src/databao_cli`
 - Ruff format: `uv run ruff format src/databao_cli`
 - Mypy: `uv run mypy src/databao_cli`
-- Unit tests: `uv run pytest tests/ -v`
-- E2E tests: `uv run --group e2e-tests pytest e2e-tests`
+- Unit tests: `make test`
+- E2E tests: `make e2e-test`
+- Coverage check: `make test-cov-check`
 - Single test file: `uv run pytest tests/test_foo.py -v`
 - Single test function: `uv run pytest tests/test_foo.py::test_bar -v`
 
