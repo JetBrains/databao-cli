@@ -1,0 +1,3 @@
+Ollama server not running. Starting Ollama server...
+Started Ollama server
+Found datasource of type "bigquery" with name my_test_bigquery
