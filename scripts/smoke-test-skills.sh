@@ -30,9 +30,9 @@ echo ""
 echo "=== Tier 2: Functional smoke tests ==="
 
 # sync-context: script runs and produces files with expected markers
-run_test "sync-context: script exits 0" "scripts/sync-agent-context.sh"
+run_test "sync-context: script exits 0" ".claude/skills/sync-context/scripts/sync.sh"
 run_test "sync-context: CLAUDE.md contains shared core" "grep -q 'Shared Core' CLAUDE.md"
-run_test "sync-context: .cursorrules contains shared core" "grep -q 'Shared Core' .cursorrules"
+run_test "sync-context: AGENTS.md exists and references shared docs" "grep -q 'agent-shared.md' AGENTS.md"
 
 # setup-environment: make setup succeeds (already verifies toolchain)
 run_test "setup-environment: make setup" "make setup"

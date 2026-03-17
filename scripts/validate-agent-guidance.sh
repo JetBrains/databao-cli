@@ -2,12 +2,10 @@
 set -euo pipefail
 
 # Tier 1: Static validation of agent skills and guidance docs.
-# Checks structural correctness, cross-references, and parity between
-# Claude Code skills and Cursor rules.
+# Checks structural correctness, cross-references, and file existence.
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SKILLS_DIR="$ROOT_DIR/.claude/skills"
-CURSOR_DIR="$ROOT_DIR/.cursor/rules"
 SHARED_FILE="$ROOT_DIR/docs/agent-shared.md"
 MAKEFILE="$ROOT_DIR/Makefile"
 
@@ -46,27 +44,7 @@ for skill_dir in "$SKILLS_DIR"/*/; do
   fi
 done
 
-# ---------- 2. Cursor parity ----------
-
-# Every Claude skill should have a matching Cursor rule
-for skill_dir in "$SKILLS_DIR"/*/; do
-  skill_name="$(basename "$skill_dir")"
-  cursor_file="$CURSOR_DIR/${skill_name}.mdc"
-  if [[ ! -f "$cursor_file" ]]; then
-    error "Claude skill '$skill_name' has no matching Cursor rule at .cursor/rules/${skill_name}.mdc"
-  fi
-done
-
-# Every Cursor rule should have a matching Claude skill
-for cursor_file in "$CURSOR_DIR"/*.mdc; do
-  rule_name="$(basename "$cursor_file" .mdc)"
-  skill_dir="$SKILLS_DIR/$rule_name"
-  if [[ ! -d "$skill_dir" ]]; then
-    error "Cursor rule '$rule_name' has no matching Claude skill at .claude/skills/${rule_name}/"
-  fi
-done
-
-# ---------- 3. Make target existence ----------
+# ---------- 2. Make target existence ----------
 
 # Extract make targets referenced in skills and docs
 check_make_target() {
@@ -93,7 +71,7 @@ if [[ -f "$SHARED_FILE" ]]; then
   done < <(grep -oE '`make ([a-z][a-z0-9_-]*)`' "$SHARED_FILE" | sed 's/`make \(.*\)`/\1/' | sort -u)
 fi
 
-# ---------- 4. Script existence ----------
+# ---------- 3. Script existence ----------
 
 for skill_file in "$SKILLS_DIR"/*/SKILL.md; do
   skill_name="$(basename "$(dirname "$skill_file")")"
@@ -104,10 +82,10 @@ for skill_file in "$SKILLS_DIR"/*/SKILL.md; do
     elif [[ ! -x "$script_path" ]]; then
       error "Script '$script' referenced in $skill_name/SKILL.md is not executable"
     fi
-  done < <(grep -oE 'scripts/[a-z][a-z0-9_-]*\.sh' "$skill_file" | sort -u)
+  done < <(grep -v '\${' "$skill_file" | grep -oE 'scripts/[a-z][a-z0-9_.-]*\.sh' | sort -u)
 done
 
-# ---------- 5. Cross-doc consistency ----------
+# ---------- 4. Cross-doc consistency ----------
 
 # Check that docs referenced in agent-shared.md exist
 if [[ -f "$SHARED_FILE" ]]; then
@@ -130,7 +108,7 @@ if [[ -f "$claude_file" ]]; then
   done < <(grep -oE '`docs/[a-z][a-z0-9_/-]*\.(md|txt)`' "$claude_file" | tr -d '`' | sort -u)
 fi
 
-# ---------- 6. Eval files validation ----------
+# ---------- 5. Eval files validation ----------
 
 # Skills exempt from requiring evals (meta-skills that evaluate other skills)
 EVAL_EXEMPT_SKILLS="eval-skills"

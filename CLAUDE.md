@@ -18,7 +18,7 @@ Claude Code entrypoint for agent instructions in this repository.
 ## Sync
 
 - Canonical shared content lives in `docs/agent-shared.md`.
-- Regenerate all files with `scripts/sync-agent-context.sh`.
+- Regenerate with `.claude/skills/sync-context/scripts/sync.sh` or `/sync-context`.
 
 ## Shared Core (synced from `docs/agent-shared.md`)
 
@@ -95,9 +95,11 @@ Key directories:
 - Run `make test-cov-check` after changing code in `src/databao_cli/` to
   verify coverage ≥80%. If existing tests break, fix the production code —
   do not weaken tests. If newly written tests are wrong, fix the tests.
-- Agent context files (`CLAUDE.md`, `.cursorrules`) are auto-synced on commit
-  via pre-commit hook. Run `scripts/sync-agent-context.sh` manually if you
-  need updated context mid-session.
+- `CLAUDE.md` is auto-synced from `docs/agent-shared.md` on commit via
+  pre-commit hook. Run `.claude/skills/sync-context/scripts/sync.sh`
+  manually (or use the `/sync-context` skill) if you need updated context
+  mid-session. `AGENTS.md` (Cursor entrypoint) references docs via `@file`
+  syntax and does not need syncing.
 - When modifying agent guidance files (skills, `docs/agent-shared.md`,
   coding-guidelines), run `make lint-skills` to validate consistency.
   The pre-commit hook runs this automatically on commit.

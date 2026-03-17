@@ -6,10 +6,10 @@
       "prompt": "I just edited docs/agent-shared.md to add a new coding guideline. Sync the agent context files.",
       "expected_output": "Agent runs the sync script and verifies the output files were updated.",
       "assertions": [
-        "Agent runs `scripts/sync-agent-context.sh`",
+        "Agent runs the sync script (sync.sh or /sync-context skill)",
         "Agent verifies output with `git diff --stat` or equivalent",
-        "Agent does NOT manually edit CLAUDE.md or .cursorrules",
-        "Agent confirms both CLAUDE.md and .cursorrules were updated"
+        "Agent does NOT manually edit CLAUDE.md",
+        "Agent confirms CLAUDE.md was updated"
       ]
     },
     {
@@ -17,7 +17,7 @@
       "prompt": "The CLAUDE.md file seems out of date compared to docs/agent-shared.md. Fix it.",
       "expected_output": "Agent uses the sync script to regenerate, not manual editing.",
       "assertions": [
-        "Agent runs `scripts/sync-agent-context.sh` to fix the drift",
+        "Agent runs the sync script to fix the drift",
         "Agent does NOT manually edit CLAUDE.md",
         "Agent explains that CLAUDE.md is auto-generated from docs/agent-shared.md"
       ]
@@ -29,7 +29,7 @@
       "assertions": [
         "Agent identifies that docs/agent-shared.md is the source of truth",
         "Agent reports the missing file error clearly",
-        "Agent proposes a recovery strategy (git checkout or reconstruct from CLAUDE.md/.cursorrules)"
+        "Agent proposes a recovery strategy (git checkout or reconstruct from CLAUDE.md)"
       ]
     }
   ]

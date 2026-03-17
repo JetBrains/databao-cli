@@ -1,27 +1,27 @@
 ---
 name: sync-context
-description: Regenerate CLAUDE.md and .cursorrules from docs/agent-shared.md. Use mid-session after editing shared guidance.
+description: Regenerate CLAUDE.md from docs/agent-shared.md. Use mid-session after editing shared guidance.
 ---
 
 # Sync Agent Context
 
-Regenerate agent entrypoint files (`CLAUDE.md`, `.cursorrules`) from the
-single source of truth in `docs/agent-shared.md`.
+Regenerate `CLAUDE.md` from the single source of truth in `docs/agent-shared.md`.
+(`AGENTS.md` uses `@file` references and does not need syncing.)
 
 ## When to use
 
 - Mid-session, after editing `docs/agent-shared.md` or the delta headers in
-  `scripts/sync-agent-context.sh`, so that subsequent work sees fresh context.
+  the sync script, so that subsequent work sees fresh context.
 - Note: commit-time sync is handled automatically by a pre-commit hook — you
   only need this skill for mid-session updates.
 
 ## Steps
 
 ```bash
-scripts/sync-agent-context.sh
+${CLAUDE_SKILL_DIR}/scripts/sync.sh
 ```
 
-Verify with `git diff --stat` — expect changes in `CLAUDE.md` and `.cursorrules`.
+Verify with `git diff --stat` — expect changes in `CLAUDE.md`.
 
 ## Failure handling
 
