@@ -1,0 +1,33 @@
+---
+description: Regenerate agent entrypoints (CLAUDE.md, AGENTS.md, .cursorrules) from docs/agent-shared.md
+globs:
+alwaysApply: false
+---
+
+# Sync Agent Context
+
+Regenerate all agent entrypoint files from the single source of truth in
+`docs/agent-shared.md`.
+
+## When to use
+
+- After editing `docs/agent-shared.md`.
+- After editing delta headers in `scripts/sync-agent-context.sh`.
+- Before committing agent configuration changes.
+
+## Steps
+
+1. Run `scripts/sync-agent-context.sh`
+2. Verify output: `git diff --stat` — expect changes in `CLAUDE.md`, `AGENTS.md`, `.cursorrules`
+3. Spot-check shared core is identical across all three files
+4. Stage: `git add CLAUDE.md AGENTS.md .cursorrules`
+
+## Failure handling
+
+- "Missing shared core" → ensure `docs/agent-shared.md` exists
+- Divergent output → compare `docs/agent-shared.md` against "Shared Core" sections
+
+## Scope
+
+- Does NOT edit `docs/agent-shared.md` — make changes there first
+- Does NOT sync `.cursor/rules/*.mdc` files
