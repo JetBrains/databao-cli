@@ -155,6 +155,33 @@ def build(ctx: Context, domain: str, should_index: bool) -> None:
 
 
 @cli.command()
+@click.option(
+    "-d",
+    "--domain",
+    type=click.STRING,
+    default="root",
+    help="Databao domain name",
+)
+@click.argument(
+    "datasources-config-files",
+    nargs=-1,
+    type=click.STRING,
+)
+@click.pass_context
+def index(ctx: click.Context, domain: str, datasources_config_files: tuple[str, ...]) -> None:
+    """Index built contexts into the embeddings database.
+
+    If one or more datasource config file strings are provided, only those datasources will be indexed.
+    If no values are provided, all built contexts for the selected domain will be indexed.
+    """
+    from databao_cli.commands.index import index_impl
+
+    project_layout = _get_project_or_exit(ctx.obj["project_dir"])
+    results = index_impl(project_layout, domain, list(datasources_config_files) if datasources_config_files else None)
+    click.echo(f"Index complete. Processed {len(results)} contexts.")
+
+
+@cli.command()
 @click.argument("question", required=False)
 @click.option(
     "--one-shot",
