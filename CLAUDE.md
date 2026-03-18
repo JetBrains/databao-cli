@@ -96,11 +96,9 @@ Key directories:
   verify coverage meets the threshold in `[tool.coverage.report] fail_under`
   (`pyproject.toml`). If existing tests break, fix the production code —
   do not weaken tests. If newly written tests are wrong, fix the tests.
-- `CLAUDE.md` is auto-synced from `docs/agent-shared.md` on commit via
-  pre-commit hook. Run `.claude/skills/sync-context/scripts/sync.sh`
-  manually (or use the `/sync-context` skill) if you need updated context
-  mid-session. Cursor context is in `.cursor/rules/project-context.mdc`
-  (uses `@file` references, does not need syncing).
+- Agent context files (`CLAUDE.md`, `.cursor/rules/project-context.mdc`)
+  derive their shared content from this file. Do not duplicate shared
+  guidance into agent-specific files.
 - When modifying agent guidance files (skills, `docs/agent-shared.md`,
   coding-guidelines), run `make lint-skills` to validate consistency.
   The pre-commit hook runs this automatically on commit.
@@ -126,8 +124,8 @@ Key directories:
 
 1. **Test & lint** — run `make check` then `make test-cov-check`. Fix any
    failures before proceeding.
-2. **Architecture review** — run the `review-architecture` skill on the
-   changed code. Fix any High-severity issues it raises.
+2. **Architecture review** — review architecture quality of the changed
+   code. Fix any high-severity issues before proceeding.
 3. **Branch** — create a branch following `<nickname>/<descriptive-branch-name>`.
    Detect the user's nickname from existing remote branches:
    ```bash
