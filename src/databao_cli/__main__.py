@@ -168,7 +168,7 @@ def build(ctx: Context, domain: str, should_index: bool) -> None:
     type=click.STRING,
 )
 @click.pass_context
-def index(ctx: click.Context, domain: str, datasources_config_files: tuple[str, ...]) -> None:
+def index(ctx: Context, domain: str, datasources_config_files: tuple[str, ...]) -> None:
     """Index built contexts into the embeddings database.
 
     If one or more datasource config file strings are provided, only those datasources will be indexed.
