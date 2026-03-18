@@ -80,7 +80,8 @@ project management, and utility functions.
 `__main__.py` entrypoint wrapper are excluded from unit coverage.
 
 **When coverage drops**: See the `check-coverage` skill for the decision
-procedure on whether to fix code or fix tests.
+procedure on whether to fix code or fix tests. Use the `write-tests` skill
+for guidance on writing new tests that follow project conventions.
 
 ## Agent Behavior
 
