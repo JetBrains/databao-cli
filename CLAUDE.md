@@ -8,23 +8,11 @@ Claude Code entrypoint for agent instructions in this repository.
 - Execute directly when safe; ask questions only if truly blocked.
 - YouTrack MCP must be configured (see DEVELOPMENT.md). Use get_issue / update_issue tools.
 
-## Shared References
+## References
 
 - `docs/architecture.md`
 - `docs/coding-guidelines.md`
 - `docs/testing-strategy.md`
-- `docs/agent-shared.md`
-
-## Sync
-
-- Canonical shared content lives in `docs/agent-shared.md`.
-- Regenerate with `.claude/skills/sync-context/scripts/sync.sh` or `/sync-context`.
-
-## Shared Core (synced from `docs/agent-shared.md`)
-
-# Agent Shared Core
-
-Shared operating context for all coding agents in this repository.
 
 ## Project Scope
 
@@ -94,11 +82,8 @@ style issues; do not manually fix formatting.
   verify coverage meets the threshold in `[tool.coverage.report] fail_under`
   (`pyproject.toml`). If existing tests break, fix the production code —
   do not weaken tests. If newly written tests are wrong, fix the tests.
-- Agent context files (`CLAUDE.md`, `.cursor/rules/project-context.mdc`)
-  derive their shared content from this file. Do not duplicate shared
-  guidance into agent-specific files.
-- When modifying agent guidance files (skills, `docs/agent-shared.md`,
-  coding-guidelines), run `make lint-skills` to validate consistency.
+- When modifying agent guidance files (skills, coding-guidelines),
+  run `make lint-skills` to validate consistency.
   The pre-commit hook runs this automatically on commit.
 
 ## YouTrack Ticket Workflow

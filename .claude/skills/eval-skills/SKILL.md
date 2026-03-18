@@ -11,7 +11,7 @@ improvements across iterations.
 ## When to use
 
 - After modifying a skill's SKILL.md to verify it still produces good results.
-- After changing `docs/agent-shared.md` or guidance docs that skills depend on.
+- After changing `CLAUDE.md` or guidance docs that skills depend on.
 - Periodically to benchmark skill quality and identify regressions.
 
 ## Steps

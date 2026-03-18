@@ -6,7 +6,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SKILLS_DIR="$ROOT_DIR/.claude/skills"
-SHARED_FILE="$ROOT_DIR/docs/agent-shared.md"
+CLAUDE_FILE="$ROOT_DIR/CLAUDE.md"
 MAKEFILE="$ROOT_DIR/Makefile"
 
 errors=0
@@ -64,11 +64,11 @@ for skill_file in "$SKILLS_DIR"/*/SKILL.md; do
   done < <(grep -oE '`make ([a-z][a-z0-9_-]*)`' "$skill_file" | sed 's/`make \(.*\)`/\1/' | sort -u)
 done
 
-# Check agent-shared.md for make targets
-if [[ -f "$SHARED_FILE" ]]; then
+# Check CLAUDE.md for make targets
+if [[ -f "$CLAUDE_FILE" ]]; then
   while IFS= read -r target; do
-    check_make_target "$target" "docs/agent-shared.md"
-  done < <(grep -oE '`make ([a-z][a-z0-9_-]*)`' "$SHARED_FILE" | sed 's/`make \(.*\)`/\1/' | sort -u)
+    check_make_target "$target" "CLAUDE.md"
+  done < <(grep -oE '`make ([a-z][a-z0-9_-]*)`' "$CLAUDE_FILE" | sed 's/`make \(.*\)`/\1/' | sort -u)
 fi
 
 # ---------- 3. Script existence ----------
@@ -87,25 +87,14 @@ done
 
 # ---------- 4. Cross-doc consistency ----------
 
-# Check that docs referenced in agent-shared.md exist
-if [[ -f "$SHARED_FILE" ]]; then
-  while IFS= read -r doc; do
-    doc_path="$ROOT_DIR/$doc"
-    if [[ ! -f "$doc_path" ]]; then
-      error "Doc '$doc' referenced in docs/agent-shared.md does not exist"
-    fi
-  done < <(grep -oE '`docs/[a-z][a-z0-9_/-]*\.(md|txt)`' "$SHARED_FILE" | tr -d '`' | sort -u)
-fi
-
-# Check Shared References in CLAUDE.md
-claude_file="$ROOT_DIR/CLAUDE.md"
-if [[ -f "$claude_file" ]]; then
+# Check that docs referenced in CLAUDE.md exist
+if [[ -f "$CLAUDE_FILE" ]]; then
   while IFS= read -r doc; do
     doc_path="$ROOT_DIR/$doc"
     if [[ ! -f "$doc_path" ]]; then
       error "Doc '$doc' referenced in CLAUDE.md does not exist"
     fi
-  done < <(grep -oE '`docs/[a-z][a-z0-9_/-]*\.(md|txt)`' "$claude_file" | tr -d '`' | sort -u)
+  done < <(grep -oE '`docs/[a-z][a-z0-9_/-]*\.(md|txt)`' "$CLAUDE_FILE" | tr -d '`' | sort -u)
 fi
 
 # ---------- 5. Eval files validation ----------

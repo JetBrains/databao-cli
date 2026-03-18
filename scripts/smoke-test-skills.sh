@@ -29,11 +29,6 @@ run_test "validate-agent-guidance" "scripts/validate-agent-guidance.sh"
 echo ""
 echo "=== Tier 2: Functional smoke tests ==="
 
-# sync-context: script runs and produces files with expected markers
-run_test "sync-context: script exits 0" ".claude/skills/sync-context/scripts/sync.sh"
-run_test "sync-context: CLAUDE.md contains shared core" "grep -q 'Shared Core' CLAUDE.md"
-run_test "sync-context: .cursor/rules/project-context.mdc references shared docs" "grep -q 'agent-shared.md' .cursor/rules/project-context.mdc"
-
 # setup-environment: make setup succeeds (already verifies toolchain)
 run_test "setup-environment: make setup" "make setup"
 
@@ -41,7 +36,7 @@ run_test "setup-environment: make setup" "make setup"
 run_test "check-coverage: make test-cov-check" "make test-cov-check"
 
 # review-architecture: referenced doc files exist and are non-empty
-for doc in docs/architecture.md docs/coding-guidelines.md docs/testing-strategy.md docs/agent-shared.md README.md; do
+for doc in docs/architecture.md docs/coding-guidelines.md docs/testing-strategy.md README.md; do
   run_test "review-architecture: $doc exists and non-empty" "test -s $doc"
 done
 

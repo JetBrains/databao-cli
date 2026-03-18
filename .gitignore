@@ -38,8 +38,6 @@ build/
 ### Mac OS ###
 .DS_Store
 
-.cursor/debug.log
-.cursor/plans/
 .claude/evals-workspace/
 
 *.code-workspace
