@@ -74,7 +74,8 @@ def initialize_agent_from_dce(project_path: Path, model: str | None, temperature
 
     agent = create_agent(domain=_domain, llm_config=llm_config)
 
-    num_sources = len(agent.sources.dbs) + len(agent.sources.dfs)
+    sources = agent.sources
+    num_sources = len(sources.dbs) + len(sources.dfs) + len(sources.dbts)
     click.echo(f"Connected to {num_sources} data source(s)")
     return agent
 
