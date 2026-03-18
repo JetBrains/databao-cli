@@ -50,17 +50,15 @@ Key directories:
 
 ## Coding Guidelines
 
-- Imports grouped as stdlib, third-party, local (`databao_cli.*`) with blank lines.
-- 4-space indentation; line length per `[tool.ruff] line-length` in `pyproject.toml`.
+Style and formatting are enforced by ruff and mypy — only non-linter-enforceable
+rules are listed here. Use `ruff check --fix` and `ruff format` to auto-fix
+style issues; do not manually fix formatting.
+
 - Add type hints for public APIs and non-trivial helpers; strict mypy is enabled.
-- Prefer modern generics (`list[str]`, `dict[str, Any]`).
-- Naming: `snake_case` functions/modules, `PascalCase` classes,
-  `UPPER_SNAKE_CASE` constants.
 - Validate config/args early and raise specific exceptions with actionable
   messages.
 - Use `logging` for runtime behavior; use `print` only for tiny utilities.
 - CLI framework is Click — follow Click patterns for new commands.
-- Prefer absolute imports (`TID252` rule enforced by ruff).
 
 ## Change Management
 
