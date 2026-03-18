@@ -4,7 +4,7 @@ Practical coding rules for contributors and coding agents.
 
 ## Language and Tooling
 
-- Python version target: `>=3.11`.
+- Python version target: see `requires-python` in `pyproject.toml`.
 - Dependency/runtime management: `uv` + `pyproject.toml`.
 - Run project commands through `uv run`.
 - Local install/update: `make setup` (or `uv sync --dev` for deps only)
@@ -28,7 +28,7 @@ Run the narrowest relevant command first, then broaden scope.
 ## General Coding Style
 
 - Use 4-space indentation.
-- Line length target: 127 characters (ruff config).
+- Line length target: per `[tool.ruff] line-length` in `pyproject.toml`.
 - Always use f-strings for string formatting (not `%` or `.format()`).
 - Prefer readability over clever/compact tricks.
 - Keep functions focused; extract helpers for repeated logic.

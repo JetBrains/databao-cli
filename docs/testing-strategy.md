@@ -49,7 +49,7 @@ Run the smallest relevant slice first, then broaden before finalizing:
 | `make check`        | `uv run pre-commit run --all-files`                  | Ruff lint + mypy                  |
 | `make test`         | `uv run pytest tests/ -v` (sources `.env` if present)| Unit tests                        |
 | `make test-cov`     | `uv run pytest ... --cov`                            | Coverage report (no threshold)    |
-| `make test-cov-check`| `uv run pytest ... --cov --cov-fail-under=80`       | Coverage with 80% enforcement     |
+| `make test-cov-check`| `uv run pytest ... --cov` (threshold from `pyproject.toml`)| Coverage enforcement              |
 | `make lint-skills`   | `scripts/validate-agent-guidance.sh`                 | Static checks on agent guidance   |
 | `make smoke-skills`  | `scripts/smoke-test-skills.sh`                       | Functional skill verification     |
 
@@ -68,7 +68,8 @@ Never add these to pre-commit hooks or CI without explicit team decision.
 
 ## Coverage
 
-Unit test coverage is measured with `pytest-cov` and enforced at **80%**.
+Unit test coverage is measured with `pytest-cov` and enforced at the threshold
+set in `[tool.coverage.report] fail_under` in `pyproject.toml`.
 
 Configuration lives in `pyproject.toml` under `[tool.coverage.*]` sections.
 

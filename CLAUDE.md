@@ -52,7 +52,7 @@ Key directories:
 
 ## Environment Defaults
 
-- Python `>=3.11`
+- Python version: see `requires-python` in `pyproject.toml`.
 - Install deps: `uv sync --dev`
 - Run commands with `uv run`
 
@@ -75,7 +75,7 @@ Key directories:
 ## Coding Guidelines
 
 - Imports grouped as stdlib, third-party, local (`databao_cli.*`) with blank lines.
-- 4-space indentation; line length target 127 (ruff config).
+- 4-space indentation; line length per `[tool.ruff] line-length` in `pyproject.toml`.
 - Add type hints for public APIs and non-trivial helpers; strict mypy is enabled.
 - Prefer modern generics (`list[str]`, `dict[str, Any]`).
 - Naming: `snake_case` functions/modules, `PascalCase` classes,
@@ -93,7 +93,8 @@ Key directories:
 - Update tests when changing commands, protocols, or behavior.
 - Update `README.md` if command examples or workflows change.
 - Run `make test-cov-check` after changing code in `src/databao_cli/` to
-  verify coverage ≥80%. If existing tests break, fix the production code —
+  verify coverage meets the threshold in `[tool.coverage.report] fail_under`
+  (`pyproject.toml`). If existing tests break, fix the production code —
   do not weaken tests. If newly written tests are wrong, fix the tests.
 - `CLAUDE.md` is auto-synced from `docs/agent-shared.md` on commit via
   pre-commit hook. Run `.claude/skills/sync-context/scripts/sync.sh`
