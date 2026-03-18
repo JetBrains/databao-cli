@@ -72,6 +72,7 @@ dev = [
     "mypy>=1.18.2",
     "types-PyYAML>=6.0.12.20250915",
     "types-requests>=2.32.4.20260107",
+    "pytest-cov>=6.0,<7.0",
 ]
 
 e2e-tests = [
@@ -140,3 +141,24 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = ["databao.agent.integrations.dce.*"]
 disable_error_code = ["no-any-return"]
+
+[tool.coverage.run]
+source = ["src/databao_cli"]
+omit = [
+    "src/databao_cli/ui/*",
+    "src/databao_cli/__main__.py",
+]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+skip_empty = true
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.",
+    "if TYPE_CHECKING:",
+    "@overload",
+]
+
+[tool.coverage.html]
+directory = "htmlcov"
