@@ -177,7 +177,8 @@ def index(ctx: Context, domain: str, datasources_config_files: tuple[str, ...]) 
     from databao_cli.commands.index import index_impl
 
     project_layout = _get_project_or_exit(ctx.obj["project_dir"])
-    results = index_impl(project_layout, domain, list(datasources_config_files) if datasources_config_files else None)
+    datasources = list(datasources_config_files) if datasources_config_files else None
+    results = index_impl(project_layout, domain, datasources)
     click.echo(f"Index complete. Processed {len(results)} contexts.")
 
 
