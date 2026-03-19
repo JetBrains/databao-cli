@@ -6,6 +6,8 @@ compatibility: git must be installed and rg (ripgrep) is recommended.
 
 # Local Code Review
 
+## When to use
+
 Use this skill when the user wants a review of local changes in a Databao repository.
 
 This skill is for review, not implementation. Default to read-only inspection. Do not edit files unless the user explicitly switches from review to fixing issues.
@@ -26,7 +28,8 @@ Find the highest-signal problems in the current local changes:
 
 Keep summaries brief.
 
-## Scope Discovery
+## Steps
+### 1. Scope Discovery
 
 Start by identifying what changed:
 
@@ -37,7 +40,7 @@ Start by identifying what changed:
 
 Prefer `rg`, `git diff`, and targeted file reads over broad scans.
 
-## Databao Review Priorities
+#### Databao Review Priorities
 
 Pay extra attention to these repository-specific areas:
 
@@ -65,7 +68,7 @@ Use these targeted checks when the diff touches the corresponding area:
   verify that changed behavior has corresponding assertions or call out the gap explicitly.
   Make sure the tests cover some real logical path and are not only trivial assertions.
 
-## Review Workflow
+### 2. Review Workflow
 
 1. Establish the review scope from git.
 2. Read the diff carefully.
@@ -100,7 +103,7 @@ Avoid mutating validation in review mode:
 - do not run formatting commands without a check-only mode when one exists
 - do not run wrapper commands like `make check` or `pre-commit` unless you have verified they are non-mutating
 
-## What Good Findings Look Like
+### 3.Findings
 
 A good finding should:
 
@@ -111,7 +114,7 @@ A good finding should:
 
 Avoid weak findings like stylistic opinions, speculative architecture preferences, or advice not grounded in the diff.
 
-## Output Format
+#### Output Format
 
 Return findings first, ordered by severity.
 
