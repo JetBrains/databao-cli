@@ -7,7 +7,11 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
+import snowflake.connector
 import streamlit as st
+from databao_context_engine.plugins.databases.snowflake.snowflake_introspector import (
+    SnowflakeIntrospector,
+)
 
 from databao_cli.ui.app import main
 
@@ -84,11 +88,6 @@ def _patch_snowflake_introspector_for_sis() -> None:
     DCE's _connect must return a context manager because BaseIntrospector uses
     ``with self._connect(file_config) as conn:``.
     """
-    import snowflake.connector
-    from databao_context_engine.plugins.databases.snowflake.snowflake_introspector import (
-        SnowflakeIntrospector,
-    )
-
     @contextmanager
     def _sis_connect(self: Any, file_config: Any, *, catalog: str | None = None) -> Generator[Any, None, None]:
         token = SESSION_TOKEN_PATH.read_text().strip()
