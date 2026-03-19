@@ -111,22 +111,24 @@ style issues; do not manually fix formatting.
    run `make test` to verify they pass.
 3. **Test & lint** — run `make check` then `make test-cov-check`. Fix any
    failures before proceeding.
-4. **Architecture review** — review architecture quality of the changed
+4. **Review the code** — review the code locally. Fix any high-severity
+   findings before proceeding.
+5. **Architecture review** — review architecture quality of the changed
    code. Fix any high-severity issues before proceeding.
-5. **Branch** — create a branch following `<nickname>/<descriptive-branch-name>`.
+6. **Branch** — create a branch following `<nickname>/<descriptive-branch-name>`.
    Detect the user's nickname from existing remote branches:
    ```bash
    git branch -r | sed -nE 's|^ *origin/([^/]+)/.*|\1|p' | grep -vE '^(dependabot|HEAD|revert-)' | sort | uniq -c | sort -rn
    ```
-6. **Commit** — stage and commit with `[DBA-123] Description of change`.
-7. **Pause** — present the user with a summary of what will be pushed and
+7. **Commit** — stage and commit with `[DBA-123] Description of change`.
+8. **Pause** — present the user with a summary of what will be pushed and
    the draft PR description. Wait for explicit confirmation before
    proceeding.
-8. **Push & PR** — push with `-u` flag, create PR using the standard
+9. **Push & PR** — push with `-u` flag, create PR using the standard
    format (see Pull Request Format section).
-9. **Update YouTrack** — move the ticket to **Review** state and add
+10. **Update YouTrack** — move the ticket to **Review** state and add
    a comment with the PR URL.
-10. Never commit directly to `main`.
+11. Never commit directly to `main`.
 
 ## Pull Request Format
 
