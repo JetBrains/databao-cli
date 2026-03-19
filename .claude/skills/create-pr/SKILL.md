@@ -12,24 +12,36 @@ project conventions.
 
 ### 1. Verify preconditions
 
-- Confirm you are NOT on `main`. Abort if so.
+- Confirm you are NOT on `main`. If on `main`, run the `create-branch`
+  skill to create a feature branch before continuing.
 - Check `git status` for changes to commit. If nothing to commit, inform
   the user and stop.
-- Warn (but do not block) if `make check` or `make test-cov-check` have
-  not been run in this session.
+### 2. Run quality gates
 
-### 2. Determine the ticket ID
+These are **blocking** — do not commit until both pass.
+
+1. **`make check`** (ruff + mypy)
+   - Run `make check`.
+   - If ruff fails, auto-fix with `uv run ruff check --fix src/databao_cli && uv run ruff format src/databao_cli`, then re-run `make check`.
+   - If mypy fails after ruff is clean, stop and fix the type errors before continuing.
+2. **`make test`** (pytest)
+   - Run `make test`.
+   - If tests fail, stop and fix the failures before continuing.
+3. **`make test-cov-check`** (coverage threshold)
+   - Run `make test-cov-check`.
+   - Warn the user if coverage is below threshold, but do **not** block the PR.
+
+### 3. Determine the ticket ID
 
 - Extract from the current branch name if it contains `DBA-<number>`.
 - Otherwise ask the user for the ticket ID.
-- Prefix every commit message with the ticket ID: `[DBA-123] Description`.
 
-### 3. Stage and commit
+### 4. Stage and commit
 
 - Stage relevant files (prefer explicit paths over `git add -A`).
-- Commit with `[DBA-XXX] Description of change`.
+- Commit following the **Commit Messages** section in `CLAUDE.md`.
 
-### 4. Pause for confirmation
+### 5. Pause for confirmation
 
 Present the user with:
 
@@ -38,7 +50,7 @@ Present the user with:
 
 **Wait for explicit user confirmation before proceeding.**
 
-### 5. Push and create PR
+### 6. Push and create PR
 
 - Push with `-u` flag: `git push -u origin <branch>`
 - Create the PR via `gh pr create` using the template:
@@ -64,7 +76,7 @@ Present the user with:
 - [ ] <Step or check to verify correctness>
 ```
 
-### 6. Report
+### 7. Report
 
 Output the PR URL so the user can review it.
 
@@ -72,7 +84,7 @@ Output the PR URL so the user can review it.
 
 - Never push to `main`.
 - Never push without explicit user confirmation.
-- Never skip the `[DBA-XXX]` commit prefix when a ticket is known.
+- Never skip the commit prefix when a ticket is known (see `CLAUDE.md`).
 - Never use `git add -A` or `git add .` — stage specific files.
 - If `gh` CLI is not available, show the push command and PR URL for
   manual creation.

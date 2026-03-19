@@ -99,8 +99,16 @@ style issues; do not manually fix formatting.
   `update_issue` (set `State` field).
 - After creating a PR, move the ticket to **Review** state and add the
   PR URL as a comment.
-- Prefix every commit message with the ticket ID:
-  `[DBA-123] Description of change`.
+## Commit Messages
+
+- Format: `[DBA-XXX] <imperative summary>` (max 72 chars)
+- Use imperative mood: "Add feature", not "Added feature" or "Adds feature"
+- Lowercase after the prefix: `[DBA-123] fix auth timeout`
+- No trailing period
+- If a body is needed, add a blank line after the summary:
+  - Explain *why*, not *what* (the diff shows what)
+  - Wrap at 72 characters
+- If no ticket exists, omit the prefix — don't invent one
 
 ## After Completing Work
 
