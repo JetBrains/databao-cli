@@ -13,7 +13,7 @@ before or after significant changes.
 Review in this order:
 
 1. `docs/architecture.md`
-2. `docs/coding-guidelines.md`
+2. `docs/python-coding-guidelines.md`
 3. `docs/testing-strategy.md`
 4. `CLAUDE.md`
 5. `README.md` (CLI usage and user-facing workflows)
