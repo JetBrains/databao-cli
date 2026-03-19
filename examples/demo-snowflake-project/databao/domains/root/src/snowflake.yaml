@@ -4,3 +4,5 @@ connection:
   account: {{ env_var('SNOWFLAKE_ACCOUNT') }}
   warehouse: {{ env_var('SNOWFLAKE_DS_WAREHOUSE') }}
   database: {{ env_var('SNOWFLAKE_DS_DATABASE') }}
+  auth:
+    authenticator: externalbrowser
