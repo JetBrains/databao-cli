@@ -85,7 +85,7 @@ uv run streamlit run src/databao_snowflake_demo/app.py -- \
   --project-dir .
 ```
 
-When running locally, the SiS session-token patch and Snowflake secret-loading logic are skipped (they only activate inside a Snowflake container). Environment variables must be set manually. Since there is no SiS session token locally, the datasource YAML has no `auth` section — you will need to configure authentication separately (e.g. via `databao datasource add-config` with `externalbrowser` or key-pair auth).
+When running locally, the SiS session-token patch and Snowflake secret-loading logic are skipped (they only activate inside a Snowflake container). Environment variables must be set manually. The datasource YAML uses `externalbrowser` auth by default, which opens your browser for Snowflake SSO. In SiS, this is overridden by the OAuth session token patch.
 
 ## Updating the `databao` Package
 
