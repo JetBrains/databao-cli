@@ -88,13 +88,13 @@ style issues; do not manually fix formatting.
 
 ## YouTrack Ticket Workflow
 
-- Before starting work, ask for a YouTrack ticket ID (e.g., `DBA-123` or just
-  `123` — expand bare numbers to `DBA-123`).
+- Before starting work, use the `make-yt-issue` skill to verify or create a
+  YouTrack ticket. It handles asking for the ID, validating it exists, and
+  creating one if needed.
 - If the YouTrack MCP server is unavailable, refer the user to `DEVELOPMENT.md`
   for setup instructions.
 - If a ticket is provided, read it with the `get_issue` tool to understand the
   full scope before writing any code.
-- If no ticket exists for the work, use the `make-yt-issue` skill to create one.
 - When starting work on a ticket, move it to **Develop** state using
   `update_issue` (set `State` field).
 - After creating a PR, move the ticket to **Review** state and add the

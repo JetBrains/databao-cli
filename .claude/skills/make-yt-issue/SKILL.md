@@ -1,52 +1,89 @@
 ---
 name: make-yt-issue
-description: Create a YouTrack issue for planned work using MCP tools. Use when no ticket exists for the work, when the user asks to create a ticket, or before starting untracked work.
+description: Ensure a YouTrack issue exists before starting work. Use at the start of any task when the user has not provided a ticket ID, when you need to verify a ticket exists, when the user asks to create a ticket, or before starting untracked work.
 ---
 
-# Make YouTrack Issue
+# Ensure YouTrack Issue
 
-Create a YouTrack issue in the DBA project using the YouTrack MCP tools.
+Ensure a YouTrack issue exists for the current work. Depending on context, this
+skill resolves an existing ticket, or drafts and creates a new one after user
+approval.
 
 ## Steps
 
-### 1. Gather issue details
+### 1. Determine intent
 
-Ask the user for (or propose from conversation context):
+Read the conversation to decide which path to take:
 
-- **Summary**: concise one-line title
-- **Description**: what the work involves and why
-- **Type**: Bug, Task, Feature, or other applicable type
+| Signal | Path |
+|--------|------|
+| User provides a ticket ID (`DBA-123`, `123`, or a YouTrack URL) | Go to **step 2** (validate) |
+| User explicitly asks to create a ticket (e.g., "create a ticket for …") | Go to **step 3** (draft) |
+| No ticket mentioned | Ask: *"Do you have a YouTrack ticket for this work?"* — then route based on answer |
 
-### 2. Show the proposed issue
+Accept `DBA-XXX`, a bare number (expand to `DBA-XXX`), or a full YouTrack URL.
 
-Present the summary, description, and type to the user.
-**Wait for explicit approval before creating.**
+### 2. Validate the ticket
 
-### 3. Create the issue
+Use the `get_issue` MCP tool to fetch the issue.
 
-Use the `create_issue` MCP tool to create the issue in the DBA project.
+- **Found** — display the issue summary and confirm with the user that it
+  matches the intended work. If confirmed, proceed to step 5.
+- **Not found / error** — inform the user the ticket could not be loaded and
+  offer to create a new one (continue to step 3).
 
-### 4. Report
+### 3. Draft the issue from context
 
-Output the issue ID (e.g., `DBA-123`) so the user can reference it.
+Generate a proposed issue using details from the conversation:
 
-### 5. Optionally transition to Develop
+- **Summary**: concise one-line title in imperative mood.
+- **Description**: what the work involves and why it matters (2-4 sentences).
+- **Type**: Bug, Task, or Feature — infer from context, default to Task.
 
-If the user is starting work immediately, move the issue to **Develop**
-state using `update_issue` (set the `State` field).
+Present the draft clearly:
+
+```
+Summary:  <proposed summary>
+Type:     <proposed type>
+
+Description:
+<proposed description>
+```
+
+Ask the user to **approve, edit, or reject** the draft.
+If the user rejects and does not want a ticket, respect that and stop.
+
+### 4. Create the issue
+
+After the user approves (or edits and then approves):
+
+- Use the `create_issue` MCP tool targeting the **DBA** project.
+- Report the created issue ID (e.g., `DBA-456`).
+
+### 5. Transition to Develop
+
+Move the issue to **Develop** state using `update_issue` (set the `State`
+custom field) so the board reflects active work.
+
+Report the final state: issue ID and current status.
 
 ## Guardrails
 
 - Never create an issue without explicit user approval of the summary,
   description, and type.
-- If the YouTrack MCP server is unavailable, inform the user and refer
-  them to `DEVELOPMENT.md` for setup instructions.
-- Default to the `DBA` project unless the user specifies otherwise.
+- Never skip the validation step when the user provides an existing ticket ID —
+  always confirm the ticket matches the intended work.
+- If the YouTrack MCP server is unavailable, inform the user and refer them to
+  `DEVELOPMENT.md` for setup instructions.
+- Default to the **DBA** project unless the user specifies otherwise.
+- Accept flexible input: `DBA-123`, `123`, or a YouTrack URL should all resolve
+  correctly.
+- If the user declines to create a ticket, respect that and do not push back.
 
 ## What this skill does NOT do
 
-- It does not manage issue state transitions beyond the initial Develop
-  move — ongoing state management (Develop → Review) is handled by the
-  development workflow in CLAUDE.md.
-- It does not search or update existing issues — use `get_issue` and
-  `update_issue` MCP tools directly for that.
+- It does not manage state transitions beyond the initial move to Develop —
+  ongoing state management (Develop → Review) is handled by the workflow in
+  CLAUDE.md.
+- It does not assign the issue or set priority — use `update_issue` or
+  `change_issue_assignee` MCP tools directly for that.
