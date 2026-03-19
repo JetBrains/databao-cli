@@ -2,7 +2,10 @@ import importlib.util
 import logging
 import os
 import sys
+from collections.abc import Generator
+from contextlib import contextmanager
 from pathlib import Path
+from typing import Any
 
 import streamlit as st
 
@@ -13,18 +16,17 @@ logger = logging.getLogger(__name__)
 SNOWFLAKE_SECRETS: dict[str, str] = {
     "openai_api_key": "OPENAI_API_KEY",
     "anthropic_api_key": "ANTHROPIC_API_KEY",
-    "snowflake_ds_account": "SNOWFLAKE_DS_ACCOUNT",
     "snowflake_ds_warehouse": "SNOWFLAKE_DS_WAREHOUSE",
     "snowflake_ds_database": "SNOWFLAKE_DS_DATABASE",
-    "snowflake_ds_user": "SNOWFLAKE_DS_USER",
-    "snowflake_ds_password": "SNOWFLAKE_DS_PASSWORD",
 }
+
+SESSION_TOKEN_PATH = Path("/snowflake/session/token")
 
 ADBC_LIB = "libadbc_driver_snowflake.so"
 
 
 def _is_running_in_snowflake() -> bool:
-    return Path("/snowflake/session/token").exists()
+    return SESSION_TOKEN_PATH.exists()
 
 
 def _ensure_adbc_driver() -> None:
@@ -72,9 +74,51 @@ def _load_snowflake_secrets() -> None:
             logger.warning("Failed to load secret '%s'", secret_name, exc_info=True)
 
 
+def _patch_snowflake_introspector_for_sis() -> None:
+    """Monkey-patch SnowflakeIntrospector._connect for Streamlit-in-Snowflake (SiS).
+
+    In SiS, the runtime maintains an OAuth session token at
+    /snowflake/session/token. We re-read it on every connection to avoid expiry
+    (tokens are valid ~1 hour, the file refreshes every few minutes).
+
+    DCE's _connect must return a context manager because BaseIntrospector uses
+    ``with self._connect(file_config) as conn:``.
+    """
+    import snowflake.connector
+    from databao_context_engine.plugins.databases.snowflake.snowflake_introspector import (
+        SnowflakeIntrospector,
+    )
+
+    @contextmanager
+    def _sis_connect(self: Any, file_config: Any, *, catalog: str | None = None) -> Generator[Any, None, None]:
+        token = SESSION_TOKEN_PATH.read_text().strip()
+        snowflake.connector.paramstyle = "qmark"
+        kwargs = file_config.connection.to_snowflake_kwargs()
+        # Replace any existing auth params with OAuth token
+        kwargs.pop("password", None)
+        kwargs.pop("private_key", None)
+        kwargs.pop("private_key_file", None)
+        kwargs.pop("private_key_file_pwd", None)
+        kwargs.pop("authenticator", None)
+        kwargs.pop("token", None)
+        kwargs["authenticator"] = "oauth"
+        kwargs["token"] = token
+        if catalog:
+            kwargs["database"] = catalog
+        conn = snowflake.connector.connect(**kwargs)
+        try:
+            yield conn
+        finally:
+            conn.close()
+
+    SnowflakeIntrospector._connect = _sis_connect  # type: ignore[assignment]
+    logger.info("Patched SnowflakeIntrospector._connect for SiS OAuth token auth")
+
+
 _ensure_adbc_driver()
 if _is_running_in_snowflake():
     _load_snowflake_secrets()
+    _patch_snowflake_introspector_for_sis()
 
 if "--project-dir" not in sys.argv:
     sys.argv.extend(["--project-dir", "examples/demo-snowflake-project"])

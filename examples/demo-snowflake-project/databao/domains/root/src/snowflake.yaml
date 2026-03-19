@@ -1,9 +1,6 @@
 type: snowflake
 name: snowflake
 connection:
-  account: {{ env_var('SNOWFLAKE_DS_ACCOUNT') }}
+  account: {{ env_var('SNOWFLAKE_ACCOUNT') }}
   warehouse: {{ env_var('SNOWFLAKE_DS_WAREHOUSE') }}
   database: {{ env_var('SNOWFLAKE_DS_DATABASE') }}
-  user: {{ env_var('SNOWFLAKE_DS_USER') }}
-  auth:
-    password: {{ env_var('SNOWFLAKE_DS_PASSWORD') }}
