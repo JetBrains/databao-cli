@@ -11,11 +11,8 @@ SET suffix              = 'DEMO';
 -- Secrets
 SET openai_key          = '<YOUR_OPENAI_API_KEY>';
 SET anthropic_key       = '<YOUR_ANTHROPIC_API_KEY>';
-SET sf_ds_account       = '<SNOWFLAKE_DATASOURCE_ACCOUNT>';
 SET sf_ds_warehouse     = '<SNOWFLAKE_DATASOURCE_WAREHOUSE>';
 SET sf_ds_database      = '<SNOWFLAKE_DATASOURCE_DATABASE>';
-SET sf_ds_user          = '<SNOWFLAKE_DATASOURCE_USER>';
-SET sf_ds_password      = '<SNOWFLAKE_DATASOURCE_PASSWORD>';
 
 -- Git repository
 SET git_repo_origin     = 'https://github.com/JetBrains/databao-cli.git';
@@ -44,11 +41,8 @@ DECLARE
   -- Configuration
   _openai_key      VARCHAR DEFAULT $openai_key;
   _anthropic_key   VARCHAR DEFAULT $anthropic_key;
-  _ds_account      VARCHAR DEFAULT $sf_ds_account;
   _ds_warehouse    VARCHAR DEFAULT $sf_ds_warehouse;
   _ds_database     VARCHAR DEFAULT $sf_ds_database;
-  _ds_user         VARCHAR DEFAULT $sf_ds_user;
-  _ds_password     VARCHAR DEFAULT $sf_ds_password;
   _git_origin      VARCHAR DEFAULT $git_repo_origin;
   _git_repo        VARCHAR DEFAULT $git_repo_name;
   _git_branch      VARCHAR DEFAULT $git_branch;
@@ -58,8 +52,6 @@ DECLARE
   _db              VARCHAR DEFAULT 'STREAMLIT_DATABAO_DB_' || $suffix;
   _wh              VARCHAR DEFAULT 'STREAMLIT_DATABAO_WAREHOUSE_' || $suffix;
   _egress_rule     VARCHAR DEFAULT 'STREAMLIT_DATABAO_EGRESS_RULE_' || $suffix;
-  _user            VARCHAR DEFAULT 'STREAMLIT_DATABAO_USER_' || $suffix;
-  _network_policy  VARCHAR DEFAULT 'STREAMLIT_DATABAO_NETWORK_POLICY_' || $suffix;
   _git_integration VARCHAR DEFAULT 'STREAMLIT_DATABAO_GIT_INTEGRATION_' || $suffix;
   _eai             VARCHAR DEFAULT 'STREAMLIT_DATABAO_EAI_' || $suffix;
   _secrets_access  VARCHAR DEFAULT 'STREAMLIT_DATABAO_SECRETS_ACCESS_' || $suffix;
@@ -89,29 +81,8 @@ BEGIN
     || ' VALUE_LIST = (''0.0.0.0:443'', ''0.0.0.0:80'')';
   EXECUTE IMMEDIATE :_sql;
 
-  -- Unset policy from our user first so CREATE OR REPLACE succeeds on re-runs
-  _sql := 'ALTER USER IF EXISTS ' || :_user || ' UNSET NETWORK_POLICY';
-  EXECUTE IMMEDIATE :_sql;
-
-  _sql := 'CREATE OR REPLACE NETWORK POLICY ' || :_network_policy
-    || ' ALLOWED_IP_LIST = (''0.0.0.0/0'')'
-    || ' COMMENT = ''Allow all network connections''';
-  EXECUTE IMMEDIATE :_sql;
-
   -- ==========================================================
-  -- 3. Service User
-  -- ==========================================================
-  _sql := 'CREATE OR REPLACE USER ' || :_user
-    || ' TYPE = SERVICE'
-    || ' DEFAULT_ROLE = ''PUBLIC''';
-  EXECUTE IMMEDIATE :_sql;
-
-  _sql := 'ALTER USER ' || :_user
-    || ' SET NETWORK_POLICY = ''' || :_network_policy || '''';
-  EXECUTE IMMEDIATE :_sql;
-
-  -- ==========================================================
-  -- 4. Git Repository
+  -- 3. Git Repository
   -- ==========================================================
   _sql := 'CREATE OR REPLACE API INTEGRATION ' || :_git_integration
     || ' API_PROVIDER = git_https_api'
@@ -129,7 +100,7 @@ BEGIN
   EXECUTE IMMEDIATE :_sql;
 
   -- ==========================================================
-  -- 5. Application Secrets
+  -- 4. Application Secrets
   -- ==========================================================
   _sql := 'CREATE OR REPLACE SECRET ' || :_db || '.PUBLIC.openai_api_key'
     || ' TYPE = GENERIC_STRING'
@@ -139,11 +110,6 @@ BEGIN
   _sql := 'CREATE OR REPLACE SECRET ' || :_db || '.PUBLIC.anthropic_api_key'
     || ' TYPE = GENERIC_STRING'
     || ' SECRET_STRING = ''' || :_anthropic_key || '''';
-  EXECUTE IMMEDIATE :_sql;
-
-  _sql := 'CREATE OR REPLACE SECRET ' || :_db || '.PUBLIC.snowflake_ds_account'
-    || ' TYPE = GENERIC_STRING'
-    || ' SECRET_STRING = ''' || :_ds_account || '''';
   EXECUTE IMMEDIATE :_sql;
 
   _sql := 'CREATE OR REPLACE SECRET ' || :_db || '.PUBLIC.snowflake_ds_warehouse'
@@ -156,18 +122,8 @@ BEGIN
     || ' SECRET_STRING = ''' || :_ds_database || '''';
   EXECUTE IMMEDIATE :_sql;
 
-  _sql := 'CREATE OR REPLACE SECRET ' || :_db || '.PUBLIC.snowflake_ds_user'
-    || ' TYPE = GENERIC_STRING'
-    || ' SECRET_STRING = ''' || :_ds_user || '''';
-  EXECUTE IMMEDIATE :_sql;
-
-  _sql := 'CREATE OR REPLACE SECRET ' || :_db || '.PUBLIC.snowflake_ds_password'
-    || ' TYPE = GENERIC_STRING'
-    || ' SECRET_STRING = ''' || :_ds_password || '''';
-  EXECUTE IMMEDIATE :_sql;
-
   -- ==========================================================
-  -- 6. External Access Integrations
+  -- 5. External Access Integrations
   -- ==========================================================
   _sql := 'CREATE OR REPLACE EXTERNAL ACCESS INTEGRATION ' || :_eai
     || ' ALLOWED_NETWORK_RULES = (' || :_db || '.PUBLIC.' || :_egress_rule || ')'
@@ -179,16 +135,13 @@ BEGIN
     || ' ALLOWED_AUTHENTICATION_SECRETS = ('
     || :_db || '.PUBLIC.openai_api_key, '
     || :_db || '.PUBLIC.anthropic_api_key, '
-    || :_db || '.PUBLIC.snowflake_ds_account, '
     || :_db || '.PUBLIC.snowflake_ds_warehouse, '
-    || :_db || '.PUBLIC.snowflake_ds_database, '
-    || :_db || '.PUBLIC.snowflake_ds_user, '
-    || :_db || '.PUBLIC.snowflake_ds_password'
+    || :_db || '.PUBLIC.snowflake_ds_database'
     || ') ENABLED = TRUE';
   EXECUTE IMMEDIATE :_sql;
 
   -- ==========================================================
-  -- 7. Compute Pool
+  -- 6. Compute Pool
   -- ==========================================================
   EXECUTE IMMEDIATE 'DROP COMPUTE POOL IF EXISTS ' || :_compute_pool;
   _sql := 'CREATE COMPUTE POOL ' || :_compute_pool
@@ -200,7 +153,7 @@ BEGIN
   EXECUTE IMMEDIATE :_sql;
 
   -- ==========================================================
-  -- 8. UDF + Streamlit App
+  -- 7. UDF + Streamlit App
   -- ==========================================================
   _sql := 'CREATE OR REPLACE FUNCTION ' || :_db || '.PUBLIC.get_secret(secret_name STRING)'
     || ' RETURNS STRING'
@@ -211,11 +164,8 @@ BEGIN
     || ' SECRETS = ('
     || '  ''openai_api_key'' = ' || :_db || '.PUBLIC.openai_api_key,'
     || '  ''anthropic_api_key'' = ' || :_db || '.PUBLIC.anthropic_api_key,'
-    || '  ''snowflake_ds_account'' = ' || :_db || '.PUBLIC.snowflake_ds_account,'
     || '  ''snowflake_ds_warehouse'' = ' || :_db || '.PUBLIC.snowflake_ds_warehouse,'
-    || '  ''snowflake_ds_database'' = ' || :_db || '.PUBLIC.snowflake_ds_database,'
-    || '  ''snowflake_ds_user'' = ' || :_db || '.PUBLIC.snowflake_ds_user,'
-    || '  ''snowflake_ds_password'' = ' || :_db || '.PUBLIC.snowflake_ds_password'
+    || '  ''snowflake_ds_database'' = ' || :_db || '.PUBLIC.snowflake_ds_database'
     || ') AS '
     || '$$' || CHR(10)
     || 'import _snowflake' || CHR(10)
