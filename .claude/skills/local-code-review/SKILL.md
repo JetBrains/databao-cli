@@ -103,7 +103,7 @@ Avoid mutating validation in review mode:
 - do not run formatting commands without a check-only mode when one exists
 - do not run wrapper commands like `make check` or `pre-commit` unless you have verified they are non-mutating
 
-### 3.Findings
+### 3. Findings
 
 A good finding should:
 
