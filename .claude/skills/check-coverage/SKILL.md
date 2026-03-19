@@ -1,20 +1,12 @@
 ---
 name: check-coverage
-description: Run test coverage measurement, analyze results, and fix gaps when coverage falls below the 80% threshold.
+description: Run test coverage measurement, analyze results, and fix gaps when coverage falls below the 80% threshold. Use after implementing features or fixing bugs, when `make test-cov-check` fails, when reviewing module test adequacy, or before creating a PR that touches `src/databao_cli/`.
 ---
 
 # Check Coverage
 
 Run test coverage measurement, analyze results, and fix gaps when coverage
 falls below the 80% threshold.
-
-## When to use
-
-- After implementing a new feature or fixing a bug, before considering the
-  change complete.
-- When `make test-cov-check` fails due to coverage below 80%.
-- When reviewing whether existing tests adequately cover a module.
-- Before creating a PR that touches `src/databao_cli/` code.
 
 ## Steps
 

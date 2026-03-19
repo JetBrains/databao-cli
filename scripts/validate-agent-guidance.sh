@@ -35,9 +35,7 @@ for skill_dir in "$SKILLS_DIR"/*/; do
   if ! grep -q '^# ' "$skill_file"; then
     error "$skill_name/SKILL.md missing top-level heading (# Title)"
   fi
-  if ! grep -q '^## When to use' "$skill_file"; then
-    error "$skill_name/SKILL.md missing '## When to use' section"
-  fi
+
   # Require actionable content: Steps section, numbered subsections, or checklist sections
   if ! grep -qE '^## Steps|^### [0-9]|^## .+ checklist' "$skill_file"; then
     error "$skill_name/SKILL.md missing '## Steps', numbered step sections, or checklist sections"

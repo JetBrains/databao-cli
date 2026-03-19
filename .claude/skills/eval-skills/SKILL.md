@@ -1,18 +1,12 @@
 ---
 name: eval-skills
-description: Run structured agent-in-the-loop evaluations on skills to measure quality and track improvements. Use after modifying SKILL.md files or agent guidance docs.
+description: Run structured agent-in-the-loop evaluations on skills to measure quality and track improvements. Use after modifying a SKILL.md, after changing `CLAUDE.md` or guidance docs that skills depend on, or periodically to benchmark skill quality and catch regressions.
 ---
 
 # Eval Skills
 
 Run structured evaluations on agent skills to measure quality and track
 improvements across iterations.
-
-## When to use
-
-- After modifying a skill's SKILL.md to verify it still produces good results.
-- After changing `CLAUDE.md` or guidance docs that skills depend on.
-- Periodically to benchmark skill quality and identify regressions.
 
 ## Steps
 

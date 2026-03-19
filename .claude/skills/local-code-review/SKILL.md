@@ -1,14 +1,10 @@
 ---
 name: local-code-review
-description: Review local code changes in Databao repositories before a commit or PR. Use for staged or unstaged diffs, local branches, and pre-merge review requests. Focus on correctness, regressions, missing tests, API or CLI behavior changes, executor or tooling changes, dependency or plugin-loading risks, and user-visible behavior changes. Prefer read-only inspection and findings-first output with file and line references.
+description: Review local code changes in Databao repositories before a commit or PR. Use when the user wants a review of staged or unstaged diffs, local branches, or pre-merge changes. Focus on correctness, regressions, missing tests, API/CLI behavior changes, executor or tooling changes, dependency or plugin-loading risks, and user-visible behavior changes.
 compatibility: git must be installed and rg (ripgrep) is recommended.
 ---
 
 # Local Code Review
-
-## When to use
-
-Use this skill when the user wants a review of local changes in a Databao repository.
 
 This skill is for review, not implementation. Default to read-only inspection. Do not edit files unless the user explicitly switches from review to fixing issues.
 
