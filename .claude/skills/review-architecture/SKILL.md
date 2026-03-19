@@ -1,19 +1,12 @@
 ---
 name: review-architecture
-description: Review architecture quality, maintainability, and developer experience before or after significant changes.
+description: Review architecture quality, maintainability, and developer experience before or after significant changes. Use when introducing a new CLI command or MCP tool, refactoring core module boundaries, diagnosing repeated dev friction, or preparing a PR with broad structural impact.
 ---
 
 # Review Architecture
 
-Use this skill to review architecture quality, maintainability, and developer
-experience (Dev UX) before or after significant changes.
-
-## When to use
-
-- Introducing a new CLI command or MCP tool.
-- Refactoring core module boundaries (commands / UI / MCP / project).
-- Seeing repeated friction in onboarding, debugging, or testing.
-- Preparing a PR with broad structural impact.
+Review architecture quality, maintainability, and developer experience (Dev UX)
+before or after significant changes.
 
 ## Primary sources of truth
 

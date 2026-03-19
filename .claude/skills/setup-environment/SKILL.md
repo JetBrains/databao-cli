@@ -1,18 +1,12 @@
 ---
 name: setup-environment
-description: Set up or verify the local development environment. Use when starting work in a fresh clone, when commands fail with missing dependencies, or before running checks for the first time.
+description: Set up or verify the local development environment. Use when starting work in a fresh clone or new machine, when commands fail with missing dependencies or broken imports, or before running `make check`/`make test` for the first time in a session.
 disable-model-invocation: true
 ---
 
 # Setup Environment
 
 Set up or verify the local development environment.
-
-## When to use
-
-- Starting work in a fresh clone or new machine.
-- A command fails with missing dependencies or broken imports.
-- Before running `make check` or `make test` for the first time in a session.
 
 ## Steps
 

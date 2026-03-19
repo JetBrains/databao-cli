@@ -35,8 +35,18 @@ for skill_dir in "$SKILLS_DIR"/*/; do
   if ! grep -q '^# ' "$skill_file"; then
     error "$skill_name/SKILL.md missing top-level heading (# Title)"
   fi
-  if ! grep -q '^## When to use' "$skill_file"; then
-    error "$skill_name/SKILL.md missing '## When to use' section"
+  # "When to use" guidance can live in the frontmatter description (preferred)
+  # or in a dedicated ## When to use section.
+  has_when_section=false
+  if grep -q '^## When to use' "$skill_file"; then
+    has_when_section=true
+  fi
+  has_desc_trigger=false
+  if grep -qiE '^description:.*\bUse (when|after|for|before)\b' "$skill_file"; then
+    has_desc_trigger=true
+  fi
+  if [[ "$has_when_section" == false && "$has_desc_trigger" == false ]]; then
+    error "$skill_name/SKILL.md must include trigger guidance: either a '## When to use' section or a frontmatter description containing 'Use when/after/for/before ...'"
   fi
   # Require actionable content: Steps section, numbered subsections, or checklist sections
   if ! grep -qE '^## Steps|^### [0-9]|^## .+ checklist' "$skill_file"; then

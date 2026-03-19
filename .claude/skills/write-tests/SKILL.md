@@ -1,19 +1,12 @@
 ---
 name: write-tests
-description: Write or update unit tests for changed code, following project conventions and ensuring coverage meets the 80% threshold.
+description: Write or update unit tests for changed code, following project conventions and ensuring coverage meets the 80% threshold. Use after implementing a feature, command, or MCP tool, after fixing a bug (regression test), when asked to cover existing code, or when `make test-cov-check` reports missing coverage.
 ---
 
 # Write Tests
 
 Write or update unit tests for new or changed code in `src/databao_cli/`,
 following project conventions and ensuring the coverage threshold is met.
-
-## When to use
-
-- After implementing a new feature, command, or MCP tool.
-- After fixing a bug — to add a regression test.
-- When asked to write tests for existing uncovered code.
-- When `make test-cov-check` reports missing coverage for code you changed.
 
 ## Steps
 
