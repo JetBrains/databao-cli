@@ -44,7 +44,13 @@ Prefer GraphQL over `gh pr view --comments`. Timeline comments do not preserve
 thread resolution state, file paths, or line mappings well enough for this
 task.
 
-Use:
+First, obtain the repository owner and name:
+
+```bash
+gh repo view --json owner,name -q '.owner.login + " " + .name'
+```
+
+Then fetch the review threads using those values:
 
 ```bash
 gh api graphql -f query='
@@ -52,11 +58,13 @@ gh api graphql -f query='
     repository(owner:$owner, name:$repo) {
       pullRequest(number:$number) {
         reviewThreads(first:100) {
+          pageInfo { hasNextPage endCursor }
           nodes {
             id
             isResolved
             isOutdated
             comments(first:20) {
+              pageInfo { hasNextPage endCursor }
               nodes {
                 id
                 databaseId
@@ -73,8 +81,15 @@ gh api graphql -f query='
         }
       }
     }
-  }' -F owner='{owner}' -F repo='{repo}' -F number=<PR_NUMBER>
+  }' -F owner=<OWNER> -F repo=<REPO> -F number=<PR_NUMBER>
 ```
+
+Replace `<OWNER>` and `<REPO>` with the values from `gh repo view` above, and
+`<PR_NUMBER>` with the pull request number.
+
+If `hasNextPage` is `true` for either `reviewThreads` or `comments`, paginate
+by re-running the query with an `after: "<endCursor>"` argument on the
+corresponding connection until all pages are fetched.
 
 Focus first on threads where `isResolved` is `false`. Treat `isOutdated: true`
 as lower priority unless the underlying issue still exists in the current code.
