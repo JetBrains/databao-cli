@@ -1,0 +1,35 @@
+{
+  "skill_name": "make-yt-issue",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a YouTrack ticket for adding a new 'config' CLI command that lets users manage project settings.",
+      "expected_output": "Agent proposes an issue with summary, description, and type, waits for approval, then creates it via MCP.",
+      "assertions": [
+        "Agent proposes a summary, description, and type before creating",
+        "Agent waits for explicit user approval before calling create_issue",
+        "Agent reports the created issue ID (e.g., DBA-XXX) after creation"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I want to start working on something but there's no ticket yet. Can you make one?",
+      "expected_output": "Agent asks for details to populate the issue, then proposes and creates after approval.",
+      "assertions": [
+        "Agent asks the user for issue details (summary, description, or type)",
+        "Agent does NOT create an issue without gathering sufficient information",
+        "Agent presents the proposed issue for approval before creating"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Create a YouTrack issue and start working on it right away.",
+      "expected_output": "Agent creates the issue after approval and moves it to Develop state.",
+      "assertions": [
+        "Agent waits for approval before creating the issue",
+        "After creation, agent moves the issue to Develop state using update_issue",
+        "Agent reports both the issue ID and the state transition"
+      ]
+    }
+  ]
+}

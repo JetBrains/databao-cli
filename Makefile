@@ -28,6 +28,9 @@ test-cov-check:
 e2e-test:
 	uv run --group e2e-tests pytest e2e-tests
 
+nickname:
+	@git config user.email | cut -d@ -f1
+
 lint-skills:
 	scripts/validate-agent-guidance.sh
 

@@ -1,0 +1,38 @@
+{
+  "skill_name": "create-branch",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a branch for ticket DBA-150 about fixing the status command output.",
+      "expected_output": "Agent detects nickname from remotes, creates a branch like <nickname>/DBA-150-fix-status-output from origin/main.",
+      "assertions": [
+        "Agent resolves the nickname from memory or git email",
+        "Agent fetches from origin before creating the branch",
+        "Branch name follows `<nickname>/<descriptive-name>` pattern",
+        "Branch is created from origin/main, not from the current HEAD of an unrelated branch",
+        "Agent reports the created branch name to the user"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I need a new branch for some exploratory work, no ticket yet.",
+      "expected_output": "Agent creates a branch with a descriptive name without a ticket prefix.",
+      "assertions": [
+        "Agent resolves the nickname from memory or git email",
+        "Agent asks or derives a descriptive slug for the branch",
+        "Branch name does NOT include a ticket ID since none was provided",
+        "Agent does NOT require a ticket to proceed"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Create a branch for DBA-200. I have uncommitted changes in my working tree.",
+      "expected_output": "Agent warns about uncommitted changes and asks user how to proceed before branching.",
+      "assertions": [
+        "Agent detects or warns about uncommitted changes",
+        "Agent asks the user whether to stash, commit, or abort before switching branches",
+        "Agent does NOT silently discard uncommitted changes"
+      ]
+    }
+  ]
+}

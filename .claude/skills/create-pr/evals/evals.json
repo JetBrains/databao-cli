@@ -1,0 +1,38 @@
+{
+  "skill_name": "create-pr",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a PR for the changes on my current branch. The ticket is DBA-180.",
+      "expected_output": "Agent stages changes, commits with [DBA-180] prefix, presents a draft PR, pauses for confirmation, then pushes and creates the PR.",
+      "assertions": [
+        "Agent commits with a message prefixed by [DBA-180]",
+        "Agent presents a draft PR description to the user before pushing",
+        "Agent waits for explicit user confirmation before pushing",
+        "Agent pushes with the -u flag",
+        "PR description follows the Summary / Changes / Test Plan template",
+        "Agent reports the PR URL after creation"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Ship my changes as a PR. I'm on a feature branch but I don't remember the ticket number.",
+      "expected_output": "Agent tries to extract the ticket ID from the branch name; if not found, asks the user.",
+      "assertions": [
+        "Agent attempts to extract a ticket ID from the current branch name",
+        "If no ticket ID is found in the branch name, agent asks the user",
+        "Agent does NOT push without a commit message prefix when a ticket is expected"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Create a PR. I'm currently on the main branch.",
+      "expected_output": "Agent refuses to push directly to main and suggests creating a feature branch first.",
+      "assertions": [
+        "Agent detects that the current branch is main",
+        "Agent does NOT push to main",
+        "Agent suggests creating a feature branch or switching to one"
+      ]
+    }
+  ]
+}
