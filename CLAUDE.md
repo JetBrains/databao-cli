@@ -94,8 +94,7 @@ style issues; do not manually fix formatting.
   for setup instructions.
 - If a ticket is provided, read it with the `get_issue` tool to understand the
   full scope before writing any code.
-- If no ticket exists for the work, propose one (show summary, description, and
-  type) and wait for explicit user approval before creating it.
+- If no ticket exists for the work, use the `make-yt-issue` skill to create one.
 - When starting work on a ticket, move it to **Develop** state using
   `update_issue` (set `State` field).
 - After creating a PR, move the ticket to **Review** state and add the
@@ -115,42 +114,9 @@ style issues; do not manually fix formatting.
    findings before proceeding.
 5. **Architecture review** — review architecture quality of the changed
    code. Fix any high-severity issues before proceeding.
-6. **Branch** — create a branch following `<nickname>/<descriptive-branch-name>`.
-   Detect the user's nickname from existing remote branches:
-   ```bash
-   git branch -r | sed -nE 's|^ *origin/([^/]+)/.*|\1|p' | grep -vE '^(dependabot|HEAD|revert-)' | sort | uniq -c | sort -rn
-   ```
-7. **Commit** — stage and commit with `[DBA-123] Description of change`.
-8. **Pause** — present the user with a summary of what will be pushed and
-   the draft PR description. Wait for explicit confirmation before
-   proceeding.
-9. **Push & PR** — push with `-u` flag, create PR using the standard
-   format (see Pull Request Format section).
-10. **Update YouTrack** — move the ticket to **Review** state and add
+6. **Branch** — use the `create-branch` skill.
+7. **Commit & PR** — use the `create-pr` skill (stages, commits, pauses
+   for confirmation, pushes, and opens the PR).
+8. **Update YouTrack** — move the ticket to **Review** state and add
    a comment with the PR URL.
-11. Never commit directly to `main`.
-
-## Pull Request Format
-
-Use the following structure for PR descriptions:
-
-```
-## Summary
-<1–3 sentence overview of why this change exists>
-
-## Changes
-
-### <Logical change 1>
-<Brief description>
-<details><summary>Files</summary>
-
-- `path/to/file1`
-- `path/to/file2`
-</details>
-
-### <Logical change 2>
-...
-
-## Test Plan
-- [ ] <Step or check to verify correctness>
-```
+9. Never commit directly to `main`.
