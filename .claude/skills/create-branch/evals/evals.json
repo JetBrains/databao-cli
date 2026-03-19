@@ -6,7 +6,7 @@
       "prompt": "Create a branch for ticket DBA-150 about fixing the status command output.",
       "expected_output": "Agent detects nickname from remotes, creates a branch like <nickname>/DBA-150-fix-status-output from origin/main.",
       "assertions": [
-        "Agent runs the nickname detection command against remote branches",
+        "Agent resolves the nickname from memory or git email",
         "Agent fetches from origin before creating the branch",
         "Branch name follows `<nickname>/<descriptive-name>` pattern",
         "Branch is created from origin/main, not from the current HEAD of an unrelated branch",
@@ -18,7 +18,7 @@
       "prompt": "I need a new branch for some exploratory work, no ticket yet.",
       "expected_output": "Agent creates a branch with a descriptive name without a ticket prefix.",
       "assertions": [
-        "Agent detects the nickname from remote branches",
+        "Agent resolves the nickname from memory or git email",
         "Agent asks or derives a descriptive slug for the branch",
         "Branch name does NOT include a ticket ID since none was provided",
         "Agent does NOT require a ticket to proceed"

@@ -12,13 +12,13 @@ convention used in this repository.
 
 ### 1. Detect the user's nickname
 
-Query existing remote branches to find the most frequent author prefix:
+Resolve the nickname using the first approach that succeeds:
 
-```bash
-git branch -r | sed -nE 's|^ *origin/([^/]+)/.*|\1|p' | grep -vE '^(dependabot|HEAD|revert-)' | sort | uniq -c | sort -rn
-```
+1. **Memory** — check if a stored memory already contains the user's nickname.
+2. **`make nickname`** — outputs the local part of `git config user.email` (before `@`).
+3. **Ask** — if neither works, ask the user.
 
-Pick the top result. If ambiguous or no branches exist, ask the user.
+Once resolved, save the nickname to memory for future conversations.
 
 ### 2. Derive a descriptive branch name
 
