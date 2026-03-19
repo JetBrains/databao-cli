@@ -84,8 +84,9 @@ def render_sources_info() -> None:
 
     dbs = agent.dbs
     dfs = agent.dfs
+    dbts = agent.sources.dbts
 
-    if not dbs and not dfs:
+    if not dbs and not dfs and not dbts:
         st.caption("No sources configured")
         return
 
@@ -95,6 +96,9 @@ def render_sources_info() -> None:
 
     for name in dfs:
         st.markdown(f"📊 **{name}** (DataFrame)")
+
+    for name in dbts:
+        st.markdown(f"🔧 **{name}** (dbt)")
 
 
 def render_executor_selector() -> None:

@@ -49,7 +49,7 @@ def render_welcome_page() -> None:
             st.metric("Active Chats", num_chats)
 
         with stat_col2:
-            num_sources = len(agent.dbs) + len(agent.dfs) if agent else 0
+            num_sources = (len(agent.sources.dbs) + len(agent.sources.dfs) + len(agent.sources.dbts)) if agent else 0
             st.metric("Data Sources", num_sources)
 
         with stat_col3:
