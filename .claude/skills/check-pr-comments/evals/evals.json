@@ -1,0 +1,42 @@
+{
+  "skill_name": "check-pr-comments",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Use the GitHub CLI to address the unresolved review comments on PR #123, make the necessary fixes, and reply to the threads.",
+      "expected_output": "Agent verifies gh access, inspects unresolved review threads for the PR, presents a Markdown triage table, and then pauses for explicit approval before any code changes or GitHub replies.",
+      "assertions": [
+        "Agent runs `gh auth status` before relying on GitHub CLI API calls",
+        "Agent identifies the target PR explicitly rather than scanning arbitrary repository comments",
+        "Agent fetches review threads with `gh api graphql` or an equivalent gh-based API call that preserves thread state",
+        "Agent presents a Markdown table that includes comment summary, referenced file, and triage decision before implementation",
+        "Agent explicitly asks for or waits for user approval after showing the triage table",
+        "Agent does NOT apply code changes or post GitHub replies before approval"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Check the GitHub review comments on my current branch's PR using gh.",
+      "expected_output": "Agent discovers the PR from the current branch with gh, shows a Markdown triage table for unresolved review threads, and waits for approval before working through them.",
+      "assertions": [
+        "Agent uses `gh pr view --json` or equivalent to discover the PR for the current branch when no PR number is given",
+        "Agent asks for a PR number or URL if no PR can be inferred from the current branch",
+        "Agent prioritizes unresolved threads over already resolved ones",
+        "Agent classifies each unresolved thread as `Implement`, `Reply only`, or `Blocked`",
+        "Agent does NOT treat the initial request itself as sufficient approval to edit code"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "A reviewer left an inline PR comment, but I think the current implementation is correct. Handle it with the GitHub CLI.",
+      "expected_output": "Agent inspects the code and the comment, marks the thread as reply-only in the Markdown triage table, and waits for approval before posting or drafting the response.",
+      "assertions": [
+        "Agent reads the referenced code before deciding whether a code change is needed",
+        "Agent allows for an explanation-only outcome when the reviewer request should not be implemented",
+        "Agent marks explanation-only threads as `Reply only` in the triage table",
+        "Agent waits for approval before replying on GitHub",
+        "Agent does NOT resolve the thread silently without addressing it in a reply"
+      ]
+    }
+  ]
+}
