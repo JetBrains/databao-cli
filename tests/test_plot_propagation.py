@@ -19,7 +19,7 @@ import pytest
 
 @pytest.fixture(autouse=True, scope="module")
 def _preload_results_module() -> None:
-    """Pre-import the results module to resolve the circular import chain.
+    """Pre-import the query_executor module to resolve the circular import chain.
 
     results → chat_persistence → __init__ → query_executor → results.
     Importing query_executor first breaks the cycle.

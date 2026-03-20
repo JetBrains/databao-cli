@@ -210,6 +210,10 @@ def render_visualization_section(
     Args:
         thread: The Thread object (may have _visualization_result)
         visualization_data: Optional persisted visualization data (takes priority over thread result)
+        allow_thread_fallback: If True, fall back to the thread-level
+            ``_visualization_result`` when *visualization_data* is ``None``.
+            Disabled by default to prevent a plot from propagating to
+            messages that did not produce it.
     """
     vis_result = thread._visualization_result
 
