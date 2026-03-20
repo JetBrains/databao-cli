@@ -1,6 +1,7 @@
 ---
 name: make-yt-issue
 description: Ensure a YouTrack issue exists before starting work. Use at the start of any task when the user has not provided a ticket ID, when you need to verify a ticket exists, when the user asks to create a ticket, or before starting untracked work.
+compatibility: YouTrack MCP must be configured and available.
 ---
 
 # Ensure YouTrack Issue
