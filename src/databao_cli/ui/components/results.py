@@ -190,7 +190,12 @@ def render_dataframe_section(result: "ExecutionResult", has_visualization: bool)
         st.dataframe(df, width="stretch")
 
 
-def render_visualization_section(thread: "Thread", visualization_data: dict[str, Any] | None = None) -> None:
+def render_visualization_section(
+    thread: "Thread",
+    visualization_data: dict[str, Any] | None = None,
+    *,
+    allow_thread_fallback: bool = False,
+) -> None:
     """Render the visualization section.
 
     Follows the same rendering logic as Jupyter notebooks:
@@ -221,7 +226,7 @@ def render_visualization_section(thread: "Thread", visualization_data: dict[str,
                     return
         return
 
-    if vis_result is None:
+    if vis_result is None or not allow_thread_fallback:
         return
 
     with st.expander("📈 Visualization", expanded=True):
@@ -349,8 +354,10 @@ def render_visualization_and_actions(
         st.info("Generating visualization...", icon="📈")
     elif viz_error:
         st.error(f"Failed to generate visualization: {viz_error}")
-    elif has_visualization or visualization_data is not None or (is_latest and thread._visualization_result is not None):
+    elif visualization_data is not None:
         render_visualization_section(thread, visualization_data)
+    elif is_latest and (has_visualization or thread._visualization_result is not None):
+        render_visualization_section(thread, None, allow_thread_fallback=True)
 
     if is_latest and not viz_pending and not viz_error:
         _render_and_handle_action_buttons(result, current_chat, message_index, has_visualization)
@@ -411,6 +418,11 @@ def execute_pending_plot(chat: "ChatSession") -> None:
         if message_index < len(messages):
             messages[message_index].has_visualization = True
             messages[message_index].visualization_data = _extract_visualization_data(thread)
+            if messages[message_index].visualization_data is None:
+                logger.warning(
+                    "visualization_data is None after successful thread.plot() for message %d",
+                    message_index,
+                )
             save_current_chat()
     except Exception as e:
         logger.exception("Failed to generate visualization")
