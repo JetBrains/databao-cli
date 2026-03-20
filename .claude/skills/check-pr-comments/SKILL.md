@@ -44,10 +44,10 @@ gh repo view --json owner,name -q '.owner.login + " " + .name'
 Then fetch the review threads using those values:
 
 ```bash
-gh api graphql -f query='
-  query($owner:String!, $repo:String!, $number:Int!) {
-    repository(owner:$owner, name:$repo) {
-      pullRequest(number:$number) {
+gh api graphql -f query="
+  query(\$owner:String!, \$repo:String!, \$number:Int!) {
+    repository(owner:\$owner, name:\$repo) {
+      pullRequest(number:\$number) {
         reviewThreads(first:100) {
           pageInfo { hasNextPage endCursor }
           nodes {
@@ -72,7 +72,7 @@ gh api graphql -f query='
         }
       }
     }
-  }' -F owner=<OWNER> -F repo=<REPO> -F number=<PR_NUMBER>
+  }" -F owner=<OWNER> -F repo=<REPO> -F number=<PR_NUMBER>
 ```
 
 Replace `<OWNER>` and `<REPO>` with the values from `gh repo view` above, and
@@ -163,26 +163,26 @@ thread reply after the code change and validation.
 Reply to a thread:
 
 ```bash
-gh api graphql -f query='
-  mutation($threadId:ID!, $body:String!) {
+gh api graphql -f query="
+  mutation(\$threadId:ID!, \$body:String!) {
     addPullRequestReviewThreadReply(
-      input:{pullRequestReviewThreadId:$threadId, body:$body}
+      input:{pullRequestReviewThreadId:\$threadId, body:\$body}
     ) {
       comment { url }
     }
-  }' -F threadId=<THREAD_ID> -f body='Addressed in <summary>. Validation: <command/result>.'
+  }" -F threadId=<THREAD_ID> -f body='Addressed in <summary>. Validation: <command/result>.'
 ```
 
 Resolve the thread only after the response is posted and the issue is actually
 addressed:
 
 ```bash
-gh api graphql -f query='
-  mutation($threadId:ID!) {
-    resolveReviewThread(input:{threadId:$threadId}) {
+gh api graphql -f query="
+  mutation(\$threadId:ID!) {
+    resolveReviewThread(input:{threadId:\$threadId}) {
       thread { id isResolved }
     }
-  }' -F threadId=<THREAD_ID>
+  }" -F threadId=<THREAD_ID>
 ```
 
 If the right action is explanation rather than code, reply with the reasoning
