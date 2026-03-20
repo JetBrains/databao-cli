@@ -1,7 +1,7 @@
 # Python Coding Guidelines
 
 Rules for writing Python in `databao-cli`. Covers patterns the linter can't
-enforce. For style/formatting, run `ruff check --fix && ruff format` and move on.
+enforce. For style/formatting, run `uv run ruff check --fix && uv run ruff format` and move on.
 
 ## Tooling
 
@@ -29,8 +29,8 @@ def ask(ctx: click.Context, question: str | None, one_shot: bool) -> None:
 - Shared state travels in `ctx.obj` (dict), set on the root group.
 - Use Click's type system (`click.Path`, `click.Choice`) over manual parsing.
 - User-facing output: `click.echo` / `click.secho`, not `print`.
-- Errors from bad input: `click.UsageError`. Errors from broken state: `sys.exit(1)`
-  after a human-readable `click.echo(..., err=True)`.
+- For user-facing errors (bad input or broken state), emit a clear
+  `click.echo(..., err=True)` message and then `sys.exit(1)`.
 
 ## Error Handling
 
@@ -173,6 +173,9 @@ def register(mcp: "FastMCP", context: "McpContext") -> None:
         try:
             ...
             return json.dumps(result, default=str)
+        # Broad catch is acceptable here at the MCP tool boundary so we can
+        # always return a structured error JSON instead of crashing the server.
+        # Inside the codebase, avoid blanket `except Exception` without re-raise.
         except Exception as e:
             logger.exception("[%s] Query failed", request_id)
             return _error(f"Query failed: {e}", request_id=request_id)

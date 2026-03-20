@@ -37,7 +37,7 @@ run_test "check-coverage: make test-cov-check" "make test-cov-check"
 
 # review-architecture: referenced doc files exist and are non-empty
 for doc in docs/architecture.md docs/python-coding-guidelines.md docs/testing-strategy.md README.md; do
-  run_test "review-architecture: $doc exists and non-empty" "test -s $doc"
+  run_test "review-architecture: $doc exists and non-empty" "test -s \"$doc\""
 done
 
 echo ""
