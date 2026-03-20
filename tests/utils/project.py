@@ -27,6 +27,14 @@ def run_build(run_dir: Path, args: list[str] | None = None, answers: list[str] |
 
 
 @contextmanager
+def run_index(run_dir: Path, args: list[str] | None = None, answers: list[str] | None = None) -> Iterator[Result]:
+    if args is None:
+        args = ["index"]
+    with run_databao_cmd(run_dir=run_dir, args=args, answers=answers) as result:
+        yield result
+
+
+@contextmanager
 def run_databao_cmd(run_dir: Path, args: list[str] | None = None, answers: list[str] | None = None) -> Iterator[Result]:
     runner = CliRunner()
     inputs = os.linesep.join(answers) if answers else ""
