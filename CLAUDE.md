@@ -11,7 +11,7 @@ Claude Code entrypoint for agent instructions in this repository.
 ## References
 
 - `docs/architecture.md`
-- `docs/coding-guidelines.md`
+- `docs/python-coding-guidelines.md`
 - `docs/testing-strategy.md`
 
 ## Project Scope
