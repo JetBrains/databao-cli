@@ -169,11 +169,19 @@ def load_chat(chat_id: str) -> ChatSession | None:
             vis_data = msg_data.get("visualization_data")
             if vis_data is not None:
                 vis_df_path = visualizations_dir / f"{i}_spec_df.parquet"
-                if vis_df_path.exists():
-                    try:
-                        vis_data["spec_df"] = pd.read_parquet(vis_df_path)
-                    except Exception as e:
-                        logger.warning(f"Failed to load visualization spec_df {i} for chat {chat_id}: {e}")
+                expects_spec_df = bool(vis_data.get("_has_spec_df"))
+                has_spec_df_parquet = vis_df_path.exists()
+                if expects_spec_df or has_spec_df_parquet:
+                    if has_spec_df_parquet:
+                        try:
+                            vis_data["spec_df"] = pd.read_parquet(vis_df_path)
+                        except Exception as e:
+                            logger.warning(f"Failed to load visualization spec_df {i} for chat {chat_id}: {e}")
+                            vis_data["spec_df"] = None
+                    elif expects_spec_df:
+                        logger.warning(f"Missing visualization spec_df parquet for message {i} in chat {chat_id}")
+                        vis_data["spec_df"] = None
+                vis_data.pop("_has_spec_df", None)
 
         chat = ChatSession.from_dict(session_data, results)
         logger.debug(f"Chat loaded: {chat_id}")
