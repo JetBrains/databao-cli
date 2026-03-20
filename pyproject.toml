@@ -16,6 +16,7 @@ dependencies = [
     "adbc-driver-snowflake>=1.10.0",
     "adbc-driver-manager>=1.10.0",
     "nh3>=0.2.15",
+    "rich>=14.3.3",
 ]
 
 [project.optional-dependencies]
