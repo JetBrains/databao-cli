@@ -420,9 +420,9 @@ def execute_pending_plot(chat: "ChatSession") -> None:
 
         messages = chat.messages
         if message_index < len(messages):
-            messages[message_index].has_visualization = True
             messages[message_index].visualization_data = _extract_visualization_data(thread)
-            if messages[message_index].visualization_data is None:
+            messages[message_index].has_visualization = messages[message_index].visualization_data is not None
+            if not messages[message_index].has_visualization:
                 logger.warning(
                     "visualization_data is None after successful thread.plot() for message %d",
                     message_index,
