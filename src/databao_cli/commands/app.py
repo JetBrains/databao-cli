@@ -9,7 +9,7 @@ from databao_cli.ui.cli import bootstrap_streamlit_app
 
 
 def app_impl(ctx: click.Context) -> None:
-    click.echo("Starting Databao UI...")
+    click.echo("Starting Databao web interface...")
 
     try:
         bootstrap_streamlit_app(
@@ -20,7 +20,7 @@ def app_impl(ctx: click.Context) -> None:
             hide_build_context_hint=ctx.obj.get("hide_build_context_hint", False),
         )
     except subprocess.CalledProcessError as e:
-        click.echo(f"Error running Streamlit: {e}", err=True)
+        click.echo(f"Error starting web interface: {e}", err=True)
         sys.exit(1)
     except KeyboardInterrupt:
-        click.echo("\nShutting down Databao...")
+        click.echo("\nShutting down...")

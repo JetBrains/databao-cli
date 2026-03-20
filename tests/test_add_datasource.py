@@ -1,7 +1,9 @@
 from pathlib import Path
+from unittest.mock import Mock
 
 import duckdb
 import pytest
+import questionary
 from click.testing import CliRunner
 
 from databao_cli.__main__ import cli
@@ -31,11 +33,14 @@ def temp_parquet_file(request: pytest.FixtureRequest, tmp_path: Path) -> Path:
     return parquet_file
 
 
-def test_databao_datasource_add(tmp_path: Path, temp_parquet_file: Path) -> None:
+def test_databao_datasource_add(tmp_path: Path, temp_parquet_file: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     init_databao_project(tmp_path)
 
+    prompt = Mock()
+    prompt.ask.return_value = "parquet"
+    monkeypatch.setattr(questionary, "select", Mock(return_value=prompt))
+
     inputs = [
-        "parquet",
         "resources/my_parq",
         str(temp_parquet_file),
         "N",  # No. skip adding duckdb secret

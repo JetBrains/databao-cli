@@ -36,7 +36,7 @@ def dataframe_to_prettytable(df: pd.DataFrame, max_rows: int = DEFAULT_MAX_DISPL
 
 
 def initialize_agent_from_dce(project_path: Path, model: str | None, temperature: float) -> Agent:
-    """Initialize the Databao agent using DCE project at the given path."""
+    """Initialize the Databao agent using a Context Engine project at the given path."""
     project = ProjectLayout(project_path)
 
     status = databao_project_status(project)
@@ -49,12 +49,12 @@ def initialize_agent_from_dce(project_path: Path, model: str | None, temperature
 
     if status == DatabaoProjectStatus.NO_DATASOURCES:
         click.echo(
-            f"No datasources configured in project at {project.project_dir}. Add datasources first.",
+            f"No data sources configured in project at {project.project_dir}. Add data sources first",
             err=True,
         )
         sys.exit(1)
 
-    click.echo(f"Using DCE project: {project.project_dir}")
+    click.echo(f"Using Context Engine project: {project.project_dir}")
 
     _domain = create_domain(project.root_domain_dir)
 
@@ -101,18 +101,18 @@ def display_result(thread: Thread) -> None:
 
 def _print_help() -> None:
     """Print help message for interactive mode."""
-    click.echo("Databao REPL")
+    click.echo("Databao interactive chat")
     click.echo("Ask questions about your data in natural language.\n")
     click.echo("Commands:")
-    click.echo("  \\help   - Show this help")
-    click.echo("  \\clear  - Start a new conversation")
+    click.echo("  \\help   - Show this help message")
+    click.echo("  \\clear  - Clear conversation history")
     click.echo("  \\q      - Exit\n")
 
 
 def run_interactive_mode(agent: Agent, show_thinking: bool) -> None:
     """Run the interactive REPL mode."""
-    click.echo("\nDatabao REPL")
-    click.echo("\nType \\help for available commands.\n")
+    click.echo("\nDatabao interactive chat")
+    click.echo("Type \\help for available commands.\n")
 
     writer = _create_cli_writer() if show_thinking else None
 
@@ -148,14 +148,14 @@ def run_interactive_mode(agent: Agent, show_thinking: bool) -> None:
                     stream_ask=show_thinking,
                     writer=writer,
                 )
-                click.echo("Conversation cleared.\n")
+                click.echo("Conversation history cleared.\n")
                 continue
 
             if command == "help":
                 _print_help()
                 continue
 
-            click.echo(f"Unknown command: {user_input}. Type \\help for available commands.\n")
+            click.echo(f"Unknown command: {user_input}\nType \\help for available commands\n")
             continue
 
         # Process as a question
