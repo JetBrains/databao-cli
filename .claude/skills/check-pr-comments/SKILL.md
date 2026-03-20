@@ -1,6 +1,6 @@
 ---
 name: check-pr-comments
-description: Address GitHub pull request review comments using the GitHub CLI. Use when the user wants to fetch unresolved PR review threads, implement requested changes on the PR branch, validate the fix locally, reply in-thread, and resolve addressed threads.
+description: Check GitHub pull request review comments using the GitHub CLI. Use when the user wants to fetch unresolved PR review threads, implement requested changes on the PR branch, validate the fix locally, reply in-thread, and resolve addressed threads.
 compatibility: gh must be installed and authenticated.
 ---
 
@@ -8,15 +8,6 @@ compatibility: gh must be installed and authenticated.
 
 Address GitHub pull request review comments with `gh`, make the requested
 changes on the PR branch, validate them locally, and close the loop on GitHub.
-
-## When to use
-
-- The user asks to address review comments on an existing GitHub pull request.
-- The user wants to work through unresolved inline review threads using `gh`.
-- The current task is to apply reviewer feedback, not just do a local review.
-
-Do not use this skill for a read-only review of local changes. Use
-`local-code-review` for that.
 
 ## Steps
 
