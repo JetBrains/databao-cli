@@ -207,8 +207,8 @@ class TestVisualizationPersistenceRoundTrip:
         assert "_has_spec_df" not in msg.visualization_data
 
     @patch("databao_cli.ui.services.chat_persistence.get_chats_dir")
-    def test_has_spec_df_false_skips_parquet_load(self, mock_chats_dir: MagicMock, tmp_path: Path) -> None:
-        """When _has_spec_df is absent, spec_df is not loaded even if parquet exists."""
+    def test_legacy_chat_without_marker_still_loads_parquet(self, mock_chats_dir: MagicMock, tmp_path: Path) -> None:
+        """Older chats without _has_spec_df still reload spec_df from parquet."""
         from databao_cli.ui.services.chat_persistence import load_chat
 
         mock_chats_dir.return_value = tmp_path
@@ -217,7 +217,7 @@ class TestVisualizationPersistenceRoundTrip:
             tmp_path,
             chat_id,
             vis_data={"spec": {"mark": "bar"}},
-            write_parquet=True,  # parquet exists but should NOT be loaded
+            write_parquet=True,
         )
 
         chat = load_chat(chat_id)
@@ -225,7 +225,8 @@ class TestVisualizationPersistenceRoundTrip:
         assert chat is not None
         msg = chat.messages[0]
         assert msg.visualization_data is not None
-        assert "spec_df" not in msg.visualization_data
+        assert msg.visualization_data["spec_df"] is not None
+        assert len(msg.visualization_data["spec_df"]) == 2
 
     @patch("databao_cli.ui.services.chat_persistence.get_chats_dir")
     def test_has_spec_df_marker_always_removed(self, mock_chats_dir: MagicMock, tmp_path: Path) -> None:
