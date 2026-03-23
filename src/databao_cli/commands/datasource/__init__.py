@@ -40,7 +40,7 @@ def check_datasource_config(ctx: click.Context, domains: tuple[str, ...]) -> Non
     The configuration is considered as valid if a connection with the datasource can be established.
 
     By default, all declared datasources across all domains in the project will be checked.
-    You can explicitely list which domains to validate by using the [DOMAINS] argument.
+    You can explicitly list which domains to validate by using the [DOMAINS] argument.
     """
     from databao_cli.commands._utils import get_project_or_exit
     from databao_cli.commands.datasource.check_datasource_connection import check_datasource_connection_impl
