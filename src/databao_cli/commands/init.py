@@ -1,8 +1,44 @@
+import sys
 from pathlib import Path
 
+import click
 from databao_context_engine import InitDomainError, init_dce_domain
 
-from databao_cli.project.layout import ProjectLayout, find_project
+from databao_cli.project.layout import ROOT_DOMAIN, ProjectLayout, find_project
+
+
+@click.command()
+@click.pass_context
+def init(ctx: click.Context) -> None:
+    """Create a new Databao project."""
+    from databao_cli.commands.datasource.add_datasource_config import add_datasource_config_interactive_impl
+
+    project_dir: Path = ctx.obj["project_dir"]
+    project_layout: ProjectLayout
+    try:
+        project_layout = init_impl(project_dir)
+    except ProjectDirDoesnotExistError:
+        if click.confirm(
+            f"The directory {project_dir.resolve()} does not exist. Do you want to create it?",
+            default=True,
+        ):
+            project_dir.mkdir(parents=True, exist_ok=False)
+            project_layout = init_impl(project_dir)
+        else:
+            return
+    except InitDatabaoProjectError as e:
+        click.echo(e.message, err=True)
+        sys.exit(1)
+
+    click.echo(f"Project initialized successfully at {project_dir.resolve()}")
+
+    if not click.confirm("\nDo you want to configure a domain now?"):
+        return
+
+    add_datasource_config_interactive_impl(project_layout, ROOT_DOMAIN)
+
+    while click.confirm("\nDo you want to add more datasources?"):
+        add_datasource_config_interactive_impl(project_layout, ROOT_DOMAIN)
 
 
 class InitDatabaoProjectError(ValueError):
