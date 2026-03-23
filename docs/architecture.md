@@ -22,8 +22,9 @@ src/databao_cli/
 - `fastmcp` — MCP server framework
 
 ## Entry Point
-`databao_cli.__main__:cli` — a Click group that registers all subcommands.
-Invoked as `uv run databao`.
+`databao_cli.__main__:cli` — a Click group that registers all subcommands and
+is exposed as the `databao` console script (run as `databao ...` after installation).
+During development, it can also be invoked via `uv run databao`.
 
 ## CLI Commands
 The CLI is implemented using the Click framework.
