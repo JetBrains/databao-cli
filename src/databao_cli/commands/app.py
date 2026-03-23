@@ -2,7 +2,6 @@
 
 import subprocess
 import sys
-from pathlib import Path
 
 import click
 
@@ -51,31 +50,22 @@ def app(
         databao app --server.headless true
         databao app --read-only-domain
     """
-    app_impl(
-        ctx.obj["project_dir"],
-        ctx.args,
-        read_only_domain=read_only_domain,
-        hide_suggested_questions=hide_suggested_questions,
-        hide_build_context_hint=hide_build_context_hint,
-    )
+    ctx.obj["read_only_domain"] = read_only_domain
+    ctx.obj["hide_suggested_questions"] = hide_suggested_questions
+    ctx.obj["hide_build_context_hint"] = hide_build_context_hint
+    app_impl(ctx)
 
 
-def app_impl(
-    project_dir: Path,
-    extra_args: list[str],
-    read_only_domain: bool = False,
-    hide_suggested_questions: bool = False,
-    hide_build_context_hint: bool = False,
-) -> None:
+def app_impl(ctx: click.Context) -> None:
     click.echo("Starting Databao UI...")
 
     try:
         bootstrap_streamlit_app(
-            project_dir,
-            extra_args,
-            read_only_domain=read_only_domain,
-            hide_suggested_questions=hide_suggested_questions,
-            hide_build_context_hint=hide_build_context_hint,
+            ctx.obj["project_dir"],
+            ctx.args,
+            read_only_domain=ctx.obj.get("read_only_domain", False),
+            hide_suggested_questions=ctx.obj.get("hide_suggested_questions", False),
+            hide_build_context_hint=ctx.obj.get("hide_build_context_hint", False),
         )
     except subprocess.CalledProcessError as e:
         click.echo(f"Error running Streamlit: {e}", err=True)
