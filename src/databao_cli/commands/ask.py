@@ -21,57 +21,6 @@ from databao_cli.ui.streaming import StreamingWriter
 DEFAULT_MAX_DISPLAY_ROWS = 10
 
 
-@click.command()
-@click.argument("question", required=False)
-@click.option(
-    "--one-shot",
-    is_flag=True,
-    default=False,
-    help="Run single question and exit (default: interactive mode)",
-)
-@click.option(
-    "-m",
-    "--model",
-    type=str,
-    default=None,
-    help="LLM model in format provider:name (e.g., openai:gpt-4o, anthropic:claude-sonnet-4-6)",
-)
-@click.option(
-    "-t",
-    "--temperature",
-    type=float,
-    default=0.0,
-    help="Temperature 0.0-1.0 (default: 0.0)",
-)
-@click.option(
-    "--show-thinking/--no-show-thinking",
-    default=True,
-    help="Display reasoning/thinking output (streaming is implicit when enabled)",
-)
-@click.pass_context
-def ask(
-    ctx: click.Context,
-    question: str | None,
-    one_shot: bool,
-    model: str | None,
-    temperature: float,
-    show_thinking: bool,
-) -> None:
-    """Chat with the Databao agent.
-
-    By default, starts an interactive chat session. Use --one-shot with a
-    QUESTION argument to run a single query and exit.
-
-    \b
-    Examples:
-        databao ask                                          # Interactive mode
-        databao ask --one-shot "What tables exist?"          # One-shot mode
-        databao ask --model anthropic:claude-sonnet-4-6      # With custom model
-        databao ask --no-show-thinking                       # Hide reasoning
-    """
-    ask_impl(ctx, question, one_shot, model, temperature, show_thinking)
-
-
 def _create_cli_writer() -> StreamingWriter:
     """Create a StreamingWriter that echoes output to the CLI in real-time."""
     return StreamingWriter(on_write=lambda text: click.echo(text, nl=False))
