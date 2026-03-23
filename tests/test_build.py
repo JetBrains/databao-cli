@@ -8,8 +8,9 @@ from tests.utils.project import describe_result, run_build
 
 def test_databao_build_duckdb_datasource(project_layout: ProjectLayout, tmp_path_factory: TempPathFactory) -> None:
     test_db = tmp_path_factory.mktemp("duckdb") / "test_db.duckdb"
-    duckdb.connect(str(test_db))
-    duckdb.execute("CREATE TABLE t1 AS SELECT 1 AS i, 2 AS j;")
+    conn = duckdb.connect(str(test_db))
+    conn.execute("CREATE TABLE t1 AS SELECT 1 AS i, 2 AS j;")
+    conn.close()
 
     dce_domain_manager = DatabaoContextDomainManager(domain_dir=project_layout.root_domain_dir)
     dce_domain_manager.create_datasource_config(
