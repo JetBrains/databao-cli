@@ -58,8 +58,8 @@ src/databao_cli/mcp/  # exposes tools via the Model Context Protocol:
 ```
 
 ## Extension Points
-- Add CLI command: create module in `commands/`, register with Click group
-  in `__main__.py`.
+- Add CLI command: create module in `commands/`, then add it to the
+  `COMMANDS` collection in `src/databao_cli/__main__.py`.
 - Add MCP tool: add handler in `mcp/tools/`, register in `mcp/server.py`.
 - Add datasource type: extend via `databao-context-engine` optional deps.
 - Add UI page: add to `ui/pages/`.
