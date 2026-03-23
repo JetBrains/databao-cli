@@ -119,9 +119,9 @@ style issues; do not manually fix formatting.
 3. **Test & lint** — run `make check` then `make test-cov-check`. Fix any
    failures before proceeding.
 4. **Review** — run `local-code-review` and `review-architecture` skills.
-   Both spawn sub-agents with clean context (no prior conversation state)
-   and can run **in parallel**. Fix any high-severity findings before
-   proceeding.
+   Both run in forked sub-agent context (no prior conversation state)
+   and can run **in parallel**. Present findings to the user and **wait
+   for explicit approval** before fixing anything.
 5. **Branch** — use the `create-branch` skill.
 6. **Commit & PR** — use the `create-pr` skill (stages, commits, pauses
    for confirmation, pushes, and opens the PR).
