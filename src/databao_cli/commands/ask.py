@@ -69,7 +69,7 @@ def ask(
         databao ask --model anthropic:claude-sonnet-4-6      # With custom model
         databao ask --no-show-thinking                       # Hide reasoning
     """
-    ask_impl(ctx, question, one_shot, model, temperature, show_thinking)
+    ask_impl(ctx.obj["project_dir"], question, one_shot, model, temperature, show_thinking)
 
 
 def _create_cli_writer() -> StreamingWriter:
@@ -252,7 +252,7 @@ def run_one_shot_mode(agent: Agent, question: str, show_thinking: bool) -> None:
 
 
 def ask_impl(
-    ctx: click.Context,
+    project_path: Path,
     question: str | None,
     one_shot: bool,
     model: str | None,
@@ -263,9 +263,6 @@ def ask_impl(
     if one_shot and not question:
         click.echo("Error: QUESTION argument is required in one-shot mode.", err=True)
         sys.exit(1)
-
-    # Get project path from CLI context
-    project_path: Path = ctx.obj["project_dir"]
 
     # Initialize agent (with progress indicator if not showing thinking)
     if not show_thinking:
