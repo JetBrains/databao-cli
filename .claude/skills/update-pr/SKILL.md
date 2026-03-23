@@ -1,6 +1,7 @@
 ---
 name: update-pr
 description: Stage, commit, and push follow-up changes to an existing feature branch or PR. Use for quick iterations — after addressing review feedback, fixing a bug on the branch, or adding incremental changes that don't need a new PR.
+compatibility: gh must be installed and authenticated.
 ---
 
 # Update PR
