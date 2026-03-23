@@ -1,12 +1,8 @@
 """databao app command - Launch the Databao Streamlit web interface."""
 
-import subprocess
-import sys
-from pathlib import Path
-
 import click
 
-from databao_cli.ui.cli import bootstrap_streamlit_app
+from databao_cli.shared.cli_utils import handle_feature_errors
 
 
 @click.command(
@@ -34,6 +30,7 @@ from databao_cli.ui.cli import bootstrap_streamlit_app
     ),
 )
 @click.pass_context
+@handle_feature_errors
 def app(
     ctx: click.Context,
     read_only_domain: bool,
@@ -51,34 +48,16 @@ def app(
         databao app --server.headless true
         databao app --read-only-domain
     """
-    app_impl(
-        ctx.obj["project_dir"],
-        ctx.args,
-        read_only_domain=read_only_domain,
-        hide_suggested_questions=hide_suggested_questions,
-        hide_build_context_hint=hide_build_context_hint,
-    )
+    from databao_cli.features.ui.cli import app_impl
 
-
-def app_impl(
-    project_dir: Path,
-    extra_args: list[str],
-    read_only_domain: bool = False,
-    hide_suggested_questions: bool = False,
-    hide_build_context_hint: bool = False,
-) -> None:
     click.echo("Starting Databao UI...")
-
     try:
-        bootstrap_streamlit_app(
-            project_dir,
-            extra_args,
+        app_impl(
+            ctx.obj["project_dir"],
+            ctx.args,
             read_only_domain=read_only_domain,
             hide_suggested_questions=hide_suggested_questions,
             hide_build_context_hint=hide_build_context_hint,
         )
-    except subprocess.CalledProcessError as e:
-        click.echo(f"Error running Streamlit: {e}", err=True)
-        sys.exit(1)
     except KeyboardInterrupt:
         click.echo("\nShutting down Databao...")

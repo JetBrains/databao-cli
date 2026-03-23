@@ -11,8 +11,8 @@ from databao_cli.commands.index import index
 from databao_cli.commands.init import init
 from databao_cli.commands.mcp import mcp
 from databao_cli.commands.status import status
-from databao_cli.log.logging import configure_logging
-from databao_cli.project.layout import find_project
+from databao_cli.shared.log.logging import configure_logging
+from databao_cli.shared.project.layout import find_project
 
 COMMANDS: list[Command] = [app, ask, build, datasource, index, init, mcp, status]
 

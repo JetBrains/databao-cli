@@ -1,10 +1,8 @@
 """databao mcp command - Run an MCP server exposing Databao tools."""
 
-from pathlib import Path
-
 import click
 
-from databao_cli.mcp.server import McpContext, run_server
+from databao_cli.shared.cli_utils import handle_feature_errors
 
 
 @click.command()
@@ -30,6 +28,7 @@ from databao_cli.mcp.server import McpContext, run_server
     help="Port to listen on (SSE transport only).",
 )
 @click.pass_context
+@handle_feature_errors
 def mcp(ctx: click.Context, transport: str, host: str, port: int) -> None:
     """Run an MCP server exposing Databao tools.
 
@@ -42,14 +41,10 @@ def mcp(ctx: click.Context, transport: str, host: str, port: int) -> None:
         databao mcp --transport sse              # SSE on localhost:8765
         databao mcp --transport sse --port 9000  # SSE on custom port
     """
-    from databao_cli.log.logging import configure_logging
-    from databao_cli.project.layout import find_project
+    from databao_cli.features.mcp.server import mcp_impl
+    from databao_cli.shared.log.logging import configure_logging
+    from databao_cli.shared.project.layout import find_project
 
     if transport == "stdio":
         configure_logging(find_project(ctx.obj["project_dir"]), quiet=True)
     mcp_impl(ctx.obj["project_dir"], transport, host, port)
-
-
-def mcp_impl(project_dir: Path, transport: str, host: str, port: int) -> None:
-    context = McpContext(project_dir=project_dir)
-    run_server(context, transport=transport, host=host, port=port)

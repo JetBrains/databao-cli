@@ -1,15 +1,6 @@
-import os
-
 import click
-from databao_context_engine import (
-    DatabaoContextDomainManager,
-    DatabaoContextPluginLoader,
-    DatasourceType,
-)
 
-from databao_cli.commands._utils import get_project_or_exit
-from databao_cli.commands.context_engine_cli import ClickUserInputCallback
-from databao_cli.project.layout import ProjectLayout
+from databao_cli.shared.cli_utils import get_project_or_raise, handle_feature_errors
 
 
 @click.command(name="add")
@@ -21,57 +12,13 @@ from databao_cli.project.layout import ProjectLayout
     help="Databao domain name",
 )
 @click.pass_context
+@handle_feature_errors
 def add(ctx: click.Context, domain: str) -> None:
     """Add a new datasource configuration.
 
     The command will ask all relevant information for that datasource and save it in a chosen Databao domain
     """
-    project_layout = get_project_or_exit(ctx.obj["project_dir"])
-    add_impl(project_layout, domain)
+    from databao_cli.workflows.datasource.add import add_workflow
 
-
-def add_impl(project_layout: ProjectLayout, domain: str) -> None:
-    from databao_cli.commands.datasource.check import print_connection_check_results
-
-    domain_dir = project_layout.domains_dir / domain
-    domain_manager = DatabaoContextDomainManager(domain_dir=domain_dir)
-    plugin_loader = DatabaoContextPluginLoader()
-
-    click.echo(f"We will guide you to add a new datasource into {domain} domain, at {domain_dir.resolve()}")
-
-    datasource_type = _ask_for_datasource_type(plugin_loader.get_all_supported_datasource_types(exclude_file_plugins=True))
-
-    datasource_name = click.prompt("Datasource name?", type=str)
-
-    datasource_id = domain_manager.datasource_config_exists(datasource_name=datasource_name)
-    if datasource_id is not None:
-        click.confirm(
-            f"A config file already exists for this datasource {datasource_id.relative_path_to_config_file()}. "
-            f"Do you want to overwrite it?",
-            abort=True,
-            default=False,
-        )
-    created_datasource = domain_manager.create_datasource_config_interactively(
-        datasource_type, datasource_name, ClickUserInputCallback(), overwrite_existing=True
-    )
-
-    datasource_id = created_datasource.datasource.id
-    click.echo(
-        f"{os.linesep}We've created a new config file for your datasource at: "
-        f"{domain_manager.get_config_file_path_for_datasource(datasource_id)}"
-    )
-    if click.confirm("\nDo you want to check the connection to this new datasource?"):
-        results = domain_manager.check_datasource_connection(datasource_ids=[datasource_id])
-        print_connection_check_results(domain, results)
-
-
-def _ask_for_datasource_type(supported_datasource_types: set[DatasourceType]) -> DatasourceType:
-    all_datasource_types = sorted([ds_type.full_type for ds_type in supported_datasource_types])
-    config_type = click.prompt(
-        "What type of datasource do you want to add?",
-        type=click.Choice(all_datasource_types),
-        default=all_datasource_types[0] if len(all_datasource_types) == 1 else None,
-    )
-    click.echo(f"Selected type: {config_type}")
-
-    return DatasourceType(full_type=config_type)
+    project_layout = get_project_or_raise(ctx.obj["project_dir"])
+    add_workflow(project_layout, domain)

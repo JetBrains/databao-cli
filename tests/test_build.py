@@ -2,7 +2,7 @@ import duckdb
 from _pytest.tmpdir import TempPathFactory
 from databao_context_engine import DatabaoContextDomainManager, DatasourceType
 
-from databao_cli.project.layout import ProjectLayout
+from databao_cli.shared.project.layout import ProjectLayout
 from tests.utils.project import describe_result, run_build
 
 
