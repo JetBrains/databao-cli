@@ -35,6 +35,10 @@ run_test "setup-environment: make setup" "make setup"
 # check-coverage: make test-cov-check succeeds
 run_test "check-coverage: make test-cov-check" "make test-cov-check"
 
+# review skills: review-guidelines.md files exist and are non-empty
+run_test "local-code-review: review-guidelines.md exists" "test -s .claude/skills/local-code-review/review-guidelines.md"
+run_test "review-architecture: review-guidelines.md exists" "test -s .claude/skills/review-architecture/review-guidelines.md"
+
 # review-architecture: referenced doc files exist and are non-empty
 for doc in docs/architecture.md docs/python-coding-guidelines.md docs/testing-strategy.md README.md; do
   run_test "review-architecture: $doc exists and non-empty" "test -s \"$doc\""

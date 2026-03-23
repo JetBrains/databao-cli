@@ -4,24 +4,37 @@
     {
       "id": 1,
       "prompt": "Review the architecture of the MCP server code.",
-      "expected_output": "A structured report covering the MCP module with Current State, Risks/Gaps, Recommendations, Doc Sync, and Validation Plan.",
+      "expected_output": "Agent resolves scope to the MCP module, spawns a sub-agent with review-guidelines.md content and clean context, and returns a structured architecture report.",
       "assertions": [
-        "Output contains a 'Current State' section with 3-6 bullets",
-        "Output contains a 'Risks / Gaps' section with severity levels (High/Med/Low)",
-        "Output contains a 'Recommendations' section with concrete changes",
-        "Output references docs/architecture.md as a source of truth",
-        "Output covers files under src/databao_cli/mcp/"
+        "Agent reads .claude/skills/review-architecture/review-guidelines.md",
+        "Agent spawns a sub-agent using the Agent tool",
+        "Sub-agent prompt includes a preamble about having no prior context",
+        "Sub-agent prompt specifies reviewing the MCP module architecture",
+        "Agent returns the sub-agent findings which include structured sections (Current State, Risks/Gaps, Recommendations)"
       ]
     },
     {
       "id": 2,
-      "prompt": "I'm about to add a new CLI command for managing API keys. Review the architecture to see if there are concerns.",
-      "expected_output": "A focused review of the command structure and extension patterns.",
+      "prompt": "/review-architecture module:src/databao_cli/commands/",
+      "expected_output": "Agent resolves scope to the commands module and spawns a sub-agent to review its architecture.",
       "assertions": [
-        "Output examines src/databao_cli/commands/ structure",
-        "Output references the Click command registration pattern in __main__.py",
-        "Output provides actionable recommendations for the new command",
-        "Output separates immediate actions from longer-term improvements"
+        "Agent resolves scope parameter to 'module:src/databao_cli/commands/'",
+        "Agent reads .claude/skills/review-architecture/review-guidelines.md",
+        "Agent spawns a sub-agent using the Agent tool",
+        "Sub-agent prompt specifies reviewing the commands module architecture",
+        "Agent returns the sub-agent findings to the user"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/review-architecture full",
+      "expected_output": "Agent resolves scope to full project and spawns a sub-agent for a comprehensive architecture review.",
+      "assertions": [
+        "Agent resolves scope parameter to 'full'",
+        "Agent reads .claude/skills/review-architecture/review-guidelines.md",
+        "Agent spawns a sub-agent using the Agent tool",
+        "Sub-agent prompt specifies reviewing the full project architecture",
+        "Agent returns the sub-agent findings to the user"
       ]
     }
   ]

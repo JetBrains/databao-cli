@@ -118,13 +118,13 @@ style issues; do not manually fix formatting.
    run `make test` to verify they pass.
 3. **Test & lint** — run `make check` then `make test-cov-check`. Fix any
    failures before proceeding.
-4. **Review the code** — review the code locally. Fix any high-severity
-   findings before proceeding.
-5. **Architecture review** — review architecture quality of the changed
-   code. Fix any high-severity issues before proceeding.
-6. **Branch** — use the `create-branch` skill.
-7. **Commit & PR** — use the `create-pr` skill (stages, commits, pauses
+4. **Review** — run `local-code-review` and `review-architecture` skills.
+   Both spawn sub-agents with clean context (no prior conversation state)
+   and can run **in parallel**. Fix any high-severity findings before
+   proceeding.
+5. **Branch** — use the `create-branch` skill.
+6. **Commit & PR** — use the `create-pr` skill (stages, commits, pauses
    for confirmation, pushes, and opens the PR).
-8. **Update YouTrack** — move the ticket to **Review** state and add
+7. **Update YouTrack** — move the ticket to **Review** state and add
    a comment with the PR URL.
-9. Never commit directly to `main`.
+8. Never commit directly to `main`.
