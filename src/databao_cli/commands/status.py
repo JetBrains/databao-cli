@@ -3,6 +3,7 @@ import sys
 from importlib.metadata import version
 from pathlib import Path
 
+import click
 from databao_context_engine import (
     DceDomainInfo,
     DceInfo,
@@ -10,11 +11,18 @@ from databao_context_engine import (
     get_databao_context_engine_info,
 )
 
-from databao_cli.project.layout import find_project
+from databao_cli.commands._utils import get_project_or_exit
+
+
+@click.command()
+@click.pass_context
+def status(ctx: click.Context) -> None:
+    """Display project status and system-wide information."""
+    click.echo(status_impl(ctx.obj["project_dir"]))
 
 
 def status_impl(project_dir: Path) -> str:
-    project_layout = find_project(project_dir)
+    project_layout = get_project_or_exit(project_dir)
 
     dce_info = get_databao_context_engine_info()
 
