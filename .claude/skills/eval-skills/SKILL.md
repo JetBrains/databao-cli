@@ -1,6 +1,7 @@
 ---
 name: eval-skills
 description: Run structured agent-in-the-loop evaluations on skills to measure quality and track improvements. Use after modifying a SKILL.md, after changing `CLAUDE.md` or guidance docs that skills depend on, or periodically to benchmark skill quality and catch regressions.
+argument-hint: "[skill-name ...] (e.g. local-code-review review-architecture)"
 ---
 
 # Eval Skills
@@ -10,10 +11,17 @@ improvements across iterations.
 
 ## Steps
 
-### 1. Pick the skill to evaluate
+### 1. Determine which skills to evaluate
 
-Identify which skill to eval. Each skill has test cases in
-`.claude/skills/<skill-name>/evals/evals.json`.
+This skill accepts an optional list of skill names via `$ARGUMENTS`.
+
+- If skill names are provided (e.g. `/eval-skills local-code-review review-architecture`),
+  evaluate only those skills.
+- If no arguments are provided, ask the user which skills they want to
+  evaluate. List all skills that have `evals/evals.json` files and let
+  the user pick. Accept "all" to evaluate every skill with evals.
+
+Each skill's test cases live in `.claude/skills/<skill-name>/evals/evals.json`.
 
 ### 2. Create an iteration directory
 
