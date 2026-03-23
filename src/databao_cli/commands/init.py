@@ -11,7 +11,7 @@ from databao_cli.project.layout import ROOT_DOMAIN, ProjectLayout, find_project
 @click.pass_context
 def init(ctx: click.Context) -> None:
     """Create a new Databao project."""
-    from databao_cli.commands.datasource.add_datasource_config import add_datasource_config_interactive_impl
+    from databao_cli.commands.datasource.add import add_impl as add_datasource_config_interactive_impl
 
     project_dir: Path = ctx.obj["project_dir"]
     project_layout: ProjectLayout

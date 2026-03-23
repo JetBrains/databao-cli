@@ -33,12 +33,11 @@ The CLI is implemented using the Click framework.
 - Single command = single file.
 - Each command MUST be implemented in its own module.
 - File name SHOULD match the command name.
-- Grouped commands MUST be organized in subdirectories.
-- Example: `src/databao_cli/commands/datasource/`
+- Grouped commands MUST be organized in subdirectories. Example: `src/databao_cli/commands/datasource/`
 
 ### Registration
-- All commands MUST be explicitly registered in `src/databao_cli/__main__.py`
-- Commands are exposed via the COMMANDS collection. Every new command MUST be added to this collection to be discoverable by the CLI.
+- All commands and groups MUST be explicitly registered in `src/databao_cli/__main__.py`
+- Commands and groups are exposed via the COMMANDS collection. Every new command or group MUST be added to this collection to be discoverable by the CLI.
 
 ## Web UI (Streamlit)
 ```

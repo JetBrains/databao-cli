@@ -7,12 +7,32 @@ from databao_context_engine import (
     DatasourceType,
 )
 
+from databao_cli.commands._utils import get_project_or_exit
 from databao_cli.commands.context_engine_cli import ClickUserInputCallback
-from databao_cli.commands.datasource.check_datasource_connection import print_connection_check_results
 from databao_cli.project.layout import ProjectLayout
 
 
-def add_datasource_config_interactive_impl(project_layout: ProjectLayout, domain: str) -> None:
+@click.command(name="add")
+@click.option(
+    "-d",
+    "--domain",
+    type=click.STRING,
+    default="root",
+    help="Databao domain name",
+)
+@click.pass_context
+def add(ctx: click.Context, domain: str) -> None:
+    """Add a new datasource configuration.
+
+    The command will ask all relevant information for that datasource and save it in a chosen Databao domain
+    """
+    project_layout = get_project_or_exit(ctx.obj["project_dir"])
+    add_impl(project_layout, domain)
+
+
+def add_impl(project_layout: ProjectLayout, domain: str) -> None:
+    from databao_cli.commands.datasource.check import print_connection_check_results
+
     domain_dir = project_layout.domains_dir / domain
     domain_manager = DatabaoContextDomainManager(domain_dir=domain_dir)
     plugin_loader = DatabaoContextPluginLoader()
