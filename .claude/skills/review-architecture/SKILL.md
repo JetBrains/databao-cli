@@ -3,15 +3,14 @@ name: review-architecture
 description: Review architecture quality, maintainability, and developer experience before or after significant changes. Use when introducing a new CLI command or MCP tool, refactoring core module boundaries, diagnosing repeated dev friction, or preparing a PR with broad structural impact.
 argument-hint: "[scope: branch | module:<path> | full]"
 context: fork
-agent: general-purpose
+agent: reviewer
 ---
 
 # Review Architecture
 
 You are reviewing the architecture of the Databao CLI project.
 You have NO prior context about why these changes were made — review
-purely on merit. Use your tools (Read, Grep, Glob, Bash) to inspect
-the code and project structure. Do NOT edit any files.
+purely on merit.
 
 ## Scope
 

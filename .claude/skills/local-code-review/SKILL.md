@@ -3,15 +3,14 @@ name: local-code-review
 description: Review local code changes in Databao repositories before a commit or PR. Use when the user wants a review of staged or unstaged diffs, local branches, or pre-merge changes. Focus on correctness, regressions, missing tests, API/CLI behavior changes, executor or tooling changes, dependency or plugin-loading risks, and user-visible behavior changes.
 argument-hint: "[scope: staged | branch | files:<path>]"
 context: fork
-agent: general-purpose
+agent: reviewer
 ---
 
 # Local Code Review
 
 You are reviewing code changes for the Databao CLI project.
 You have NO prior context about why these changes were made — review
-purely on merit. Use your tools (Read, Grep, Glob, Bash) to inspect
-the code, diffs, and surrounding implementation. Do NOT edit any files.
+purely on merit.
 
 ## Scope
 
@@ -151,7 +150,7 @@ Format the results using Markdown.
 
 ## Guardrails
 
-- Do not rewrite the code during review mode.
+- Include short code snippets to illustrate suggested fixes, but keep them conceptual — avoid pasting full rewrites or verbose replacement blocks.
 - Do not bury findings under a long summary.
 - Do not claim tests passed unless you ran them.
 - Do not over-index on style when behavior risks exist.
