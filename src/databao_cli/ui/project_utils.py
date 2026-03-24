@@ -1,5 +1,6 @@
 import logging
 from enum import Enum
+from pathlib import Path
 
 from databao.agent.integrations.dce import DatabaoContextApi
 
@@ -48,3 +49,33 @@ def has_build_output(project: ProjectLayout) -> bool:
         return len(dce_project.get_introspected_datasource_list()) > 0
     except Exception:
         return False
+
+
+BUILD_SENTINEL = ".build_complete"
+
+
+def get_build_fingerprint(domain_dir: Path) -> float:
+    """Return a fingerprint representing the current build state.
+
+    Reads the modification time of the sentinel file written after a
+    successful build.  Returns 0.0 if the sentinel does not exist.
+    """
+    sentinel = domain_dir / "output" / BUILD_SENTINEL
+    try:
+        return sentinel.stat().st_mtime if sentinel.is_file() else 0.0
+    except OSError:
+        logger.debug("Failed to read build sentinel", exc_info=True)
+        return 0.0
+
+
+def write_build_sentinel(domain_dir: Path) -> None:
+    """Write (or touch) the build sentinel after a successful build.
+
+    The sentinel is a zero-byte marker file whose mtime is compared by
+    ``get_build_fingerprint`` to detect new builds.
+    """
+    output_dir = domain_dir / "output"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    sentinel = output_dir / BUILD_SENTINEL
+    sentinel.touch()
+    logger.debug("Wrote build sentinel: %s", sentinel)

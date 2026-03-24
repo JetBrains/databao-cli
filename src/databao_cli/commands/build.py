@@ -1,6 +1,7 @@
 from databao_context_engine import BuildDatasourceResult, DatabaoContextDomainManager
 
 from databao_cli.project.layout import ProjectLayout
+from databao_cli.ui.project_utils import write_build_sentinel
 
 
 def build_impl(project_layout: ProjectLayout, domain: str, should_index: bool) -> list[BuildDatasourceResult]:
@@ -8,5 +9,6 @@ def build_impl(project_layout: ProjectLayout, domain: str, should_index: bool) -
     results: list[BuildDatasourceResult] = DatabaoContextDomainManager(domain_dir=dce_project_dir).build_context(
         datasource_ids=None, should_index=should_index
     )
+    write_build_sentinel(dce_project_dir)
 
     return results

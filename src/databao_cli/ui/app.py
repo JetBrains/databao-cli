@@ -18,7 +18,12 @@ from databao_cli.project.layout import ProjectLayout, find_project
 from databao_cli.ui.components.status import AppStatus, set_status, status_context
 from databao_cli.ui.models.chat_session import ChatSession
 from databao_cli.ui.models.settings import LLMSettings
-from databao_cli.ui.project_utils import DatabaoProjectStatus, databao_project_status, has_build_output
+from databao_cli.ui.project_utils import (
+    DatabaoProjectStatus,
+    databao_project_status,
+    get_build_fingerprint,
+    has_build_output,
+)
 from databao_cli.ui.services.storage import get_cache_dir
 
 logger = logging.getLogger(__name__)
@@ -128,6 +133,7 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
         _agent = create_agent(**kwargs)  # type: ignore[arg-type]
 
         st.session_state.agent = _agent
+        st.session_state.build_fingerprint = get_build_fingerprint(project.root_domain_dir)
 
         return _agent
 
@@ -185,6 +191,8 @@ def invalidate_agent(status_message: str = "Reloading project...") -> None:
     """
     st.session_state.databao_project = None
     st.session_state.agent = None
+    st.session_state.pop("build_fingerprint", None)
+    st.session_state.pop("new_build_available", None)
     _clear_all_chat_threads()
     set_status(AppStatus.INITIALIZING, status_message)
 
@@ -319,6 +327,11 @@ def init_session_state() -> None:
         st.session_state.build_result = None
     if "build_error" not in st.session_state:
         st.session_state.build_error = None
+
+    if "build_fingerprint" not in st.session_state:
+        st.session_state.build_fingerprint = None
+    if "new_build_available" not in st.session_state:
+        st.session_state.new_build_available = False
 
 
 def _create_new_chat() -> None:

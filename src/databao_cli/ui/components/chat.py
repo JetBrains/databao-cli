@@ -7,6 +7,7 @@ from databao.agent.core.agent import Agent
 
 from databao_cli.ui.components.results import render_execution_result
 from databao_cli.ui.models.chat_session import ChatMessage
+from databao_cli.ui.project_utils import get_build_fingerprint
 from databao_cli.ui.services import (
     check_query_completion,
     get_query_phase,
@@ -510,6 +511,47 @@ def _process_pending_overwrite(chat: "ChatSession") -> None:
     start_background_query(chat, pending)
 
 
+@st.fragment(run_every=5.0)
+def _new_build_polling_fragment() -> None:
+    """Poll for new build output every 5 seconds.
+
+    Compares the current build fingerprint on disk with the one recorded
+    when the agent was loaded. Sets a session-state flag when a newer
+    build is detected so the banner can be shown.
+    """
+    if st.session_state.get("new_build_available"):
+        return
+
+    stored = st.session_state.get("build_fingerprint")
+    if stored is None:
+        return
+
+    project = st.session_state.get("databao_project")
+    if project is None:
+        return
+
+    current = get_build_fingerprint(project.root_domain_dir)
+    if current > stored:
+        st.session_state.new_build_available = True
+        st.rerun()
+
+
+def _render_new_build_banner() -> None:
+    """Show a banner when a new build is available with a reload action."""
+    if not st.session_state.get("new_build_available"):
+        return
+
+    from databao_cli.ui.app import invalidate_agent
+
+    col_msg, col_btn = st.columns([5, 1])
+    with col_msg:
+        st.warning("A new build is available. Reload to use the latest context.")
+    with col_btn:
+        if st.button("Reload", key="new_build_reload_btn", type="primary"):
+            invalidate_agent("Reloading with new build...")
+            st.rerun()
+
+
 def render_chat_interface(chat: "ChatSession") -> None:
     """Render the complete chat interface.
 
@@ -521,6 +563,9 @@ def render_chat_interface(chat: "ChatSession") -> None:
        so the disabled input bar is already visible).
     """
     _process_pending_overwrite(chat)
+
+    _render_new_build_banner()
+    _new_build_polling_fragment()
 
     agent: Agent | None = st.session_state.get("agent")
     hide_build_context_hint: bool = bool(st.session_state.get("_hide_build_context_hint"))
