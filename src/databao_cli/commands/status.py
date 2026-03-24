@@ -11,7 +11,7 @@ from databao_context_engine import (
     get_databao_context_engine_info,
 )
 
-from databao_cli.commands._utils import get_project_or_exit
+from databao_cli.project.layout import find_project
 
 
 @click.command()
@@ -22,7 +22,7 @@ def status(ctx: click.Context) -> None:
 
 
 def status_impl(project_dir: Path) -> str:
-    project_layout = get_project_or_exit(project_dir)
+    project_layout = find_project(project_dir)
 
     dce_info = get_databao_context_engine_info()
 
