@@ -1,7 +1,6 @@
 """Tests for build fingerprint and sentinel (DBA-136)."""
 
 import os
-import time
 from pathlib import Path
 
 import pytest
