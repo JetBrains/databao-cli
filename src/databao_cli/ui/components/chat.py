@@ -7,6 +7,7 @@ from databao.agent.core.agent import Agent
 
 from databao_cli.ui.components.results import render_execution_result
 from databao_cli.ui.models.chat_session import ChatMessage
+from databao_cli.ui.project_utils import get_build_fingerprint
 from databao_cli.ui.services import (
     check_query_completion,
     get_query_phase,
@@ -510,6 +511,57 @@ def _process_pending_overwrite(chat: "ChatSession") -> None:
     start_background_query(chat, pending)
 
 
+@st.fragment(run_every=5.0)
+def _new_build_notification_fragment() -> None:
+    """Poll for build changes and show an inline banner when detected.
+
+    Runs every 5 seconds.  When the on-disk build fingerprint is newer than
+    the one captured at agent init, it shows a toast (once) and renders an
+    warning banner with a Reload button.  The banner and polling live
+    in the same fragment, so no full-page ``st.rerun()`` is needed for the
+    banner to appear.
+    """
+    project = st.session_state.get("databao_project")
+    if project is None:
+        return
+
+    stored = st.session_state.get("build_fingerprint", 0.0)
+    if stored == 0.0:
+        return
+
+    # Detect change
+    if not st.session_state.get("new_build_available"):
+        current = get_build_fingerprint(project)
+        if current > stored:
+            st.session_state.new_build_available = True
+            st.toast(
+                "A new build is available. Reload to use the latest context.",
+                icon="\u26a0\ufe0f",
+            )
+
+    # Render banner
+    if not st.session_state.get("new_build_available"):
+        return
+
+    from databao_cli.ui.app import _clear_all_chat_threads
+    from databao_cli.ui.components.status import AppStatus, set_status
+    from databao_cli.ui.suggestions import reset_suggestions_state
+
+    col1, col2 = st.columns([10, 2], vertical_alignment="center")
+    with col1:
+        st.warning("A new build is available. Reload to use the latest context.")
+    with col2:
+        if st.button("Reload", key="new_build_reload_btn", type="primary", use_container_width=True):
+            st.session_state.databao_project = None
+            st.session_state.agent = None
+            st.session_state.new_build_available = False
+            st.session_state.build_fingerprint = 0.0
+            _clear_all_chat_threads()
+            set_status(AppStatus.INITIALIZING, "Reloading project...")
+            reset_suggestions_state()
+            st.rerun()
+
+
 def render_chat_interface(chat: "ChatSession") -> None:
     """Render the complete chat interface.
 
@@ -554,6 +606,7 @@ def render_chat_interface(chat: "ChatSession") -> None:
             _query_polling_fragment()
 
     st.markdown("<div style='height: 2em'></div>", unsafe_allow_html=True)
+    _new_build_notification_fragment()
     _render_chat_input_bar(chat, query_running)
 
     if "pending_plot_message_index" in st.session_state:

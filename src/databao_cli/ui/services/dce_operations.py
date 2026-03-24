@@ -165,7 +165,19 @@ def verify_datasource_config(ds_type_str: str, ds_name: str, config: dict[str, A
 def build_context(project_dir: Path) -> list[BuildDatasourceResult]:
     """Build context for all datasources in the DCE project. This is a long-running operation."""
     manager = DatabaoContextDomainManager(domain_dir=project_dir)
-    return manager.build_context()
+    results = manager.build_context()
+    write_build_sentinel_file(project_dir)
+    return results
+
+
+BUILD_SENTINEL = ".build_complete"
+
+
+def write_build_sentinel_file(project_dir: Path) -> None:
+    """Write a sentinel file to signal that a build has completed."""
+    sentinel = project_dir / BUILD_SENTINEL
+    sentinel.write_text("")
+    logger.debug("Wrote build sentinel: %s", sentinel)
 
 
 def get_status_info(project_dir: Path) -> str:

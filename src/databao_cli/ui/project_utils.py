@@ -37,6 +37,24 @@ def databao_project_status(project: ProjectLayout) -> DatabaoProjectStatus:
     return DatabaoProjectStatus.VALID
 
 
+def get_build_fingerprint(project: ProjectLayout) -> float:
+    """Return a fingerprint representing the last completed build.
+
+    Reads the modification time of the ``.build_complete`` sentinel file
+    written by the build command after a successful build.  This avoids
+    false positives from files being written *during* a build.
+
+    Returns 0.0 if the sentinel does not exist.
+    """
+    from databao_cli.ui.services.dce_operations import BUILD_SENTINEL
+
+    sentinel = project.root_domain_dir / BUILD_SENTINEL
+    try:
+        return sentinel.stat().st_mtime
+    except OSError:
+        return 0.0
+
+
 def has_build_output(project: ProjectLayout) -> bool:
     """Check whether the project has any build output (introspected datasources).
 
