@@ -23,11 +23,13 @@ When reviewing a PR, check each of the following areas and flag violations.
 
 ### Test Coverage
 
-- If the PR changes files under `src/databao_cli/`, check that corresponding
-  test files under `tests/` are also modified or added.
+- If the PR changes behavior in files under `src/databao_cli/`, check that
+  corresponding test files under `tests/` are also modified or added.
 - New CLI commands, MCP tools, and utility functions MUST have unit tests.
 - Bug fixes SHOULD include a regression test.
-- Flag PRs that touch production code but add zero test changes.
+- Flag PRs that change behavior/commands/protocols in production code but
+  add zero test changes. Pure refactors, formatting-only, or comment-only
+  changes do not require new tests.
 - Do NOT require tests for changes to `src/databao_cli/ui/` (Streamlit UI)
   or `src/databao_cli/__main__.py` (wiring-only entrypoint).
 
