@@ -1,0 +1,7 @@
+Ollama server not running. Starting Ollama server...
+Started Ollama server
+Found datasource of type "snowflake" with name my_test_snowflake
+Failed to collect column stats for PUBLIC.ALL_TYPES_EXAMPLE: 002016 (22000): SQL compilation error:
+Function MIN does not support OBJECT argument type
+Exported result to /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmpf_9gq45ntest_databao_build_snowflake_datasource_from_init_config/databao/domains/root/output/my_test_snowflake.yaml
+Build complete. Processed 1 datasources.
