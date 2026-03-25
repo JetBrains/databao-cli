@@ -1,12 +1,28 @@
 ---
 name: review-architecture
 description: Review architecture quality, maintainability, and developer experience before or after significant changes. Use when introducing a new CLI command or MCP tool, refactoring core module boundaries, diagnosing repeated dev friction, or preparing a PR with broad structural impact.
+argument-hint: "[scope: branch | module:<path> | full]"
+context: fork
+agent: reviewer
 ---
 
 # Review Architecture
 
-Review architecture quality, maintainability, and developer experience (Dev UX)
-before or after significant changes.
+You are reviewing the architecture of the Databao CLI project.
+You have NO prior context about why these changes were made — review
+purely on merit.
+
+## Scope
+
+Review scope: $ARGUMENTS
+
+If no scope was provided, default to `branch`.
+
+Accepted scopes:
+
+- `branch` — review architecture of code changed on the current branch (default)
+- `module:<path>` — review a specific module (e.g. `module:src/databao_cli/mcp/`)
+- `full` — review the full project architecture
 
 ## Primary sources of truth
 
