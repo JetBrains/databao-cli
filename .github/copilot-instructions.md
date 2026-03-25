@@ -14,9 +14,12 @@ When reviewing a PR, check each of the following areas and flag violations.
 
 ### Commit Hygiene
 
-- Every commit message MUST start with a YouTrack ticket ID in the format
-  `[DBA-XXX]` (e.g., `[DBA-123] add datasource validation`).
-  Flag any commit missing this prefix.
+- When a YouTrack ticket exists, the PR title and/or branch name SHOULD
+  include the ticket ID in the format `[DBA-XXX]` (e.g., `[DBA-123] add
+  datasource validation`). If commit messages are visible in the review
+  context, they SHOULD also include this prefix.
+- Do NOT require or invent a `[DBA-XXX]` prefix when no ticket exists. Do not
+  flag commits or PRs that lack this prefix if there is no associated ticket.
 
 ### Test Coverage
 
