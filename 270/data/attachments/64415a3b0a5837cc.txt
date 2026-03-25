@@ -1,0 +1,29 @@
+Project initialized successfully at /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmpct98xroetest_databao_build_mysql
+
+Do you want to configure a domain now? [y/N]: Y
+Y
+We will guide you to add a new datasource into root domain, at /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmpct98xroetest_databao_build_mysql/databao/domains/root
+What type of datasource do you want to add? (bigquery, dbt, duckdb, mysql, parquet, postgres, snowflake, sqlite): mysql
+mysql
+Selected type: mysql
+Datasource name?: test_mysql_conn
+test_mysql_conn
+connection.host? [localhost]: localhost
+localhost
+connection.port? (Optional): 32769
+32769
+connection.database? (Optional): test
+test
+connection.user? (Optional): test
+test
+connection.password? (Optional): 
+
+We've created a new config file for your datasource at: /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmpct98xroetest_databao_build_mysql/databao/domains/root/src/test_mysql_conn.yaml
+
+Do you want to check the connection to this new datasource? [y/N]: y
+y
+Validating datasource(s): [DatasourceId(datasource_path='test_mysql_conn', config_file_suffix='.yaml')]
+root:test_mysql_conn.yaml: Valid
+
+Do you want to add more datasources? [y/N]:N
+ N
