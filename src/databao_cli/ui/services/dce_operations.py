@@ -24,7 +24,7 @@ from databao_context_engine.pluginlib.config import ConfigPropertyDefinition
 from databao_context_engine.pluginlib.plugin_utils import check_connection_for_datasource
 
 from databao_cli.commands.init import init_impl
-from databao_cli.project.layout import ProjectLayout
+from databao_cli.project.layout import ProjectLayout, write_build_sentinel
 
 logger = logging.getLogger(__name__)
 
@@ -166,9 +166,6 @@ def build_context(project_dir: Path) -> list[BuildDatasourceResult]:
     """Build context for all datasources in the DCE project. This is a long-running operation."""
     manager = DatabaoContextDomainManager(domain_dir=project_dir)
     results = manager.build_context()
-
-    from databao_cli.project.layout import write_build_sentinel
-
     write_build_sentinel(project_dir)
     return results
 
