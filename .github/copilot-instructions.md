@@ -14,12 +14,14 @@ When reviewing a PR, check each of the following areas and flag violations.
 
 ### Commit Hygiene
 
-- When a YouTrack ticket exists, the PR title and/or branch name SHOULD
-  include the ticket ID in the format `[DBA-XXX]` (e.g., `[DBA-123] add
-  datasource validation`). If commit messages are visible in the review
-  context, they SHOULD also include this prefix.
-- Do NOT require or invent a `[DBA-XXX]` prefix when no ticket exists. Do not
-  flag commits or PRs that lack this prefix if there is no associated ticket.
+- When a YouTrack ticket exists:
+  - The PR title SHOULD include the ticket ID as a `[DBA-XXX]` prefix (e.g.,
+    `[DBA-123] add datasource validation`).
+  - The branch name SHOULD include the bare ticket ID `DBA-XXX` somewhere in
+    the name (e.g., `<nickname>/DBA-123-fix-auth-timeout`).
+  - If commit messages are visible in the review context, they SHOULD also
+    include the `[DBA-XXX]` prefix.
+- Do NOT require or flag a missing `[DBA-XXX]` prefix when no ticket exists.
 
 ### Test Coverage
 
@@ -27,12 +29,15 @@ When reviewing a PR, check each of the following areas and flag violations.
   corresponding test files under `tests/` are also modified or added.
 - New CLI commands, MCP tools, and utility functions MUST have unit tests.
 - Bug fixes SHOULD include a regression test.
-- Flag PRs that change behavior/commands/protocols in production code but
-  add zero test changes. Pure refactors, formatting-only, or comment-only
-  changes do not require new tests.
-- Changes to `src/databao_cli/ui/` (Streamlit UI) and
-  `src/databao_cli/__main__.py` (wiring-only entrypoint) are excluded from
-  coverage thresholds, but tests are still encouraged where practical.
+- Flag PRs that change behavior in production code but add zero test changes.
+  Pure refactors, formatting-only, or comment-only changes do not require new
+  tests.
+- Do NOT require new tests for purely cosmetic or layout-only changes to
+  Streamlit UI components under `src/databao_cli/ui/` that do not alter
+  control flow or data handling.
+- Changes to `src/databao_cli/__main__.py` that alter CLI behavior, commands,
+  or options SHOULD have corresponding tests. Wiring-only refactors with
+  identical behavior do not require new tests.
 
 ### Documentation
 
@@ -69,8 +74,9 @@ When reviewing a PR, check each of the following areas and flag violations.
   `commands/`. Flag logic creeping into `__main__.py`.
 - MCP tools live in `src/databao_cli/mcp/tools/` with a
   `register(mcp, context)` pattern. Flag tools defined outside this structure.
-- New commands must validate project state early using
-  `ProjectLayout` + `databao_project_status()` before doing work.
+- New commands must validate project state early (for example via
+  `find_project(...)`, `_get_project_or_exit(...)`, or `ProjectLayout` +
+  `databao_project_status()` as appropriate for the command) before doing work.
 - Flag broad exception swallowing that hides failure modes.
 
 ### Dependencies and Packaging
