@@ -46,7 +46,7 @@ def get_build_fingerprint(project: ProjectLayout) -> float:
 
     Returns 0.0 if the sentinel does not exist.
     """
-    from databao_cli.ui.services.dce_operations import BUILD_SENTINEL
+    from databao_cli.project.layout import BUILD_SENTINEL
 
     sentinel = project.root_domain_dir / BUILD_SENTINEL
     try:

@@ -1,7 +1,6 @@
 from databao_context_engine import BuildDatasourceResult, DatabaoContextDomainManager
 
-from databao_cli.project.layout import ProjectLayout
-from databao_cli.ui.services.dce_operations import write_build_sentinel_file
+from databao_cli.project.layout import ProjectLayout, write_build_sentinel
 
 
 def build_impl(project_layout: ProjectLayout, domain: str, should_index: bool) -> list[BuildDatasourceResult]:
@@ -10,5 +9,5 @@ def build_impl(project_layout: ProjectLayout, domain: str, should_index: bool) -
         datasource_ids=None, should_index=should_index
     )
 
-    write_build_sentinel_file(dce_project_dir)
+    write_build_sentinel(dce_project_dir)
     return results

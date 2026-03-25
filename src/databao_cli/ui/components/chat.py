@@ -547,8 +547,7 @@ def _new_build_notification_fragment() -> None:
     if not st.session_state.get("new_build_available"):
         return
 
-    from databao_cli.ui.app import _clear_all_chat_threads
-    from databao_cli.ui.components.status import AppStatus, set_status
+    from databao_cli.ui.app import invalidate_agent
     from databao_cli.ui.suggestions import reset_suggestions_state
 
     col1, col2 = st.columns([10, 2], vertical_alignment="center")
@@ -556,12 +555,9 @@ def _new_build_notification_fragment() -> None:
         st.warning("A new build is available. Reload to use the latest context.")
     with col2:
         if st.button("Reload", key="new_build_reload_btn", type="primary", use_container_width=True):
-            st.session_state.databao_project = None
-            st.session_state.agent = None
             st.session_state.new_build_available = False
             st.session_state.build_fingerprint = 0.0
-            _clear_all_chat_threads()
-            set_status(AppStatus.INITIALIZING, "Reloading project...")
+            invalidate_agent("Reloading project...")
             reset_suggestions_state()
             st.rerun()
 

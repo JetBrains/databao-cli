@@ -134,6 +134,7 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
 
         st.session_state.agent = _agent
         st.session_state.build_fingerprint = get_build_fingerprint(project)
+        st.session_state.new_build_available = False
 
         return _agent
 
