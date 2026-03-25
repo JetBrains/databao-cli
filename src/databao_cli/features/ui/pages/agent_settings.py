@@ -125,14 +125,25 @@ def render_agent_settings_page(*, auto_apply: bool = False) -> None:
         env_var = _ENV_VAR_MAP.get(chosen_provider, "")
         env_key_value = os.environ.get(env_var, "")
         has_env_key = bool(env_key_value)
-        label = f"API key (using environment variable `{env_var}` if present)" if has_env_key else "API key"
-        default_value = existing.api_key or env_key_value
-        api_key = st.text_input(
-            label,
-            value=default_value,
-            type="password",
-            help="Stored locally, sent only to the provider. Leave empty to use the key from your environment variable.",
-        )
+        if has_env_key:
+            label = f"API key (using `{env_var}` from environment)"
+            st.text_input(
+                label,
+                value="",
+                type="password",
+                disabled=True,
+                placeholder="Provided by environment variable",
+                help=f"The API key is loaded from the `{env_var}` environment variable.",
+            )
+            api_key = ""
+        else:
+            default_value = existing.api_key
+            api_key = st.text_input(
+                "API key",
+                value=default_value,
+                type="password",
+                help="Stored locally, sent only to the provider.",
+            )
 
     base_url = ""
     if chosen_provider == "openai_compat":
