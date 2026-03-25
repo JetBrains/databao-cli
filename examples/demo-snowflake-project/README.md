@@ -23,7 +23,7 @@ This project deploys the [Databao](https://github.com/JetBrains/databao-cli) Str
 3. **`app.py`** is the Streamlit entry point that adapts `databao-cli`'s UI for Snowflake:
    - Detects whether it is running inside Snowflake (via `/snowflake/session/token`)
    - Calls `get_secret()` through a Snowflake SQL session to load secrets into environment variables (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `SNOWFLAKE_DS_WAREHOUSE`, `SNOWFLAKE_DS_DATABASE`)
-   - Patches the Snowflake introspector to authenticate using the SiS OAuth session token (re-read from `/snowflake/session/token` on every connection to avoid expiry). This means the datasource connection runs as the logged-in user — no service user or stored credentials needed.
+   - Patches both the Snowflake introspector (DCE) and the DuckDB Snowflake adapter (agent) to authenticate using the SPCS OAuth session token (re-read from `/snowflake/session/token` on every connection to avoid expiry). Under the default **owner's rights** model, all queries run as the role that created the Streamlit app — no stored user credentials needed.
    - Locates and configures the ADBC Snowflake driver shared library so DuckDB's Snowflake extension can find it
    - Launches the standard Databao UI in **read-only domain** mode
 
@@ -45,7 +45,7 @@ Open `setup.sql` and fill in the placeholder values at the top:
 
 #### Datasource configuration (`sf_ds_*`)
 
-These settings tell the Databao agent which warehouse and database to use when exploring data. Authentication is handled automatically via the SiS session token — the agent runs as the logged-in Snowflake user, so no service user or password is needed.
+These settings tell the Databao agent which warehouse and database to use when exploring data. Authentication is handled automatically via the SPCS session token — no stored passwords are needed. Under the default **owner's rights** model, the agent runs as the role that created the Streamlit app (typically `ACCOUNTADMIN` if you ran `setup.sql` as-is). Grant that role `USAGE` on the target warehouse and database.
 
 - **`sf_ds_warehouse`** — the warehouse the agent will use to run queries. If you don't have one, create it in **Snowsight → Admin → Warehouses → + Warehouse** (an `XSMALL` warehouse is sufficient).
 
@@ -53,7 +53,7 @@ These settings tell the Databao agent which warehouse and database to use when e
 
 The Snowflake account is detected automatically from the SPCS-provided `SNOWFLAKE_ACCOUNT` environment variable.
 
-> **Note:** Users opening the Streamlit app must have `USAGE` grants on the configured warehouse and database, since the agent authenticates as their Snowflake identity.
+> **Note:** Under owner's rights (the default), the app's owner role must have `USAGE` on the configured warehouse and database. If you switch to [restricted caller's rights](https://docs.snowflake.com/en/developer-guide/streamlit/owners-rights) (`executeAsCaller: true`), each viewer's role needs the grants instead.
 
 ### 2. Run the Setup Script
 
