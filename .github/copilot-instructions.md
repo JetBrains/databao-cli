@@ -30,8 +30,9 @@ When reviewing a PR, check each of the following areas and flag violations.
 - Flag PRs that change behavior/commands/protocols in production code but
   add zero test changes. Pure refactors, formatting-only, or comment-only
   changes do not require new tests.
-- Do NOT require tests for changes to `src/databao_cli/ui/` (Streamlit UI)
-  or `src/databao_cli/__main__.py` (wiring-only entrypoint).
+- Changes to `src/databao_cli/ui/` (Streamlit UI) and
+  `src/databao_cli/__main__.py` (wiring-only entrypoint) are excluded from
+  coverage thresholds, but tests are still encouraged where practical.
 
 ### Documentation
 
