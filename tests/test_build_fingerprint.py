@@ -1,6 +1,6 @@
 """Tests for build fingerprint detection and new-build notification logic."""
 
-import time
+import os
 from pathlib import Path
 
 import pytest
@@ -47,9 +47,8 @@ def test_fingerprint_changes_after_new_build(
     """Fingerprint changes when sentinel is rewritten (simulating a new build)."""
     fp_before = get_build_fingerprint(project_with_sentinel)
 
-    time.sleep(0.05)
     sentinel = project_with_sentinel.root_domain_dir / BUILD_SENTINEL
-    sentinel.write_text("")
+    os.utime(sentinel, (fp_before + 10, fp_before + 10))
 
     fp_after = get_build_fingerprint(project_with_sentinel)
     assert fp_after > fp_before

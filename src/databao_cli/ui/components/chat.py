@@ -526,12 +526,16 @@ def _new_build_notification_fragment() -> None:
         return
 
     stored = st.session_state.get("build_fingerprint", 0.0)
-    if stored == 0.0:
-        return
 
     # Detect change
     if not st.session_state.get("new_build_available"):
         current = get_build_fingerprint(project)
+        if stored == 0.0:
+            # No build existed at init. Silently adopt the first build
+            # so subsequent builds are detected.
+            if current > 0.0:
+                st.session_state.build_fingerprint = current
+            return
         if current > stored:
             st.session_state.new_build_available = True
             st.toast(
