@@ -118,10 +118,11 @@ def _render_project_info(project: ProjectLayout) -> bool:
 
 def _render_sources(agent: Agent) -> None:
     """Render connected data sources from the active agent."""
-    dbs = agent.dbs
-    dfs = agent.dfs
+    dbs = agent.sources.dbs
+    dfs = agent.sources.dfs
+    dbts = agent.sources.dbts
 
-    if not dbs and not dfs:
+    if not dbs and not dfs and not dbts:
         st.caption("No data sources configured in this project.")
         return
 
@@ -145,3 +146,8 @@ def _render_sources(agent: Agent) -> None:
         st.markdown("**DataFrames:**")
         for name in dfs:
             st.markdown(f"📊 **{name}**")
+
+    if dbts:
+        st.markdown("**dbt projects:**")
+        for name in dbts:
+            st.markdown(f"🌿 **{name}**")
