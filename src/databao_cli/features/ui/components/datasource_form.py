@@ -17,6 +17,26 @@ from databao_context_engine.pluginlib.config import (
 SKIP_TOP_LEVEL_KEYS = {"type", "name"}
 
 
+def get_missing_required_fields(
+    config_fields: list[ConfigPropertyDefinition],
+    values: dict[str, Any],
+) -> list[str]:
+    """Return labels of required fields that are empty in *values*.
+
+    Only checks top-level single (leaf) properties that are marked as
+    required. Skips the ``type`` and ``name`` keys (handled separately).
+    """
+    missing: list[str] = []
+    for prop in config_fields:
+        if prop.property_key in SKIP_TOP_LEVEL_KEYS:
+            continue
+        if isinstance(prop, ConfigSinglePropertyDefinition) and not prop.nested_properties and prop.required:
+            val = values.get(prop.property_key)
+            if val is None or not str(val).strip():
+                missing.append(prop.property_key)
+    return missing
+
+
 def render_datasource_config_form(
     config_fields: list[ConfigPropertyDefinition],
     existing_values: dict[str, Any] | None = None,
