@@ -101,8 +101,8 @@ style issues; do not manually fix formatting.
   full scope before writing any code.
 - When starting work on a ticket, move it to **Develop** state using
   `update_issue` (set `State` field).
-- After creating a PR, move the ticket to **Review** state and add the
-  PR URL as a comment.
+- After creating a PR, move the ticket to **Review** state and add a
+  comment with the PR URL and the Claude Code session cost (from `/cost`).
 ## Commit Messages
 
 - Format: `[DBA-XXX] <imperative summary>` (max 72 chars)
@@ -131,6 +131,7 @@ phase and wait for user confirmation before starting the next one.
    commit following **Commit Messages** conventions.
 6. **PR** — use the `create-pr` skill (pushes and opens the PR).
 7. **Update YouTrack** — move the ticket to **Review** state and add
-   a comment with the PR URL.
+   a comment with the PR URL and the Claude Code session cost (run
+   `/cost` to obtain it).
 
 Never commit directly to `main`.
