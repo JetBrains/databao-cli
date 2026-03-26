@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from databao_cli.project.layout import BUILD_SENTINEL, ProjectLayout
-from databao_cli.ui.project_utils import get_build_fingerprint
+from databao_cli.features.ui.project_utils import get_build_fingerprint
+from databao_cli.shared.project.layout import BUILD_SENTINEL, ProjectLayout
 
 
 @pytest.fixture

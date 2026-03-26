@@ -3,7 +3,7 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "Review the architecture of the MCP server code.",
+      "prompt": "/review-architecture module:src/databao_cli/mcp/",
       "expected_output": "A structured report covering the MCP module with Current State, Risks/Gaps, Recommendations, Doc Sync, and Validation Plan.",
       "assertions": [
         "Output contains a 'Current State' section with 3-6 bullets",
@@ -15,13 +15,24 @@
     },
     {
       "id": 2,
-      "prompt": "I'm about to add a new CLI command for managing API keys. Review the architecture to see if there are concerns.",
+      "prompt": "/review-architecture module:src/databao_cli/commands/",
       "expected_output": "A focused review of the command structure and extension patterns.",
       "assertions": [
         "Output examines src/databao_cli/commands/ structure",
-        "Output references the Click command registration pattern in __main__.py",
-        "Output provides actionable recommendations for the new command",
+        "Output references the Click command registration pattern",
+        "Output provides actionable recommendations",
         "Output separates immediate actions from longer-term improvements"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/review-architecture full",
+      "expected_output": "A comprehensive architecture review covering all major modules.",
+      "assertions": [
+        "Output reviews multiple modules (commands, mcp, ui, project)",
+        "Output references primary sources of truth (docs/architecture.md, CLAUDE.md)",
+        "Output contains all five report sections (Current State, Risks/Gaps, Recommendations, Doc Sync, Validation Plan)",
+        "Agent does NOT edit any files"
       ]
     }
   ]

@@ -2,8 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from databao_cli.commands.init import init_impl
-from databao_cli.project.layout import ProjectLayout
+from databao_cli.features.init.service import init_impl
+from databao_cli.shared.project.layout import ProjectLayout
 
 
 @pytest.fixture

@@ -5,8 +5,12 @@ Claude Code entrypoint for agent instructions in this repository.
 ## Agent Delta (Claude Code)
 
 - Prefer concise updates with clear file/command references.
-- Execute directly when safe; ask questions only if truly blocked.
 - YouTrack MCP must be configured (see DEVELOPMENT.md). Use get_issue / update_issue tools.
+- **Pacing rule**: pause for user confirmation between phases (plan →
+  implement → validate → commit → PR). Present what you intend to do or
+  what you just did, then wait for a go-ahead before moving to the next
+  phase. Small, safe actions within a phase (running tests, reading files)
+  do not require a pause.
 
 ## References
 
@@ -112,19 +116,21 @@ style issues; do not manually fix formatting.
 
 ## After Completing Work
 
-1. **Implement** — write the code changes to satisfy the ticket
-   requirements.
-2. **Write tests** — add or update unit tests covering the new behavior;
-   run `make test` to verify they pass.
-3. **Test & lint** — run `make check` then `make test-cov-check`. Fix any
+Each numbered step below is a **phase**. Present the outcome of each
+phase and wait for user confirmation before starting the next one.
+
+1. **Plan** — outline the approach and list files you intend to change.
+2. **Implement** — write the code changes to satisfy the ticket
+   requirements, including tests. Run `make test` to verify they pass.
+3. **Validate** — run `make check` then `make test-cov-check`. Fix any
    failures before proceeding.
-4. **Review the code** — review the code locally. Fix any high-severity
-   findings before proceeding.
-5. **Architecture review** — review architecture quality of the changed
-   code. Fix any high-severity issues before proceeding.
-6. **Branch** — use the `create-branch` skill.
-7. **Commit & PR** — use the `create-pr` skill (stages, commits, pauses
-   for confirmation, pushes, and opens the PR).
-8. **Update YouTrack** — move the ticket to **Review** state and add
+4. **Review** — run `local-code-review` and `review-architecture` skills.
+   Both run in forked sub-agent context (no prior conversation state)
+   and can run **in parallel**.
+5. **Branch & commit** — use the `create-branch` skill, then stage and
+   commit following **Commit Messages** conventions.
+6. **PR** — use the `create-pr` skill (pushes and opens the PR).
+7. **Update YouTrack** — move the ticket to **Review** state and add
    a comment with the PR URL.
-9. Never commit directly to `main`.
+
+Never commit directly to `main`.
