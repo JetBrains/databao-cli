@@ -1,5 +1,5 @@
-# ===== test sqlite conn.yaml =====
-datasource_id: test sqlite conn.yaml
+# ===== test_sqlite_conn.yaml =====
+datasource_id: test_sqlite_conn.yaml
 datasource_type: sqlite
 context_built_at: 2026-02-27 16:15:31.010532
 context:

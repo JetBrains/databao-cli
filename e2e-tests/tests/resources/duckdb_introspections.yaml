@@ -1,5 +1,5 @@
-# ===== test duckdb conn.yaml =====
-datasource_id: test duckdb conn.yaml
+# ===== test_duckdb_conn.yaml =====
+datasource_id: test_duckdb_conn.yaml
 datasource_type: duckdb
 context_built_at: 2026-02-27 16:38:36.999625
 context:
