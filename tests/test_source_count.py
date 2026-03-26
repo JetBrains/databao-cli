@@ -34,40 +34,6 @@ def _make_agent(
 
 
 # ---------------------------------------------------------------------------
-# ask.py - _setup_agent source count
-# ---------------------------------------------------------------------------
-
-
-class TestAskSourceCount:
-    """Verify that ask.py counts dbt sources."""
-
-    @staticmethod
-    def _count_sources(agent: MagicMock) -> int:
-        """Reproduce the counting logic from ask.py:_setup_agent."""
-        return len(agent.sources.dbs) + len(agent.sources.dfs) + len(agent.sources.dbts)
-
-    def test_only_dbt_sources(self) -> None:
-        agent = _make_agent(dbts={"my_dbt": object()})
-        assert self._count_sources(agent) == 1
-
-    def test_mixed_sources(self) -> None:
-        agent = _make_agent(
-            dbs={"pg": object()},
-            dfs={"df1": object()},
-            dbts={"dbt1": object()},
-        )
-        assert self._count_sources(agent) == 3
-
-    def test_no_sources(self) -> None:
-        agent = _make_agent()
-        assert self._count_sources(agent) == 0
-
-    def test_dbs_and_dfs_only(self) -> None:
-        agent = _make_agent(dbs={"pg": object()}, dfs={"df1": object()})
-        assert self._count_sources(agent) == 2
-
-
-# ---------------------------------------------------------------------------
 # sidebar.py - render_sources_info
 # ---------------------------------------------------------------------------
 
@@ -145,16 +111,29 @@ class TestContextSettingsSourceCount:
 
 
 class TestWelcomeSourceCount:
-    """Verify that welcome page counts dbt sources."""
+    """Verify that welcome page counts dbt sources via the real render function."""
 
     @staticmethod
-    def _count_sources(agent: MagicMock | None) -> int:
-        """Reproduce the counting logic from welcome.py."""
-        return (len(agent.sources.dbs) + len(agent.sources.dfs) + len(agent.sources.dbts)) if agent else 0
+    def _run_welcome(agent: MagicMock | None) -> MagicMock:
+        """Patch streamlit and run the real welcome page renderer."""
+        with patch("databao_cli.features.ui.pages.welcome.st") as mock_st:
+            mock_st.session_state = {
+                "chats": {},
+                "agent": agent,
+                "databao_project": None,
+            }
+            mock_st.columns.side_effect = lambda n: [MagicMock() for _ in range(n if isinstance(n, int) else len(n))]
+            mock_st.button.return_value = False
+
+            from databao_cli.features.ui.pages.welcome import render_welcome_page
+
+            render_welcome_page()
+            return mock_st
 
     def test_only_dbt_sources(self) -> None:
         agent = _make_agent(dbts={"my_dbt": object()})
-        assert self._count_sources(agent) == 1
+        mock_st = self._run_welcome(agent)
+        mock_st.metric.assert_any_call("Data Sources", 1)
 
     def test_mixed_sources(self) -> None:
         agent = _make_agent(
@@ -162,7 +141,9 @@ class TestWelcomeSourceCount:
             dfs={"df1": object()},
             dbts={"dbt1": object()},
         )
-        assert self._count_sources(agent) == 3
+        mock_st = self._run_welcome(agent)
+        mock_st.metric.assert_any_call("Data Sources", 3)
 
     def test_none_agent(self) -> None:
-        assert self._count_sources(None) == 0
+        mock_st = self._run_welcome(None)
+        mock_st.metric.assert_any_call("Data Sources", 0)
