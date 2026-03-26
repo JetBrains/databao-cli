@@ -1,6 +1,7 @@
 ---
 name: create-pr
 description: Stage, commit, push, and open a GitHub PR following project conventions. Use when code is ready to ship — after tests pass, code review, and architecture review are done.
+compatibility: gh must be installed and authenticated.
 ---
 
 # Create PR

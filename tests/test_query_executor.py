@@ -6,8 +6,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from databao_cli.ui.models.chat_session import ChatSession
-from databao_cli.ui.services.query_executor import (
+from databao_cli.features.ui.models.chat_session import ChatSession
+from databao_cli.features.ui.services.query_executor import (
     QueryResult,
     QueryThread,
     _raise_in_thread,
@@ -118,7 +118,7 @@ class TestStartQueryExecution:
         result = start_query_execution(chat_session, mock_thread, "test")
         assert result is False
 
-    @patch("databao_cli.ui.services.query_executor.get_script_run_ctx")
+    @patch("databao_cli.features.ui.services.query_executor.get_script_run_ctx")
     def test_starts_execution(
         self,
         mock_ctx: MagicMock,

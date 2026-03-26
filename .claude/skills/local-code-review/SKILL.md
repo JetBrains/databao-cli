@@ -1,18 +1,32 @@
 ---
 name: local-code-review
 description: Review local code changes in Databao repositories before a commit or PR. Use when the user wants a review of staged or unstaged diffs, local branches, or pre-merge changes. Focus on correctness, regressions, missing tests, API/CLI behavior changes, executor or tooling changes, dependency or plugin-loading risks, and user-visible behavior changes.
-compatibility: git must be installed and rg (ripgrep) is recommended.
+argument-hint: "[scope: staged | branch | files:<path>]"
+context: fork
+agent: reviewer
 ---
 
 # Local Code Review
 
-This skill is for review, not implementation. Default to read-only inspection. Do not edit files unless the user explicitly switches from review to fixing issues.
+You are reviewing code changes for the Databao CLI project.
+You have NO prior context about why these changes were made — review
+purely on merit.
 
-If the user didn't request an explicit review, ask the user if a review is wanted before doing it.
+## Scope
+
+Review scope: $ARGUMENTS
+
+If no scope was provided, default to `branch`.
+
+Accepted scopes:
+
+- `staged` — review only staged changes (`git diff --cached`)
+- `branch` — review the branch diff against main (default)
+- `files:<path>` — review specific files or directories (e.g. `files:src/databao_cli/mcp/`)
 
 ## Review Goal
 
-Find the highest-signal problems in the current local changes:
+Find the highest-signal problems in the changes under review:
 
 - correctness bugs
 - regressions in user-visible behavior
@@ -25,18 +39,21 @@ Find the highest-signal problems in the current local changes:
 Keep summaries brief.
 
 ## Steps
+
 ### 1. Scope Discovery
 
 Start by identifying what changed:
 
 1. Run `git status --short`.
-2. Inspect both staged and unstaged changes with `git diff --stat` and `git diff --cached --stat`.
+2. Inspect the relevant changes based on the scope you were given:
+   - **branch**: diff from the merge base with the main branch
+   - **staged**: `git diff --cached --stat` and `git diff --cached`
+   - **files**: read the specified files and their recent git history
 3. Read the actual diffs for changed files before reading large surrounding files.
-4. If the user asks for a branch review rather than just working tree changes, diff from the merge base with the main branch.
 
 Prefer `rg`, `git diff`, and targeted file reads over broad scans.
 
-#### Databao Review Priorities
+### Databao Review Priorities
 
 Pay extra attention to these repository-specific areas:
 
@@ -133,7 +150,7 @@ Format the results using Markdown.
 
 ## Guardrails
 
-- Do not rewrite the code during review mode.
+- Include short code snippets to illustrate suggested fixes, but keep them conceptual — avoid pasting full rewrites or verbose replacement blocks.
 - Do not bury findings under a long summary.
 - Do not claim tests passed unless you ran them.
 - Do not over-index on style when behavior risks exist.

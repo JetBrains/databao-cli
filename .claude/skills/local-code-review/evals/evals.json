@@ -3,7 +3,7 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "Review the changes on my current branch before I open a PR. Keep this in review mode only and focus on correctness, regressions, and missing tests.",
+      "prompt": "/local-code-review branch",
       "expected_output": "Agent determines branch review scope from git, inspects the actual diff, and returns a findings-first review or an explicit no-findings verdict with file references and a testing note.",
       "assertions": [
         "Agent determines scope from the current branch diff against the main branch or merge base",
@@ -15,35 +15,36 @@
     },
     {
       "id": 2,
-      "prompt": "Please review my local changes before I commit. Do not fix anything. Focus on user-visible behavior, integration risks, and whether tests are missing.",
-      "expected_output": "Agent performs working-tree scope discovery from git, stays read-only, and returns severity-ordered findings tied to the local diff.",
+      "prompt": "/local-code-review staged",
+      "expected_output": "Agent performs staged-changes scope discovery from git, stays read-only, and returns severity-ordered findings tied to the staged diff.",
       "assertions": [
-        "Agent runs `git status --short` to establish review scope",
-        "Agent inspects both `git diff --stat` and `git diff --cached --stat`",
+        "Agent inspects staged changes via git diff --cached",
         "Agent reads the diff for changed files before reading large surrounding files",
         "Output orders findings by severity and ties them to concrete behavior risks",
-        "Output includes open questions or assumptions"
+        "Output includes open questions or assumptions",
+        "Agent does NOT edit any files"
       ]
     },
     {
       "id": 3,
-      "prompt": "I changed a few files in this repo. What do you think?",
-      "expected_output": "Agent asks whether the user wants an explicit code review before beginning repository inspection.",
+      "prompt": "/local-code-review files:src/databao_cli/mcp/",
+      "expected_output": "Agent reviews the specified files/directory, reading them and their recent git history.",
       "assertions": [
-        "Agent asks a clarifying question about whether a review is wanted",
-        "Agent does NOT start with git inspection or a full review before that clarification",
-        "Agent keeps the response concise and framed as a clarification request"
+        "Agent focuses review on files under src/databao_cli/mcp/",
+        "Agent reads the actual file contents or diffs for the specified path",
+        "Output presents findings with file and line references",
+        "Agent does NOT edit any files"
       ]
     },
     {
       "id": 4,
-      "prompt": "Review my current branch and run any safe validation that makes sense, but do not mutate files.",
-      "expected_output": "Agent chooses only non-mutating validation that exists in this repo, then reports findings and validation results.",
+      "prompt": "/local-code-review",
+      "expected_output": "Agent defaults to branch scope when no argument is provided and runs a branch review.",
       "assertions": [
+        "Agent defaults to reviewing the branch diff against main",
         "Agent inspects the repo's available tooling before choosing validation commands",
-        "If validation is run, agent uses non-mutating commands such as targeted `uv run pytest` or check-only linters",
-        "Agent does NOT run mutating commands such as formatter fixes or broad wrapper commands without confirming they are non-mutating",
-        "Output reports what validation was run or why validation was skipped"
+        "If validation is run, agent uses non-mutating commands",
+        "Agent does NOT run mutating commands such as formatter fixes"
       ]
     }
   ]
