@@ -15,8 +15,8 @@ from databao_context_engine.pluginlib.config import ConfigPropertyDefinition
 from databao_cli.features.datasource.validation import validate_datasource_name
 from databao_cli.features.ui.app import invalidate_agent
 from databao_cli.features.ui.components.datasource_form import (
-    get_missing_required_fields,
     render_datasource_config_form,
+    validate_config_fields,
 )
 from databao_cli.features.ui.services.dce_operations import (
     add_datasource,
@@ -130,8 +130,9 @@ def _render_add_datasource_section(project_dir: Path) -> None:
             validated = _validate_new_datasource_inputs(ds_name, selected_type)
             if validated is None:
                 pass  # errors already shown
-            elif config_fields and (missing := get_missing_required_fields(config_fields, config_values)):
-                st.error(f"Required fields are empty: {', '.join(missing)}")
+            elif config_fields and (field_errors := validate_config_fields(config_fields, config_values)):
+                for err in field_errors:
+                    st.error(err)
             else:
                 try:
                     add_datasource(project_dir, selected_type, validated, config_values)

@@ -14,27 +14,78 @@ from databao_context_engine.pluginlib.config import (
     ConfigUnionPropertyDefinition,
 )
 
+from databao_cli.features.datasource.validation import validate_hostname, validate_port
+
 SKIP_TOP_LEVEL_KEYS = {"type", "name"}
 
+# Field keys that represent a network host.
+_HOST_KEYS = {"host", "hostname"}
 
-def get_missing_required_fields(
+# Field keys that represent a network port.
+_PORT_KEYS = {"port"}
+
+
+def validate_config_fields(
     config_fields: list[ConfigPropertyDefinition],
     values: dict[str, Any],
 ) -> list[str]:
-    """Return labels of required fields that are empty in *values*.
+    """Return human-readable error strings for invalid or missing fields.
 
-    Only checks top-level single (leaf) properties that are marked as
-    required. Skips the ``type`` and ``name`` keys (handled separately).
+    Checks are applied recursively but only to leaf
+    ``ConfigSinglePropertyDefinition`` nodes.  Checks performed:
+
+    * Required fields must not be empty.
+    * ``int``-typed fields must be valid integers.
+    * Fields named ``port`` must be in the 1-65535 range.
+    * Fields named ``host`` / ``hostname`` must be valid hostnames or IPs.
     """
-    missing: list[str] = []
+    return _validate_fields_recursive(config_fields, values)
+
+
+def _validate_fields_recursive(
+    config_fields: list[ConfigPropertyDefinition],
+    values: dict[str, Any],
+    path_prefix: str = "",
+) -> list[str]:
+    errors: list[str] = []
     for prop in config_fields:
         if prop.property_key in SKIP_TOP_LEVEL_KEYS:
             continue
-        if isinstance(prop, ConfigSinglePropertyDefinition) and not prop.nested_properties and prop.required:
-            val = values.get(prop.property_key)
-            if val is None or not str(val).strip():
-                missing.append(prop.property_key)
-    return missing
+
+        full_key = f"{path_prefix}{prop.property_key}" if path_prefix else prop.property_key
+
+        if isinstance(prop, ConfigSinglePropertyDefinition):
+            if prop.nested_properties:
+                nested_vals = values.get(prop.property_key, {})
+                if not isinstance(nested_vals, dict):
+                    nested_vals = {}
+                errors.extend(_validate_fields_recursive(prop.nested_properties, nested_vals, f"{full_key}."))
+                continue
+
+            raw = values.get(prop.property_key)
+            text = str(raw).strip() if raw is not None else ""
+
+            # Required check.
+            if prop.required and not text:
+                errors.append(f"{full_key}: required field is empty")
+                continue
+
+            if not text:
+                continue
+
+            # Type-specific checks.
+            if prop.property_type is int or (prop.property_key in _PORT_KEYS):
+                port_err = validate_port(text)
+                if port_err:
+                    errors.append(f"{full_key}: {port_err}")
+                    continue
+
+            if prop.property_key in _HOST_KEYS:
+                host_err = validate_hostname(text)
+                if host_err:
+                    errors.append(f"{full_key}: {host_err}")
+
+    return errors
 
 
 def render_datasource_config_form(

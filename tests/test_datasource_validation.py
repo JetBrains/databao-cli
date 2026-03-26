@@ -3,30 +3,51 @@ import pytest
 from databao_cli.features.datasource.validation import (
     MAX_DATASOURCE_NAME_LENGTH,
     validate_datasource_name,
+    validate_hostname,
+    validate_port,
 )
 
 
 class TestValidateDatasourceName:
-    """Tests for validate_datasource_name()."""
+    """Tests for validate_datasource_name().
+
+    The last segment must match the agent's pattern: ^[A-Za-z][A-Za-z0-9_]*$
+    Folder segments (preceding the last) are more permissive.
+    """
+
+    @pytest.mark.parametrize(
+        "name",
+        [
+            "my_datasource",
+            "ds1",
+            "a",
+            "A",
+            "SnowflakeProd",
+            "test_db",
+            "ab",
+            "resources/my_db",
+            "folder/sub/name",
+            "my-folder/my_db",
+            "v2.data/source1",
+        ],
+    )
+    def test_valid_names(self, name: str) -> None:
+        assert validate_datasource_name(name) is None
 
     @pytest.mark.parametrize(
         "name",
         [
             "my-datasource",
-            "my_datasource",
             "my.datasource",
-            "ds1",
-            "a",
-            "A",
             "Snowflake-Prod",
             "test_db.v2",
-            "ab",
-            "resources/my_db",
-            "folder/sub/name",
+            "1startsWithDigit",
+            "_leading_underscore",
         ],
     )
-    def test_valid_names(self, name: str) -> None:
-        assert validate_datasource_name(name) is None
+    def test_invalid_source_name_segment(self, name: str) -> None:
+        """Last segment must match agent pattern: letter then [A-Za-z0-9_]*."""
+        assert validate_datasource_name(name) is not None
 
     def test_empty_name(self) -> None:
         assert validate_datasource_name("") is not None
@@ -38,18 +59,6 @@ class TestValidateDatasourceName:
         error = validate_datasource_name("my datasource")
         assert error is not None
         assert "spaces" in error.lower()
-
-    def test_name_with_leading_space(self) -> None:
-        error = validate_datasource_name(" leading")
-        assert error is not None
-
-    def test_name_with_trailing_space(self) -> None:
-        error = validate_datasource_name("trailing ")
-        assert error is not None
-
-    @pytest.mark.parametrize("name", [".hidden", "-start", "end-", "end."])
-    def test_name_starting_or_ending_with_special_char(self, name: str) -> None:
-        assert validate_datasource_name(name) is not None
 
     @pytest.mark.parametrize("char", ["@", "#", "$", "%", "!", "?", "\\", ":", "*"])
     def test_forbidden_characters(self, char: str) -> None:
@@ -64,6 +73,9 @@ class TestValidateDatasourceName:
     def test_trailing_slash_rejected(self) -> None:
         assert validate_datasource_name("a/") is not None
 
+    def test_invalid_folder_segment(self) -> None:
+        assert validate_datasource_name(".hidden/my_db") is not None
+
     def test_name_too_long(self) -> None:
         long_name = "a" * (MAX_DATASOURCE_NAME_LENGTH + 1)
         error = validate_datasource_name(long_name)
@@ -73,3 +85,49 @@ class TestValidateDatasourceName:
     def test_name_at_max_length(self) -> None:
         name = "a" * MAX_DATASOURCE_NAME_LENGTH
         assert validate_datasource_name(name) is None
+
+
+class TestValidatePort:
+    """Tests for validate_port()."""
+
+    @pytest.mark.parametrize("value", ["1", "80", "443", "5432", "65535"])
+    def test_valid_ports(self, value: str) -> None:
+        assert validate_port(value) is None
+
+    @pytest.mark.parametrize("value", ["0", "-1", "65536", "99999"])
+    def test_out_of_range(self, value: str) -> None:
+        error = validate_port(value)
+        assert error is not None
+        assert "between" in error.lower()
+
+    @pytest.mark.parametrize("value", ["abc", "12.5", "", "  "])
+    def test_non_numeric(self, value: str) -> None:
+        error = validate_port(value)
+        assert error is not None
+        assert "number" in error.lower()
+
+
+class TestValidateHostname:
+    """Tests for validate_hostname()."""
+
+    @pytest.mark.parametrize(
+        "value",
+        [
+            "localhost",
+            "127.0.0.1",
+            "192.168.1.1",
+            "my-host",
+            "db.example.com",
+            "my-db.internal.corp.net",
+        ],
+    )
+    def test_valid_hostnames(self, value: str) -> None:
+        assert validate_hostname(value) is None
+
+    def test_empty_hostname(self) -> None:
+        assert validate_hostname("") is not None
+        assert validate_hostname("   ") is not None
+
+    @pytest.mark.parametrize("value", ["-leading-hyphen", "trailing-hyphen-"])
+    def test_invalid_hostnames(self, value: str) -> None:
+        assert validate_hostname(value) is not None
