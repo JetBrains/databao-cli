@@ -1,3 +1,0 @@
-Ollama model nomic-embed-text:v1.5 not found locally. Pulling it (this may take several minutes)...
-Ollama model nomic-embed-text:v1.5 pulled successfully
-Found datasource of type "duckdb" with name test duckdb conn
