@@ -5,7 +5,7 @@ import pytest
 from click.testing import CliRunner
 
 from databao_cli.__main__ import cli
-from databao_cli.commands.init import init_impl as init_databao_project
+from databao_cli.features.init.service import init_impl as init_databao_project
 
 
 @pytest.fixture

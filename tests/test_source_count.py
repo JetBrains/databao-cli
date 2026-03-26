@@ -83,10 +83,10 @@ class TestSidebarSourceCount:
 
     def test_dbt_only_shows_sources(self) -> None:
         agent = _make_agent(dbts={"my_dbt": object()})
-        with patch("databao_cli.ui.components.sidebar.st") as mock_st:
+        with patch("databao_cli.features.ui.components.sidebar.st") as mock_st:
             mock_st.session_state = self._mock_session_state(agent)
 
-            from databao_cli.ui.components.sidebar import render_sources_info
+            from databao_cli.features.ui.components.sidebar import render_sources_info
 
             render_sources_info()
 
@@ -99,10 +99,10 @@ class TestSidebarSourceCount:
 
     def test_empty_sources_shows_no_configured(self) -> None:
         agent = _make_agent()
-        with patch("databao_cli.ui.components.sidebar.st") as mock_st:
+        with patch("databao_cli.features.ui.components.sidebar.st") as mock_st:
             mock_st.session_state = self._mock_session_state(agent)
 
-            from databao_cli.ui.components.sidebar import render_sources_info
+            from databao_cli.features.ui.components.sidebar import render_sources_info
 
             render_sources_info()
 
@@ -119,8 +119,8 @@ class TestContextSettingsSourceCount:
 
     def test_dbt_only_shows_sources(self) -> None:
         agent = _make_agent(dbts={"my_dbt": object()})
-        with patch("databao_cli.ui.pages.context_settings.st") as mock_st:
-            from databao_cli.ui.pages.context_settings import _render_sources
+        with patch("databao_cli.features.ui.pages.context_settings.st") as mock_st:
+            from databao_cli.features.ui.pages.context_settings import _render_sources
 
             _render_sources(agent)
 
@@ -131,8 +131,8 @@ class TestContextSettingsSourceCount:
 
     def test_empty_sources_shows_no_configured(self) -> None:
         agent = _make_agent()
-        with patch("databao_cli.ui.pages.context_settings.st") as mock_st:
-            from databao_cli.ui.pages.context_settings import _render_sources
+        with patch("databao_cli.features.ui.pages.context_settings.st") as mock_st:
+            from databao_cli.features.ui.pages.context_settings import _render_sources
 
             _render_sources(agent)
 
