@@ -1,0 +1,12 @@
+Project initialized successfully at /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmpamrqkguotest_databao_build_duckdb
+
+Do you want to configure a domain now? [y/N]: Y
+Y
+We will guide you to add a new datasource into root domain, at /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmpamrqkguotest_databao_build_duckdb/databao/domains/root
+What type of datasource do you want to add? (bigquery, dbt, duckdb, mysql, parquet, postgres, snowflake, sqlite): duckdb
+duckdb
+Selected type: duckdb
+Datasource name?: test duckdb conn
+test duckdb conn
+[31mDatasource name must not contain spaces.[0m
+Datasource name?: 

@@ -1,3 +1,0 @@
-Found datasource of type "sqlite" with name test sqlite conn
-Exported result to /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmp5qkjc2rctest_databao_build_sqlite/databao/domains/root/output/test sqlite conn.yaml
-Build complete. Processed 1 datasources.
