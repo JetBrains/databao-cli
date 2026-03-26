@@ -19,7 +19,7 @@ def test_app_hide_flags_forwarded() -> None:
     runner = CliRunner()
     mock_bootstrap = MagicMock()
 
-    with patch("databao_cli.commands.app.bootstrap_streamlit_app", mock_bootstrap):
+    with patch("databao_cli.features.ui.cli.bootstrap_streamlit_app", mock_bootstrap):
         result = runner.invoke(
             cli,
             ["app", "--hide-suggested-questions", "--hide-build-context-hint"],
@@ -36,7 +36,7 @@ def test_app_hide_flags_default_false() -> None:
     runner = CliRunner()
     mock_bootstrap = MagicMock()
 
-    with patch("databao_cli.commands.app.bootstrap_streamlit_app", mock_bootstrap):
+    with patch("databao_cli.features.ui.cli.bootstrap_streamlit_app", mock_bootstrap):
         result = runner.invoke(cli, ["app"])
 
     assert result.exit_code == 0
