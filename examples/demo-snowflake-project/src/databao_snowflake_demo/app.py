@@ -6,7 +6,7 @@ from pathlib import Path
 
 import streamlit as st
 
-from databao_cli.ui.app import main
+from databao_cli.features.ui.app import main
 
 logger = logging.getLogger(__name__)
 

@@ -1,12 +1,28 @@
 ---
 name: review-architecture
 description: Review architecture quality, maintainability, and developer experience before or after significant changes. Use when introducing a new CLI command or MCP tool, refactoring core module boundaries, diagnosing repeated dev friction, or preparing a PR with broad structural impact.
+argument-hint: "[scope: branch | module:<path> | full]"
+context: fork
+agent: reviewer
 ---
 
 # Review Architecture
 
-Review architecture quality, maintainability, and developer experience (Dev UX)
-before or after significant changes.
+You are reviewing the architecture of the Databao CLI project.
+You have NO prior context about why these changes were made — review
+purely on merit.
+
+## Scope
+
+Review scope: $ARGUMENTS
+
+If no scope was provided, default to `branch`.
+
+Accepted scopes:
+
+- `branch` — review architecture of code changed on the current branch (default)
+- `module:<path>` — review a specific module (e.g. `module:src/databao_cli/mcp/`)
+- `full` — review the full project architecture
 
 ## Primary sources of truth
 
@@ -17,13 +33,6 @@ Review in this order:
 3. `docs/testing-strategy.md`
 4. `CLAUDE.md`
 5. `README.md` (CLI usage and user-facing workflows)
-
-Then validate actual implementation under:
-
-- `src/databao_cli/commands/`
-- `src/databao_cli/ui/`
-- `src/databao_cli/mcp/`
-- `src/databao_cli/project/`
 
 ## Review goals
 
@@ -37,7 +46,10 @@ Then validate actual implementation under:
 - Are modules aligned with single responsibility?
 - Are CLI concerns separated from business logic?
 - Is the Click command structure clean and discoverable?
-- Are MCP tools properly isolated in `mcp/tools/`?
+- Does `workflows/` stay free of business logic (delegates to `features/`)?
+- Are `features/` functions free of Click dependency (pure business operations)?
+- Is `shared/` limited to cross-feature utilities with no business logic of its own?
+- Are MCP tools properly isolated in their own module?
 - Are UI components reusable and page-specific logic separated?
 - Are errors actionable and surfaced at the right layer?
 
