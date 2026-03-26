@@ -9,6 +9,7 @@ from databao_context_engine import (
     DatasourceType,
 )
 
+from databao_cli.features.datasource.validation import validate_datasource_name
 from databao_cli.shared.context_engine_cli import ClickUserInputCallback
 from databao_cli.shared.project.layout import ProjectLayout
 from databao_cli.workflows.datasource.check import print_connection_check_results
@@ -24,7 +25,13 @@ def add_workflow(project_layout: ProjectLayout, domain: str) -> None:
     click.echo(f"We will guide you to add a new datasource into {domain} domain, at {domain_dir.resolve()}")
 
     datasource_type = _ask_for_datasource_type(plugin_loader.get_all_supported_datasource_types(exclude_file_plugins=True))
-    datasource_name = click.prompt("Datasource name?", type=str)
+
+    while True:
+        datasource_name = click.prompt("Datasource name?", type=str).strip()
+        name_error = validate_datasource_name(datasource_name)
+        if name_error is None:
+            break
+        click.secho(name_error, fg="red", err=True)
 
     overwrite_existing = False
     existing_id = datasource_config_exists(project_layout, domain, datasource_name)
