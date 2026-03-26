@@ -1,0 +1,39 @@
+{
+  "skill_name": "review-architecture",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/review-architecture module:src/databao_cli/mcp/",
+      "expected_output": "A structured report covering the MCP module with Current State, Risks/Gaps, Recommendations, Doc Sync, and Validation Plan.",
+      "assertions": [
+        "Output contains a 'Current State' section with 3-6 bullets",
+        "Output contains a 'Risks / Gaps' section with severity levels (High/Med/Low)",
+        "Output contains a 'Recommendations' section with concrete changes",
+        "Output references docs/architecture.md as a source of truth",
+        "Output covers files under src/databao_cli/mcp/"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/review-architecture module:src/databao_cli/commands/",
+      "expected_output": "A focused review of the command structure and extension patterns.",
+      "assertions": [
+        "Output examines src/databao_cli/commands/ structure",
+        "Output references the Click command registration pattern",
+        "Output provides actionable recommendations",
+        "Output separates immediate actions from longer-term improvements"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/review-architecture full",
+      "expected_output": "A comprehensive architecture review covering all major modules.",
+      "assertions": [
+        "Output reviews multiple modules (commands, mcp, ui, project)",
+        "Output references primary sources of truth (docs/architecture.md, CLAUDE.md)",
+        "Output contains all five report sections (Current State, Risks/Gaps, Recommendations, Doc Sync, Validation Plan)",
+        "Agent does NOT edit any files"
+      ]
+    }
+  ]
+}

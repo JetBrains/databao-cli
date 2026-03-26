@@ -32,3 +32,11 @@ repos:
         entry: uv run mypy
         language: system
         pass_filenames: false
+
+      - id: validate-agent-guidance
+        name: validate-agent-guidance
+        description: Validate agent skills and guidance docs structure
+        entry: scripts/validate-agent-guidance.sh
+        language: script
+        pass_filenames: false
+        files: ^(\.claude/skills/|docs/(python-coding-guidelines|architecture|testing-strategy)\.md|scripts/validate-agent-guidance\.sh)$

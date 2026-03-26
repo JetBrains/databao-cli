@@ -1,0 +1,38 @@
+{
+  "skill_name": "check-coverage",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Check test coverage and fix any gaps.",
+      "expected_output": "Agent runs coverage check, identifies uncovered lines, and proposes meaningful tests.",
+      "assertions": [
+        "Agent runs `make test-cov-check` or equivalent pytest-cov command",
+        "Agent examines the coverage report to identify uncovered lines",
+        "Agent proposes tests for uncovered code rather than adding pragma comments",
+        "Agent does NOT add trivial or empty tests solely to raise the number"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "The CI is failing because test coverage dropped below 80%. Fix it.",
+      "expected_output": "Agent identifies which lines lost coverage, writes targeted tests, and re-verifies.",
+      "assertions": [
+        "Agent runs `make test-cov-check` to reproduce the failure",
+        "Agent identifies specific uncovered lines from the report",
+        "Agent writes tests in the corresponding tests/test_<module>.py file",
+        "Agent re-runs `make test-cov-check` to verify the fix",
+        "Agent does NOT lower the coverage threshold in pyproject.toml"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Some tests are failing after my code change. Also coverage is below threshold.",
+      "expected_output": "Agent fixes test failures FIRST, then addresses coverage gaps.",
+      "assertions": [
+        "Agent fixes existing test failures before addressing coverage",
+        "Agent fixes production code (not tests) when existing tests break",
+        "Agent addresses coverage only after all tests pass"
+      ]
+    }
+  ]
+}

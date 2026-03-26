@@ -6,12 +6,13 @@ from pathlib import Path
 
 import streamlit as st
 
-from databao_cli.ui.app import main
+from databao_cli.features.ui.app import main
 
 logger = logging.getLogger(__name__)
 
 SNOWFLAKE_SECRETS: dict[str, str] = {
     "openai_api_key": "OPENAI_API_KEY",
+    "anthropic_api_key": "ANTHROPIC_API_KEY",
     "snowflake_ds_account": "SNOWFLAKE_DS_ACCOUNT",
     "snowflake_ds_warehouse": "SNOWFLAKE_DS_WAREHOUSE",
     "snowflake_ds_database": "SNOWFLAKE_DS_DATABASE",
@@ -80,5 +81,9 @@ if "--project-dir" not in sys.argv:
 
 if "--read-only-domain" not in sys.argv:
     sys.argv.append("--read-only-domain")
+if "--hide-suggested-questions" not in sys.argv:
+    sys.argv.append("--hide-suggested-questions")
+if "--hide-build-context-hint" not in sys.argv:
+    sys.argv.append("--hide-build-context-hint")
 
 main()

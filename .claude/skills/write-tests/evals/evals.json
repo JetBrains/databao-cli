@@ -1,0 +1,53 @@
+{
+  "skill_name": "write-tests",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Write tests for the new CLI command I just added in src/databao_cli/commands/status.py.",
+      "expected_output": "Agent reads the source module, writes tests in tests/test_status.py using CliRunner, and verifies they pass.",
+      "assertions": [
+        "Agent reads the source module before writing tests",
+        "Agent writes tests in the corresponding tests/test_<module>.py file",
+        "Agent uses click.testing.CliRunner for CLI command testing",
+        "Agent runs `uv run pytest tests/test_status.py -v` or equivalent to verify tests pass",
+        "Agent follows one-behavior-per-test convention"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I fixed a bug where `databao build` crashed on empty project directories. Add a regression test.",
+      "expected_output": "Agent adds a focused regression test for the empty-directory edge case in the build test file.",
+      "assertions": [
+        "Agent reads the bug fix code to understand the behavior change",
+        "Agent adds a test specifically for the empty-directory edge case",
+        "Agent uses the project_layout fixture or tmp_path for filesystem setup",
+        "Agent verifies the test passes with pytest",
+        "Agent does NOT add unrelated tests beyond the regression case"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Coverage dropped after my changes. Write tests to bring it back above 80%.",
+      "expected_output": "Agent runs coverage, identifies uncovered lines, writes targeted tests, and re-verifies coverage.",
+      "assertions": [
+        "Agent runs `make test-cov-check` to identify uncovered lines",
+        "Agent reads source files with missing coverage",
+        "Agent writes tests targeting the specific uncovered lines",
+        "Agent re-runs `make test-cov-check` to verify threshold is met",
+        "Agent does NOT add trivial tests or pragma comments just to raise the number"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Write unit tests for the MCP tool I added in src/databao_cli/mcp/tools/.",
+      "expected_output": "Agent writes tests in tests/test_mcp.py following project conventions, mocking external I/O.",
+      "assertions": [
+        "Agent reads the MCP tool source code first",
+        "Agent adds tests in tests/test_mcp.py",
+        "Agent mocks external I/O (network, subprocess) but not internal modules",
+        "Agent runs tests and verifies they pass",
+        "Agent runs `make check` to verify lint and type-check pass"
+      ]
+    }
+  ]
+}

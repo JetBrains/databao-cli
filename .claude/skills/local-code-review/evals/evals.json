@@ -1,0 +1,51 @@
+{
+  "skill_name": "local-code-review",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/local-code-review branch",
+      "expected_output": "Agent determines branch review scope from git, inspects the actual diff, and returns a findings-first review or an explicit no-findings verdict with file references and a testing note.",
+      "assertions": [
+        "Agent determines scope from the current branch diff against the main branch or merge base",
+        "Agent inspects the actual git diff before broad repository scanning",
+        "Output presents findings first or explicitly states that no findings were found",
+        "Output references files and line numbers for any reported findings",
+        "Output includes a testing gap or validation-performed note"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/local-code-review staged",
+      "expected_output": "Agent performs staged-changes scope discovery from git, stays read-only, and returns severity-ordered findings tied to the staged diff.",
+      "assertions": [
+        "Agent inspects staged changes via git diff --cached",
+        "Agent reads the diff for changed files before reading large surrounding files",
+        "Output orders findings by severity and ties them to concrete behavior risks",
+        "Output includes open questions or assumptions",
+        "Agent does NOT edit any files"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/local-code-review files:src/databao_cli/mcp/",
+      "expected_output": "Agent reviews the specified files/directory, reading them and their recent git history.",
+      "assertions": [
+        "Agent focuses review on files under src/databao_cli/mcp/",
+        "Agent reads the actual file contents or diffs for the specified path",
+        "Output presents findings with file and line references",
+        "Agent does NOT edit any files"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "/local-code-review",
+      "expected_output": "Agent defaults to branch scope when no argument is provided and runs a branch review.",
+      "assertions": [
+        "Agent defaults to reviewing the branch diff against main",
+        "Agent inspects the repo's available tooling before choosing validation commands",
+        "If validation is run, agent uses non-mutating commands",
+        "Agent does NOT run mutating commands such as formatter fixes"
+      ]
+    }
+  ]
+}

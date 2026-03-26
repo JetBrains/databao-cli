@@ -17,8 +17,10 @@ venv/
 ENV/
 env/
 
-# Pytest
+# Pytest / Coverage
 .pytest_cache/
+.coverage
+htmlcov/
 
 # IDE
 .idea/
@@ -36,8 +38,7 @@ build/
 ### Mac OS ###
 .DS_Store
 
-.cursor/debug.log
-.cursor/plans/
+.claude/evals-workspace/
 
 *.code-workspace
 

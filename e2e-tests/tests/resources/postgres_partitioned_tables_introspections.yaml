@@ -1,0 +1,402 @@
+datasource_id: my_postgres.yaml
+datasource_type: postgres
+context_built_at: 2026-03-12 17:37:19.271780
+context:
+  catalogs:
+  - name: test
+    schemas:
+    - name: public
+      tables:
+      - name: all_types_demo
+        columns:
+        - name: id
+          type: integer
+          nullable: false
+          description: null
+          default_expression: nextval('all_types_demo_id_seq'::regclass)
+          generated: null
+          checks: []
+          stats: null
+        - name: small_int_col
+          type: smallint
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: int_col
+          type: integer
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: big_int_col
+          type: bigint
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: numeric_col
+          type: numeric(10,2)
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: real_col
+          type: real
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: double_col
+          type: double precision
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: money_col
+          type: money
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: char_col
+          type: character(5)
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: varchar_col
+          type: character varying(50)
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: text_col
+          type: text
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: boolean_col
+          type: boolean
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: date_col
+          type: date
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: time_col
+          type: time without time zone
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: timetz_col
+          type: time with time zone
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: timestamp_col
+          type: timestamp without time zone
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: timestamptz_col
+          type: timestamp with time zone
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: interval_col
+          type: interval
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: json_col
+          type: json
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: jsonb_col
+          type: jsonb
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: int_array_col
+          type: integer[]
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: text_array_col
+          type: text[]
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: bytea_col
+          type: bytea
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: status_col
+          type: text
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: inet_col
+          type: inet
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: cidr_col
+          type: cidr
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: macaddr_col
+          type: macaddr
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: point_col
+          type: point
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: circle_col
+          type: circle
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: bit_col
+          type: bit(4)
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: bitvarying_col
+          type: bit varying(8)
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: xml_col
+          type: xml
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        samples:
+        - id: 1
+          small_int_col: 10
+          int_col: 1000
+          big_int_col: 10000000000
+          numeric_col: '12345.67'
+          real_col: 3.140000104904175
+          double_col: 3.1415926535
+          money_col: $99.99
+          char_col: ABCDE
+          varchar_col: Hello PostgreSQL
+          text_col: This is a long text column
+          boolean_col: true
+          date_col: 2025-01-01
+          time_col: '12:30:00'
+          timetz_col: 12:30:00+02:00
+          timestamp_col: 2025-01-01 12:30:00
+          timestamptz_col: 2025-01-01 10:30:00+00:00
+          interval_col: 2 days, 3:00:00
+          json_col: '{"key": "value"}'
+          jsonb_col: '{"key": "value"}'
+          int_array_col:
+          - 1
+          - 2
+          - 3
+          text_array_col:
+          - a
+          - b
+          - c
+          bytea_col: !!binary |
+            3q2+7w==
+          status_col: active
+          inet_col: 192.168.1.1
+          cidr_col:
+            netmask: 255.255.255.0
+            network_address: 192.168.0.0
+          macaddr_col: 08:00:2b:01:02:03
+          point_col: asyncpg.pgproto.types.Point((1.0, 2.0))
+          circle_col: ((1.0, 2.0), 5.0)
+          bit_col: <BitString 1010>
+          bitvarying_col: <BitString 1010 10>
+          xml_col: <root><child>value</child></root>
+        partition_info: null
+        description: null
+        kind: table
+        primary_key:
+          name: all_types_demo_pkey
+          columns:
+          - id
+          validated: true
+        unique_constraints: []
+        checks:
+        - name: all_types_demo_status_col_check
+          expression: (status_col = ANY (ARRAY['active'::text, 'inactive'::text, 'pending'::text]))
+          validated: true
+        indexes: []
+        foreign_keys: []
+        stats: null
+      - name: sales
+        columns:
+        - name: id
+          type: integer
+          nullable: false
+          description: null
+          default_expression: nextval('sales_id_seq'::regclass)
+          generated: null
+          checks: []
+          stats: null
+        - name: sale_date
+          type: date
+          nullable: false
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: amount
+          type: numeric(10,2)
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: product_name
+          type: character varying(100)
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        - name: region
+          type: character varying(50)
+          nullable: true
+          description: null
+          default_expression: null
+          generated: null
+          checks: []
+          stats: null
+        samples:
+        - id: 1
+          sale_date: 2024-01-15
+          amount: '150.00'
+          product_name: Product A
+          region: North
+        - id: 2
+          sale_date: 2024-05-20
+          amount: '250.50'
+          product_name: Product B
+          region: South
+        - id: 3
+          sale_date: 2024-08-10
+          amount: '175.75'
+          product_name: Product C
+          region: East
+        partition_info:
+          meta:
+            partitioning_strategy: range partitioned
+            columns_in_partition_key:
+            - sale_date
+          partition_tables:
+          - sales_2024_q1
+          - sales_2024_q2
+          - sales_2024_q3
+        description: null
+        kind: table
+        primary_key: null
+        unique_constraints: []
+        checks: []
+        indexes: []
+        foreign_keys: []
+        stats: null
+      description: null
+    description: null

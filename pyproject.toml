@@ -1,6 +1,6 @@
 [project]
-name = "databao-cli"
-version = "0.1.0"
+name = "databao"
+dynamic = ["version"]  # Based on the git tag
 description = ""
 readme = "README.md"
 requires-python = ">=3.11"
@@ -8,7 +8,7 @@ dependencies = [
     "click>=8.2.1,<9.0.0",
     "databao-context-engine[snowflake]~=0.6.0",
     "prettytable>=3.10.0",
-    "databao-agent~=0.1.4.dev5",
+    "databao-agent~=0.2.0",
     "streamlit[snowflake]>=1.53.0",
     "uuid6>=2024.7.10",
     "pyyaml>=6.0",
@@ -40,8 +40,18 @@ pdf = [
 databao = "databao_cli.__main__:cli"
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "uv-dynamic-versioning"]
 build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "uv-dynamic-versioning"
+
+[tool.uv-dynamic-versioning]
+# Use `git tag -a v0.0.0 -m "v0.0.0"` to create a tag.
+vcs = "git"
+style = "pep440"
+fallback-version = "0.0.0"
+bump = true
 
 [tool.hatch.metadata]
 allow-direct-references = true
@@ -49,8 +59,11 @@ allow-direct-references = true
 [tool.hatch.build.targets.wheel]
 packages = ["src/databao_cli"]
 
+[tool.uv]
+cache-keys = [{ file = "pyproject.toml" }, { git = { commit = true, tags = true }}]
+
 [tool.uv.workspace]
-members = ["examples/*"]
+members = []
 
 [dependency-groups]
 dev = [
@@ -59,6 +72,8 @@ dev = [
     "ruff>=0.9.0,<1.0.0",
     "mypy>=1.18.2",
     "types-PyYAML>=6.0.12.20250915",
+    "types-requests>=2.32.4.20260107",
+    "pytest-cov>=6.0,<7.0",
 ]
 
 e2e-tests = [
@@ -96,7 +111,9 @@ select = [
     # Prefer absolute imports over relative ones
     "TID252",
 ]
-ignore = []
+ignore = [
+    "RUF001",  # Allow ambiguous unicode characters (emojis in UI)
+]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101"]  # assert is standard in pytest
@@ -125,3 +142,24 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = ["databao.agent.integrations.dce.*"]
 disable_error_code = ["no-any-return"]
+
+[tool.coverage.run]
+source = ["src/databao_cli"]
+omit = [
+    "src/databao_cli/ui/*",
+    "src/databao_cli/__main__.py",
+]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+skip_empty = true
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.",
+    "if TYPE_CHECKING:",
+    "@overload",
+]
+
+[tool.coverage.html]
+directory = "htmlcov"

@@ -1,0 +1,37 @@
+{
+  "skill_name": "update-pr",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Push my latest changes to the PR. I'm on branch andrei.gasparian/DBA-200-add-logging.",
+      "expected_output": "Agent runs quality gates, stages changes, commits with [DBA-200] prefix, and pushes to the existing branch.",
+      "assertions": [
+        "Agent runs make check before committing",
+        "Agent runs make test before committing",
+        "Agent commits with a message prefixed by [DBA-200]",
+        "Agent stages specific files, not git add -A",
+        "Agent pushes to the current branch"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I fixed the review comments, just push it.",
+      "expected_output": "Agent stages the changes, commits with ticket prefix from branch name, and pushes.",
+      "assertions": [
+        "Agent runs quality gates before committing",
+        "Agent extracts ticket ID from branch name if present",
+        "Agent pushes without creating a new PR"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Update the PR with my changes. I'm on main.",
+      "expected_output": "Agent detects it is on main and runs the create-branch skill before continuing.",
+      "assertions": [
+        "Agent detects that the current branch is main",
+        "Agent does NOT push to main",
+        "Agent runs the create-branch skill to create a feature branch"
+      ]
+    }
+  ]
+}

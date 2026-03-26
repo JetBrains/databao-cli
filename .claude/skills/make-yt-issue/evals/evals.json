@@ -1,0 +1,79 @@
+{
+  "skill_name": "make-yt-issue",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I want to add a new 'export' CLI command for exporting project data.",
+      "expected_output": "Agent asks whether the user has a YouTrack ticket, and when told no, drafts an issue from the description, waits for approval, creates it, and moves it to Develop.",
+      "assertions": [
+        "Agent asks whether the user has an existing YouTrack ticket",
+        "Agent drafts a summary, description, and type from the conversation context",
+        "Agent waits for explicit user approval before calling create_issue",
+        "Agent reports the created issue ID (e.g., DBA-XXX) after creation",
+        "Agent moves the issue to Develop state using update_issue"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I need to fix a bug in the status command. The ticket is DBA-200.",
+      "expected_output": "Agent fetches DBA-200 with get_issue, shows the summary, confirms it matches the work, and moves it to Develop.",
+      "assertions": [
+        "Agent calls get_issue to validate that DBA-200 exists",
+        "Agent displays the issue summary for user confirmation",
+        "Agent does NOT create a new issue when the ticket already exists",
+        "Agent moves the issue to Develop state after confirmation"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Let's work on ticket 175.",
+      "expected_output": "Agent expands bare number to DBA-175, fetches the issue, confirms with the user, and transitions to Develop.",
+      "assertions": [
+        "Agent expands bare number 175 to DBA-175",
+        "Agent calls get_issue to validate the expanded ticket ID",
+        "Agent shows the issue summary and asks for confirmation before proceeding"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Create a YouTrack ticket for adding a new 'config' CLI command that lets users manage project settings.",
+      "expected_output": "Agent recognizes explicit creation request, drafts issue details, waits for approval, then creates via MCP.",
+      "assertions": [
+        "Agent does NOT ask whether a ticket exists — user explicitly wants to create",
+        "Agent proposes a summary, description, and type before creating",
+        "Agent waits for explicit user approval before calling create_issue",
+        "Agent reports the created issue ID (e.g., DBA-XXX) after creation"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "I want to refactor the MCP tool registry but I don't have a ticket. Don't create one, I'll do it later.",
+      "expected_output": "Agent respects the user's decision and does not create an issue.",
+      "assertions": [
+        "Agent does NOT call create_issue when the user declines",
+        "Agent acknowledges the user's decision without pushing back"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Start work on DBA-999. I think that ticket was deleted.",
+      "expected_output": "Agent tries to fetch DBA-999, reports it cannot be found, and offers to create a new one.",
+      "assertions": [
+        "Agent calls get_issue for DBA-999",
+        "Agent informs the user the ticket could not be loaded",
+        "Agent offers to create a new issue as a fallback",
+        "Agent does NOT silently proceed without a valid ticket"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "I want to start working on something but there's no ticket yet. Can you make one?",
+      "expected_output": "Agent asks for details to populate the issue, then proposes and creates after approval.",
+      "assertions": [
+        "Agent asks the user for issue details (summary, description, or type)",
+        "Agent does NOT create an issue without gathering sufficient information",
+        "Agent presents the proposed issue for approval before creating"
+      ]
+    }
+  ]
+}
