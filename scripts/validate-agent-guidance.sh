@@ -98,7 +98,7 @@ fi
 # ---------- 5. Eval files validation ----------
 
 # Skills exempt from requiring evals (meta-skills that evaluate other skills)
-EVAL_EXEMPT_SKILLS="eval-skills"
+EVAL_EXEMPT_SKILLS="eval-skills autosteer"
 
 for skill_dir in "$SKILLS_DIR"/*/; do
   skill_name="$(basename "$skill_dir")"
