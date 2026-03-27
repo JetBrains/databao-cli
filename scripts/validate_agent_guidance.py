@@ -70,7 +70,10 @@ class ClaudeDir:
     @cached_property
     def skill_dirs(self) -> list[Path]:
         """Sorted list of every skill directory under .claude/skills/."""
-        return [d for d in sorted((self.path / "skills").iterdir()) if d.is_dir()]
+        skills_dir = self.path / "skills"
+        if not skills_dir.is_dir():
+            return []
+        return [d for d in sorted(skills_dir.iterdir()) if d.is_dir()]
 
     @cached_property
     def skill_files(self) -> list[MdFile]:
