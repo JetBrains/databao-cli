@@ -51,6 +51,9 @@ Present the user with:
 
 **Wait for explicit user confirmation before proceeding.**
 
+> **Autosteer exception**: if autosteer mode is active, skip this pause
+> and proceed directly to pushing and creating the PR.
+
 ### 6. Push and create PR
 
 - Push with `-u` flag: `git push -u origin <branch>`

@@ -14,8 +14,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from databao_cli.ui.models.chat_session import ChatMessage, ChatSession
-from databao_cli.ui.services.query_executor import (
+from databao_cli.features.ui.models.chat_session import ChatMessage, ChatSession
+from databao_cli.features.ui.services.query_executor import (
     QueryResult,
     QueryThread,
     check_query_completion,
@@ -225,7 +225,7 @@ class TestThreadStateTransitionRaces:
 class TestRapidSequentialOperations:
     """Tests for rapid sequential operations."""
 
-    @patch("databao_cli.ui.services.query_executor.get_script_run_ctx")
+    @patch("databao_cli.features.ui.services.query_executor.get_script_run_ctx")
     def test_rapid_stop_start_stop(self, mock_ctx: MagicMock, chat_session: ChatSession, mock_writer: MagicMock) -> None:
         """Quick stop→start→stop sequence should work correctly."""
         mock_ctx.return_value = None
@@ -268,7 +268,7 @@ class TestRapidSequentialOperations:
         stop_query(chat_session)
         assert chat_session.query_status == "idle"
 
-    @patch("databao_cli.ui.services.query_executor.get_script_run_ctx")
+    @patch("databao_cli.features.ui.services.query_executor.get_script_run_ctx")
     def test_start_immediately_after_stop(
         self, mock_ctx: MagicMock, chat_session: ChatSession, mock_writer: MagicMock
     ) -> None:

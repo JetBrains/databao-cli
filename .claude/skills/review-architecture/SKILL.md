@@ -34,13 +34,6 @@ Review in this order:
 4. `CLAUDE.md`
 5. `README.md` (CLI usage and user-facing workflows)
 
-Then validate actual implementation under:
-
-- `src/databao_cli/commands/`
-- `src/databao_cli/ui/`
-- `src/databao_cli/mcp/`
-- `src/databao_cli/project/`
-
 ## Review goals
 
 - Confirm boundaries are clear and responsibilities are separated.
@@ -53,7 +46,10 @@ Then validate actual implementation under:
 - Are modules aligned with single responsibility?
 - Are CLI concerns separated from business logic?
 - Is the Click command structure clean and discoverable?
-- Are MCP tools properly isolated in `mcp/tools/`?
+- Does `workflows/` stay free of business logic (delegates to `features/`)?
+- Are `features/` functions free of Click dependency (pure business operations)?
+- Is `shared/` limited to cross-feature utilities with no business logic of its own?
+- Are MCP tools properly isolated in their own module?
 - Are UI components reusable and page-specific logic separated?
 - Are errors actionable and surfaced at the right layer?
 
