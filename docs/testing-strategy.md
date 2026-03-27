@@ -41,18 +41,6 @@ Run the smallest relevant slice first, then broaden before finalizing:
 - Add a regression test for every bug fix when feasible.
 - Test files mirror source modules (e.g., `test_init.py` tests `commands/init.py`).
 
-## Make Targets
-
-| Target         | Command                                              | What it does               |
-|----------------|------------------------------------------------------|----------------------------|
-| `make setup`        | `uv sync --dev` + pre-commit + verify                | One-time environment setup        |
-| `make check`        | `uv run pre-commit run --all-files`                  | Ruff lint + mypy                  |
-| `make test`         | `uv run pytest tests/ -v` (sources `.env` if present)| Unit tests                        |
-| `make test-cov`     | `uv run pytest ... --cov`                            | Coverage report (no threshold)    |
-| `make test-cov-check`| `uv run pytest ... --cov` (threshold from `pyproject.toml`)| Coverage enforcement              |
-| `make lint-skills`   | `scripts/validate-agent-guidance.sh`                 | Static checks on agent guidance   |
-| `make smoke-skills`  | `scripts/smoke-test-skills.sh`                       | Functional skill verification     |
-
 ## What Does NOT Run in CI / Pre-commit
 
 Everything above (lint, type-check, unit tests, skill validation) is
