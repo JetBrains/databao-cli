@@ -23,6 +23,14 @@ When reviewing a PR, check each of the following areas and flag violations.
     include the `[DBA-XXX]` prefix.
 - Do NOT require or flag a missing `[DBA-XXX]` prefix when no ticket exists.
 
+### Code Correctness
+
+Ensure the coding guidelines specified under `docs/python-coding-guidelines.md` are followed.
+
+### Architecture
+
+Understand the project architecture described in `docs/architecture.md` and enforce consistency.
+
 ### Test Coverage
 
 - If the PR changes behavior in files under `src/databao_cli/`, check that
@@ -48,36 +56,6 @@ When reviewing a PR, check each of the following areas and flag violations.
 - If a PR adds or modifies an MCP tool, check that docstrings describe
   parameters and return values.
 - Flag PRs with user-facing changes but no documentation updates.
-
-### Code Correctness (from project coding guidelines)
-
-- **Error handling**: No blanket `except Exception` / `except BaseException`
-  without re-raise, except at MCP tool boundaries where structured error JSON
-  is returned. Catch narrow, specific exceptions.
-- **CLI layer**: `__main__.py` should contain only command registrations and
-  delegation to `*_impl()` functions — no business logic.
-- **Type hints**: Public functions must have full type signatures. Use
-  `X | None` not `Optional[X]`.
-- **Imports**: No import-time side effects. Heavy imports (Streamlit, ML libs)
-  must be lazy (inside functions).
-- **Data modeling**: Use dataclasses for internal state, Pydantic for
-  validation boundaries (API/MCP). No raw `dict` for structured data passed
-  between functions.
-- **Path handling**: Use `pathlib.Path`, not `os.path`.
-- **User output**: CLI uses `click.echo` / `click.secho`, not `print`.
-- **Mutable defaults**: Must use `field(default_factory=...)`, never mutable
-  literals as defaults.
-
-### Architecture
-
-- CLI commands delegate to `*_impl()` in their respective modules under
-  `commands/`. Flag logic creeping into `__main__.py`.
-- MCP tools live in `src/databao_cli/mcp/tools/` with a
-  `register(mcp, context)` pattern. Flag tools defined outside this structure.
-- New commands must validate project state early (for example via
-  `find_project(...)`, `_get_project_or_exit(...)`, or `ProjectLayout` +
-  `databao_project_status()` as appropriate for the command) before doing work.
-- Flag broad exception swallowing that hides failure modes.
 
 ### Dependencies and Packaging
 
