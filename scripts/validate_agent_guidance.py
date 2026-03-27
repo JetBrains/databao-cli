@@ -12,6 +12,8 @@ from dataclasses import dataclass
 from functools import cached_property
 from pathlib import Path
 
+import yaml
+
 _EVAL_EXEMPT_SKILLS: frozenset[str] = frozenset({"eval-skills"})
 
 
@@ -21,7 +23,7 @@ class MdFile:
 
     @cached_property
     def _content(self) -> str:
-        return self.path.read_text()
+        return self.path.read_text(encoding="utf-8")
 
     @cached_property
     def make_targets(self) -> frozenset[str]:
@@ -47,16 +49,14 @@ class MdFile:
 
     @cached_property
     def frontmatter(self) -> dict[str, str]:
-        """Parse YAML-style frontmatter between leading --- delimiters into a flat dict."""
-        m = re.match(r"^---\n(.*?)\n---\n", self._content, re.DOTALL)
+        """Parse YAML frontmatter between leading --- delimiters into a flat dict."""
+        m = re.match(r"^---\r?\n(.*?)\r?\n---(?:\r?\n|$)", self._content, re.DOTALL)
         if not m:
             return {}
-        result: dict[str, str] = {}
-        for line in m.group(1).splitlines():
-            if ": " in line:
-                key, _, value = line.partition(": ")
-                result[key.strip()] = value.strip()
-        return result
+        parsed = yaml.safe_load(m.group(1))
+        if not isinstance(parsed, dict):
+            return {}
+        return {str(k): str(v) for k, v in parsed.items()}
 
 
 @dataclass
@@ -128,11 +128,11 @@ def _make_target_exists(target: str, makefile_content: str) -> bool:
 
 
 def validate_make_targets(claude: ClaudeDir) -> list[str]:
-    errors = []
+    errors: list[str] = []
     makefile = claude.root / "Makefile"
     if not makefile.is_file():
         return errors
-    makefile_content = makefile.read_text()
+    makefile_content = makefile.read_text(encoding="utf-8")
 
     for md in claude.skill_files:
         skill_name = md.path.parent.name
@@ -170,7 +170,7 @@ def validate_scripts(claude: ClaudeDir) -> list[str]:
 
 
 def validate_doc_references(claude: ClaudeDir) -> list[str]:
-    errors = []
+    errors: list[str] = []
     claude_file = claude.root / "CLAUDE.md"
     if not claude_file.is_file():
         return errors
@@ -194,7 +194,7 @@ def validate_eval_files(
 
         if eval_file.is_file():
             try:
-                json.loads(eval_file.read_text())
+                json.loads(eval_file.read_text(encoding="utf-8"))
             except json.JSONDecodeError as e:
                 errors.append(f"{skill_name}/evals/evals.json is not valid JSON: {e}")
         elif skill_name not in exempt_skills:
