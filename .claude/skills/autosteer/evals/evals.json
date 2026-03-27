@@ -1,0 +1,44 @@
+{
+  "skill_name": "autosteer",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/autosteer DBA-300",
+      "expected_output": "Agent fetches the ticket, moves it to Develop, then runs the full pipeline (implement, validate, review, branch, commit, PR, YouTrack update) without asking for user confirmation between phases.",
+      "assertions": [
+        "Agent fetches the ticket with get_issue",
+        "Agent moves the ticket to Develop state",
+        "Agent does NOT pause for user confirmation between phases",
+        "Agent runs make check and make test before committing",
+        "Agent creates a feature branch, not committing to main",
+        "Agent creates a PR via gh pr create",
+        "Agent moves the ticket to Review state after PR creation",
+        "Agent reports the PR URL at the end"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/autosteer Add a --verbose flag to the status command",
+      "expected_output": "Agent creates a YouTrack issue from the description, then runs the full pipeline autonomously.",
+      "assertions": [
+        "Agent creates a YouTrack issue with a summary derived from the task description",
+        "Agent does NOT ask for approval of the issue draft — creates it directly",
+        "Agent proceeds through all phases without pausing",
+        "Agent runs quality gates (make check, make test, make test-cov-check)",
+        "Agent creates a branch and PR"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/autosteer DBA-301 (assume make test fails on first run)",
+      "expected_output": "Agent detects the test failure, attempts to fix the code, and re-runs tests. If still failing after two attempts, stops and reports.",
+      "assertions": [
+        "Agent does NOT skip the failing tests",
+        "Agent attempts to fix the failure",
+        "Agent re-runs make test after fixing",
+        "Agent stops and reports if unable to fix after two attempts",
+        "Agent does NOT create a PR with failing tests"
+      ]
+    }
+  ]
+}
