@@ -39,4 +39,4 @@ repos:
         entry: uv run python scripts/validate_agent_guidance.py
         language: system
         pass_filenames: false
-        files: ^(\.claude/skills/|docs/(python-coding-guidelines|architecture|testing-strategy)\.md|scripts/validate_agent_guidance\.py)$
+        files: ^(\.claude/skills/|CLAUDE\.md|docs/(python-coding-guidelines|architecture|testing-strategy)\.md|scripts/validate_agent_guidance\.py)$
