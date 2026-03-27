@@ -14,7 +14,7 @@ from pathlib import Path
 
 import yaml
 
-_EVAL_EXEMPT_SKILLS: frozenset[str] = frozenset({"eval-skills"})
+_EVAL_EXEMPT_SKILLS: frozenset[str] = frozenset({"eval-skills", "autosteer"})
 
 
 @dataclass
