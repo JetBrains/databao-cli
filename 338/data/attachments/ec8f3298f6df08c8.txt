@@ -1,0 +1,33 @@
+Project initialized successfully at /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmpc1tvhbbttest_databao_build_snowflake_datasource_from_init_config
+
+Do you want to configure a domain now? [y/N]: Y
+Y
+We will guide you to add a new datasource into root domain, at /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmpc1tvhbbttest_databao_build_snowflake_datasource_from_init_config/databao/domains/root
+What type of datasource do you want to add? (bigquery, dbt, duckdb, mysql, parquet, postgres, snowflake, sqlite): snowflake
+snowflake
+Selected type: snowflake
+Datasource name?: my_test_snowflake
+my_test_snowflake
+connection.account?: {{ env_var("SNOWFLAKE_ACCOUNT") }}
+connection.warehouse? (Optional): {{ env_var("SNOWFLAKE_WAREHOUSE") }}
+{{ env_var("SNOWFLAKE_WAREHOUSE") }}
+connection.database? (Optional): {{ env_var("SNOWFLAKE_DATABASE") }}
+{{ env_var("SNOWFLAKE_DATABASE") }}
+connection.user? (Optional): {{ env_var("SNOWFLAKE_TEST_USER") }}
+connection.role? (Optional): 
+
+connection.auth.type? (SnowflakeKeyPairAuth, SnowflakePasswordAuth, SnowflakeSSOAuth): SnowflakeKeyPairAuth
+SnowflakeKeyPairAuth
+connection.auth.private_key_file? (Optional): 
+connection.auth.private_key_file_pwd? (Optional): 
+connection.auth.private_key? (Optional): 
+
+We've created a new config file for your datasource at: /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmpc1tvhbbttest_databao_build_snowflake_datasource_from_init_config/databao/domains/root/src/my_test_snowflake.yaml
+
+Do you want to check the connection to this new datasource? [y/N]: y
+y
+Validating datasource(s): [DatasourceId(datasource_path='my_test_snowflake', config_file_suffix='.yaml')]
+root:my_test_snowflake.yaml: Valid
+
+Do you want to add more datasources? [y/N]: N
+N
