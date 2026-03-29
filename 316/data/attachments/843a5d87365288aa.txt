@@ -1,0 +1,11 @@
+No existing Ollama installation detected. We will download and install Ollama.
+Downloading https://github.com/ollama/ollama/releases/download/v0.13.0/ollama-linux-amd64.tgz to /tmp/ollama-download-et_m1avp/ollama-linux-amd64.tgz
+Verified SHA256 for ollama-linux-amd64.tgz
+Ollama installed at /home/runner/.dce/ollama/bin/ollama
+Ollama server not running. Starting Ollama server...
+Started Ollama server
+Ollama model nomic-embed-text:v1.5 not found locally. Pulling it (this may take several minutes)...
+Ollama model nomic-embed-text:v1.5 pulled successfully
+Found datasource of type "duckdb" with name test duckdb conn
+Exported result to /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmpf_an7_aotest_databao_build_duckdb/databao/domains/root/output/test duckdb conn.yaml
+Build complete. Processed 1 datasources.
