@@ -1159,13 +1159,13 @@ requires-dist = [
     { name = "adbc-driver-manager", specifier = ">=1.10.0" },
     { name = "adbc-driver-snowflake", specifier = ">=1.10.0" },
     { name = "click", specifier = ">=8.2.1,<9.0.0" },
-    { name = "databao-agent", specifier = "~=0.2.0" },
+    { name = "databao-agent", specifier = "~=0.2.1.dev1" },
     { name = "databao-context-engine", extras = ["athena"], marker = "extra == 'athena'" },
     { name = "databao-context-engine", extras = ["bigquery"], marker = "extra == 'bigquery'" },
     { name = "databao-context-engine", extras = ["clickhouse"], marker = "extra == 'clickhouse'" },
     { name = "databao-context-engine", extras = ["mssql"], marker = "extra == 'mssql'" },
     { name = "databao-context-engine", extras = ["pdf"], marker = "extra == 'pdf'" },
-    { name = "databao-context-engine", extras = ["snowflake"], specifier = "~=0.6.0" },
+    { name = "databao-context-engine", extras = ["snowflake"], specifier = "~=0.7.0" },
     { name = "fastmcp", specifier = ">=2.0.0" },
     { name = "nh3", specifier = ">=0.2.15" },
     { name = "prettytable", specifier = ">=3.10.0" },
@@ -1197,7 +1197,7 @@ e2e-tests = [
 
 [[package]]
 name = "databao-agent"
-version = "0.2.0"
+version = "0.2.1.dev1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "claude-agent-sdk" },
@@ -1225,14 +1225,14 @@ dependencies = [
     { name = "tabulate" },
     { name = "watchdog" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/02/d4/4879100915a4b43b567b2522d5a44635de3c8f8cab24a9fb861343cb4ec4/databao_agent-0.2.0.tar.gz", hash = "sha256:9f4e86c9affcae37fd47a4abcc182a4a0e6b2a08a6a4658887fd33b6b08ecfbc", size = 1031892, upload-time = "2026-03-12T13:09:01.207Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/2b/cf/fbaa3767c6b918a69ac29ff457b54e320a2423eb3539d91a134644a9d72a/databao_agent-0.2.1.dev1.tar.gz", hash = "sha256:61f572922a25356f27ae834e9f4c07a10d66e930973159e2a6a4d3b7d2fcede5", size = 1032011, upload-time = "2026-03-20T10:59:10.42Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/46/81/754413b4d56e7e2f9ab66f626de99f27bba4a7c47f220e50dffb1541f6c7/databao_agent-0.2.0-py3-none-any.whl", hash = "sha256:63417d2b7cffb81d23f27f52fa89f731499c8a53ea72f48e90052ca5a694151a", size = 1072737, upload-time = "2026-03-12T13:08:59.799Z" },
+    { url = "https://files.pythonhosted.org/packages/3d/d8/d4178b051631cddd0499cde7a565eea7f4272514d72d786b4a42b43ddd7b/databao_agent-0.2.1.dev1-py3-none-any.whl", hash = "sha256:7d95e4829fa51610b0a85e5c732867ce30d14305327bc98ad9ef83cee4f855b2", size = 1072789, upload-time = "2026-03-20T10:59:09.065Z" },
 ]
 
 [[package]]
 name = "databao-context-engine"
-version = "0.6.2"
+version = "0.7.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -1244,10 +1244,11 @@ dependencies = [
     { name = "pyyaml" },
     { name = "requests" },
     { name = "sqlparse" },
+    { name = "xxhash" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/62/53/6db5c176cf7c3a5df575fa8800477a0a48d320709e398f4d5ba0dd20c65d/databao_context_engine-0.6.2.tar.gz", hash = "sha256:cd0d816e4ca4e32270bdb8346dbab76b4ac3e2a0c41401225974de2a8167c60e", size = 119996, upload-time = "2026-03-12T11:54:32.965Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c4/72/040aa0c0c1fa2302bc350ae0dc18cd82dadad9bcab1b23d2bb2b0491b6a8/databao_context_engine-0.7.0.tar.gz", hash = "sha256:447e7c1cf6bbe899a125296e2362838cc7e5bd4770cb1d9bf682c9c12bac20aa", size = 124182, upload-time = "2026-03-18T09:54:43.204Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/12/fe/74957094a60f047e2c10c7cb2d34ff0c41a42802b5ef2742654e405932dd/databao_context_engine-0.6.2-py3-none-any.whl", hash = "sha256:33bfd668b9bdb9dda80596f248a38ac538a04d1093161ec4d4b8f9e0208d7ee4", size = 189234, upload-time = "2026-03-12T11:54:31.883Z" },
+    { url = "https://files.pythonhosted.org/packages/27/fd/a271eac8b1486f41a4d40b89aa7212f8f1581b9c97b00e9b60b35ca5a32c/databao_context_engine-0.7.0-py3-none-any.whl", hash = "sha256:d4521c63980e87a9906e890424244e672a0bdc953d13c9e484152dd2a8612fd5", size = 195832, upload-time = "2026-03-18T09:54:42.059Z" },
 ]
 
 [package.optional-dependencies]

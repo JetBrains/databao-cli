@@ -1,4 +1,4 @@
-from databao_context_engine import ChunkEmbeddingMode, DatabaoContextDomainManager, DatasourceId, IndexDatasourceResult
+from databao_context_engine import DatabaoContextDomainManager, DatasourceId, IndexDatasourceResult
 
 from databao_cli.shared.project.layout import ProjectLayout
 
@@ -11,7 +11,7 @@ def index_impl(
     datasource_ids = [DatasourceId.from_string_repr(p) for p in datasources_config_files] if datasources_config_files else None
 
     results: list[IndexDatasourceResult] = DatabaoContextDomainManager(domain_dir=dce_project_dir).index_built_contexts(
-        datasource_ids=datasource_ids, chunk_embedding_mode=ChunkEmbeddingMode.EMBEDDABLE_TEXT_ONLY
+        datasource_ids=datasource_ids
     )
 
     return results
