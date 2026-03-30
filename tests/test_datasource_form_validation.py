@@ -129,6 +129,28 @@ class TestUnionPropertyValidation:
         assert len(errors) == 1
         assert "token" in errors[0]
 
+    def test_multi_variant_union_errors_when_type_unknown(self) -> None:
+        """When multiple variants exist and type can't be inferred, emit an error."""
+
+        class VariantA:
+            pass
+
+        class VariantB:
+            pass
+
+        union = ConfigUnionPropertyDefinition(
+            property_key="auth",
+            types=(VariantA, VariantB),
+            type_properties={
+                VariantA: [_single("username", required=True)],
+                VariantB: [_single("token", required=True)],
+            },
+        )
+        fields = _fields(union)
+        errors = validate_config_fields(fields, {"auth": {}})
+        assert len(errors) == 1
+        assert "could not be determined" in errors[0]
+
 
 class TestHostValidation:
     """Host field validation within config fields."""

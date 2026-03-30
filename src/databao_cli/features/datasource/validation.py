@@ -46,7 +46,9 @@ def validate_datasource_name(name: str) -> str | None:
     segments = name.split("/")
     for segment in segments:
         if not segment:
-            return "Datasource name must not contain empty path segments (double slashes)."
+            return (
+                "Datasource name must not contain empty path segments (for example, leading, trailing, or repeated slashes)."
+            )
 
     # Validate folder segments (all but the last).
     for segment in segments[:-1]:

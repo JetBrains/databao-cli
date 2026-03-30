@@ -69,6 +69,11 @@ def _validate_fields_recursive(
                 sole_type = prop.types[0]
                 nested_props = prop.type_properties.get(sole_type, [])
                 errors.extend(_validate_fields_recursive(nested_props, union_vals, f"{full_key}."))
+            elif len(prop.types) > 1:
+                errors.append(
+                    f"{full_key}: union type could not be determined; "
+                    "select a configuration variant and provide required fields"
+                )
             continue
 
         if isinstance(prop, ConfigSinglePropertyDefinition):
