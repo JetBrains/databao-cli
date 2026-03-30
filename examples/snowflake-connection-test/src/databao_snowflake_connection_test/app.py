@@ -19,8 +19,11 @@ import os
 from pathlib import Path
 
 import databao.agent as bao
+import snowflake
 import streamlit as st
 from databao_context_engine import SnowflakeConnectionProperties, SnowflakeOAuthAuth
+from snowflake.sqlalchemy import URL
+from sqlalchemy import create_engine, text
 
 logger = logging.getLogger(__name__)
 
@@ -117,30 +120,61 @@ def _test_connection(
     else:
         connect_kwargs["authenticator"] = "externalbrowser"
 
-    # snowflake.connector.paramstyle = "qmark"
-    # conn = snowflake.connector.connect(**connect_kwargs)
-    # try:
-    #     cursor = conn.cursor()
-    #     cursor.execute("SELECT 1")
-    #     result = cursor.fetchone()
-    #     if result is None or result[0] != 1:
-    #         return f"Unexpected result: {result}"
-    #     return f"SELECT 1 returned: {result[0]}"
-    # finally:
-    #     conn.close()
+    snowflake.connector.paramstyle = "qmark"
+    conn = snowflake.connector.connect(**connect_kwargs)
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1")
+        result = cursor.fetchone()
+        if result is None or result[0] != 1:
+            return f"Unexpected result: {result}"
+        return f"SELECT 1 returned: {result[0]}"
+    finally:
+        conn.close()
 
-    domain = bao.domain()
-    domain.add_db(db = SnowflakeConnectionProperties(
-        account = account,
-        warehouse = warehouse,
-        database = database,
-        auth=SnowflakeOAuthAuth(token=_get_sis_token()),
-    ))
+    # domain = bao.domain()
+    # domain.add_db(db = SnowflakeConnectionProperties(
+    #     account = account,
+    #     warehouse = warehouse,
+    #     database = database,
+    #     auth=SnowflakeOAuthAuth(token=_get_sis_token()),
+    # ))
+    #
+    # agent = bao.agent(domain=domain, name="my_agent", llm_config=bao.LLMConfig(name="gpt-5.1", temperature=0))
+    #
+    # agent.thread().ask("How many accidents occurred in total?")
 
-    agent = bao.agent(domain=domain, name="my_agent", llm_config=bao.LLMConfig(name="gpt-5.1", temperature=0))
 
-    agent.thread().ask("How many accidents occurred in total?")
+def _test_connection_sqlalchemy(
+    account: str,
+    warehouse: str | None,
+    database: str | None,
+) -> str:
+    """Connect to Snowflake via SQLAlchemy, run SELECT 1, return a status message."""
+    connect_args: dict[str, object] = {}
 
+    if _is_running_in_snowflake():
+        connect_args["authenticator"] = "oauth"
+        connect_args["token"] = _get_sis_token()
+        if host := _get_snowflake_host():
+            connect_args["host"] = host
+    else:
+        connect_args["authenticator"] = "externalbrowser"
+
+    url = URL(
+        account=account,
+        warehouse=warehouse,
+        database=database,
+    )
+    engine = create_engine(url, connect_args=connect_args)
+    try:
+        with engine.connect() as conn:
+            result = conn.execute(text("SELECT 1")).fetchone()
+        if result is None or result[0] != 1:
+            return f"Unexpected result: {result}"
+        return f"SELECT 1 returned: {result[0]}"
+    finally:
+        engine.dispose()
 
 
 _ensure_adbc_driver()
@@ -174,6 +208,14 @@ def main() -> None:
                 st.success(f"Connection successful. {message}")
             except Exception as exc:
                 st.error(f"Connection failed: {exc}")
+
+    if st.button("Test Connection (SQLAlchemy)"):
+        with st.spinner("Connecting via SQLAlchemy..."):
+            try:
+                message = _test_connection_sqlalchemy(account, warehouse or None, database or None)
+                st.success(f"SQLAlchemy connection successful. {message}")
+            except Exception as exc:
+                st.error(f"SQLAlchemy connection failed: {exc}")
 
 
 main()

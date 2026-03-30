@@ -9,6 +9,7 @@ dependencies = [
     "streamlit[snowflake]>=1.53.0",
     "adbc-driver-snowflake>=1.10.0",
     "adbc-driver-manager>=1.10.0",
+    "snowflake-sqlalchemy>=1.6.0",
 ]
 
 [tool.uv]
