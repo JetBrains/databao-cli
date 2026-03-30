@@ -23,9 +23,11 @@ from typing import Any
 import snowflake.connector
 import streamlit as st
 from databao.agent.databases.snowflake_adapter import SnowflakeAdapter
+from databao_context_engine import SnowflakeConnectionProperties, SnowflakeKeyPairAuth, SnowflakeOAuthAuth
 from databao_context_engine.plugins.databases.snowflake.snowflake_introspector import (
     SnowflakeIntrospector,
 )
+import databao.agent as bao
 
 logger = logging.getLogger(__name__)
 
@@ -176,17 +178,27 @@ def _test_connection(
     else:
         connect_kwargs["authenticator"] = "externalbrowser"
 
-    snowflake.connector.paramstyle = "qmark"
-    conn = snowflake.connector.connect(**connect_kwargs)
-    try:
-        cursor = conn.cursor()
-        cursor.execute("SELECT 1")
-        result = cursor.fetchone()
-        if result is None or result[0] != 1:
-            return f"Unexpected result: {result}"
-        return f"SELECT 1 returned: {result[0]}"
-    finally:
-        conn.close()
+    # snowflake.connector.paramstyle = "qmark"
+    # conn = snowflake.connector.connect(**connect_kwargs)
+    # try:
+    #     cursor = conn.cursor()
+    #     cursor.execute("SELECT 1")
+    #     result = cursor.fetchone()
+    #     if result is None or result[0] != 1:
+    #         return f"Unexpected result: {result}"
+    #     return f"SELECT 1 returned: {result[0]}"
+    # finally:
+    #     conn.close()
+
+    domain = bao.domain()
+    domain.add_db(db = SnowflakeConnectionProperties(
+        account = account,
+        warehouse = warehouse,
+        database = database,
+        auth=SnowflakeOAuthAuth(token=_get_sis_token()),
+    ))
+
+
 
 
 _ensure_adbc_driver()
@@ -203,10 +215,12 @@ def main() -> None:
     database = os.environ.get("SNOWFLAKE_DS_DATABASE", "")
     auth_mode = "OAuth session token (SiS)" if _is_running_in_snowflake() else "externalbrowser"
 
+    sis_token = _get_sis_token() if _is_running_in_snowflake() else None
+
     st.markdown("**Connection parameters** (from environment variables)")
     st.table({
-        "Parameter": ["Account", "Warehouse", "Database", "Auth"],
-        "Value": [account or "—", warehouse or "—", database or "—", auth_mode],
+        "Parameter": ["Account", "Warehouse", "Database", "Auth", "SiS Token"],
+        "Value": [account or "—", warehouse or "—", database or "—", auth_mode, sis_token or "—"],
     })
 
     if not account:
