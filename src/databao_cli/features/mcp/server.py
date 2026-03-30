@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from fastmcp import FastMCP
 
 from databao_cli.features.mcp.tools import databao_ask
+from databao_cli.features.mcp.tools import database_context as database_context_tools
 from databao_cli.shared.project.layout import ProjectLayout
 
 
@@ -19,6 +20,7 @@ def create_server(context: McpContext) -> FastMCP:
     """Create a FastMCP server with all registered tools."""
     mcp = FastMCP("databao")
     databao_ask.register(mcp, context)
+    database_context_tools.register(mcp, context)
     return mcp
 
 

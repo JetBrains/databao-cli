@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "click>=8.2.1,<9.0.0",
-    "databao-context-engine[snowflake]~=0.7.0",
+    "databao-context-engine[snowflake]~=0.7.1.dev1",
     "prettytable>=3.10.0",
     "databao-agent~=0.2.1.dev1",
     "streamlit[snowflake]>=1.53.0",
