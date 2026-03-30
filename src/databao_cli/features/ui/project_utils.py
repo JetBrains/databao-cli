@@ -3,7 +3,7 @@ from enum import Enum
 
 from databao.agent.integrations.dce import DatabaoContextApi
 
-from databao_cli.shared.project.layout import ProjectLayout
+from databao_cli.shared.project.layout import BUILD_SENTINEL, ProjectLayout
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +35,22 @@ def databao_project_status(project: ProjectLayout) -> DatabaoProjectStatus:
         return DatabaoProjectStatus.NO_DATASOURCES
 
     return DatabaoProjectStatus.VALID
+
+
+def get_build_fingerprint(project: ProjectLayout) -> float:
+    """Return a fingerprint representing the last completed build.
+
+    Reads the modification time of the ``.build_complete`` sentinel file
+    written by the build command after a successful build.  This avoids
+    false positives from files being written *during* a build.
+
+    Returns 0.0 if the sentinel does not exist.
+    """
+    sentinel = project.root_domain_dir / BUILD_SENTINEL
+    try:
+        return sentinel.stat().st_mtime
+    except OSError:
+        return 0.0
 
 
 def has_build_output(project: ProjectLayout) -> bool:

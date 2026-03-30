@@ -28,7 +28,9 @@ def build(ctx: click.Context, domain: str, should_index: bool) -> None:
     """
     from databao_cli.features.build import build_impl
     from databao_cli.shared.cli_utils import get_project_or_raise
+    from databao_cli.shared.project.layout import write_build_sentinel
 
     project_layout = get_project_or_raise(ctx.obj["project_dir"])
     results = build_impl(project_layout, domain, should_index)
+    write_build_sentinel(project_layout.domains_dir / domain)
     click.echo(f"Build complete. Processed {len(results)} datasources.")
