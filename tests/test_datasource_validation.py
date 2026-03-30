@@ -60,6 +60,13 @@ class TestValidateDatasourceName:
         assert error is not None
         assert "spaces" in error.lower()
 
+    @pytest.mark.parametrize("name", ["my\tdatasource", "my\ndatasource", "my\u00a0datasource"])
+    def test_name_with_non_space_whitespace(self, name: str) -> None:
+        """Tabs, newlines, and non-breaking spaces should also be rejected."""
+        error = validate_datasource_name(name)
+        assert error is not None
+        assert "spaces" in error.lower()
+
     @pytest.mark.parametrize("char", ["@", "#", "$", "%", "!", "?", "\\", ":", "*"])
     def test_forbidden_characters(self, char: str) -> None:
         assert validate_datasource_name(f"ds{char}name") is not None
@@ -119,6 +126,9 @@ class TestValidateHostname:
             "my-host",
             "db.example.com",
             "my-db.internal.corp.net",
+            "::1",
+            "[::1]",
+            "2001:db8::1",
         ],
     )
     def test_valid_hostnames(self, value: str) -> None:
@@ -130,4 +140,9 @@ class TestValidateHostname:
 
     @pytest.mark.parametrize("value", ["-leading-hyphen", "trailing-hyphen-"])
     def test_invalid_hostnames(self, value: str) -> None:
+        assert validate_hostname(value) is not None
+
+    @pytest.mark.parametrize("value", ["not-an-ip:still-not", "db.example.com:5432"])
+    def test_colon_strings_not_treated_as_ip(self, value: str) -> None:
+        """Strings with colons that are not valid IPv6 should not pass as IPs."""
         assert validate_hostname(value) is not None

@@ -49,10 +49,23 @@ def _validate_fields_recursive(
 ) -> list[str]:
     errors: list[str] = []
     for prop in config_fields:
-        if prop.property_key in SKIP_TOP_LEVEL_KEYS:
+        # Only skip special top-level keys like "type" / "name".
+        if not path_prefix and prop.property_key in SKIP_TOP_LEVEL_KEYS:
             continue
 
         full_key = f"{path_prefix}{prop.property_key}" if path_prefix else prop.property_key
+
+        if isinstance(prop, ConfigUnionPropertyDefinition):
+            union_vals = values.get(prop.property_key, {})
+            if not isinstance(union_vals, dict):
+                union_vals = {}
+            type_choices = {t.__name__: t for t in prop.types}
+            selected_name = union_vals.get("type") or _infer_union_type(union_vals, type_choices, prop.type_properties)
+            if selected_name and selected_name in type_choices:
+                selected_type = type_choices[selected_name]
+                nested_props = prop.type_properties.get(selected_type, [])
+                errors.extend(_validate_fields_recursive(nested_props, union_vals, f"{full_key}."))
+            continue
 
         if isinstance(prop, ConfigSinglePropertyDefinition):
             if prop.nested_properties:
@@ -74,10 +87,16 @@ def _validate_fields_recursive(
                 continue
 
             # Type-specific checks.
-            if prop.property_type is int or (prop.property_key in _PORT_KEYS):
+            if prop.property_key in _PORT_KEYS:
                 port_err = validate_port(text)
                 if port_err:
                     errors.append(f"{full_key}: {port_err}")
+                    continue
+            elif prop.property_type is int:
+                try:
+                    int(text)
+                except ValueError:
+                    errors.append(f"{full_key}: must be a valid integer")
                     continue
 
             if prop.property_key in _HOST_KEYS:

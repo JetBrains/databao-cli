@@ -5,6 +5,7 @@ that users get the same feedback regardless of how they create a
 datasource.
 """
 
+import ipaddress
 import re
 
 # The agent requires source names to match this pattern so they can be
@@ -39,7 +40,7 @@ def validate_datasource_name(name: str) -> str | None:
     if len(name) > MAX_DATASOURCE_NAME_LENGTH:
         return f"Datasource name must be at most {MAX_DATASOURCE_NAME_LENGTH} characters."
 
-    if " " in name:
+    if re.search(r"\s", name):
         return "Datasource name must not contain spaces."
 
     segments = name.split("/")
@@ -91,9 +92,11 @@ def validate_hostname(value: str) -> str | None:
 
 
 def _is_ip_address(value: str) -> bool:
-    """Return True if *value* looks like an IPv4 or bracketed IPv6 address."""
-    parts = value.split(".")
-    if len(parts) == 4:
-        return all(p.isdigit() and 0 <= int(p) <= 255 for p in parts)
-    # Bracketed IPv6 or raw IPv6.
-    return ":" in value
+    """Return True if *value* is a valid IPv4 or IPv6 address."""
+    # Strip brackets for bracketed IPv6 (e.g. [::1]).
+    stripped = value.strip("[]")
+    try:
+        ipaddress.ip_address(stripped)
+        return True
+    except ValueError:
+        return False

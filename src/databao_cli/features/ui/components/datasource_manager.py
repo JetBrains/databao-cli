@@ -145,7 +145,12 @@ def _render_add_datasource_section(project_dir: Path) -> None:
     with col_verify_new:
         if st.button("Verify connection", key="verify_new_ds_btn", use_container_width=True):
             validated = _validate_new_datasource_inputs(ds_name, selected_type)
-            if validated is not None:
+            if validated is None:
+                pass  # errors already shown
+            elif config_fields and (field_errors := validate_config_fields(config_fields, config_values)):
+                for err in field_errors:
+                    st.error(err)
+            else:
                 try:
                     result = verify_datasource_config(selected_type, validated, config_values)
                     if result.connection_status == DatasourceConnectionStatus.VALID:
