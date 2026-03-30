@@ -93,10 +93,8 @@ def validate_hostname(value: str) -> str | None:
 
 def _is_ip_address(value: str) -> bool:
     """Return True if *value* is a valid IPv4 or IPv6 address."""
-    # Strip brackets for bracketed IPv6 (e.g. [::1]).
-    stripped = value.strip("[]")
     try:
-        ipaddress.ip_address(stripped)
+        ipaddress.ip_address(value)
         return True
     except ValueError:
         return False

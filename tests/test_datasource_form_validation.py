@@ -111,6 +111,24 @@ class TestUnionPropertyValidation:
         errors = validate_config_fields(fields, {"auth": {"type": "VariantA", "username": "admin"}})
         assert errors == []
 
+    def test_single_variant_union_validates_with_empty_dict(self) -> None:
+        """When there's only one variant and no type discriminator, still validate."""
+
+        class OnlyVariant:
+            pass
+
+        union = ConfigUnionPropertyDefinition(
+            property_key="auth",
+            types=(OnlyVariant,),
+            type_properties={
+                OnlyVariant: [_single("token", required=True)],
+            },
+        )
+        fields = _fields(union)
+        errors = validate_config_fields(fields, {"auth": {}})
+        assert len(errors) == 1
+        assert "token" in errors[0]
+
 
 class TestHostValidation:
     """Host field validation within config fields."""

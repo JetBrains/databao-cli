@@ -65,6 +65,10 @@ def _validate_fields_recursive(
                 selected_type = type_choices[selected_name]
                 nested_props = prop.type_properties.get(selected_type, [])
                 errors.extend(_validate_fields_recursive(nested_props, union_vals, f"{full_key}."))
+            elif len(prop.types) == 1:
+                sole_type = prop.types[0]
+                nested_props = prop.type_properties.get(sole_type, [])
+                errors.extend(_validate_fields_recursive(nested_props, union_vals, f"{full_key}."))
             continue
 
         if isinstance(prop, ConfigSinglePropertyDefinition):

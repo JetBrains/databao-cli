@@ -127,7 +127,6 @@ class TestValidateHostname:
             "db.example.com",
             "my-db.internal.corp.net",
             "::1",
-            "[::1]",
             "2001:db8::1",
         ],
     )
