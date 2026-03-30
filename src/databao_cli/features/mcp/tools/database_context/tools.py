@@ -31,10 +31,9 @@ def register(mcp: "FastMCP", context: "McpContext") -> None:
         annotations=ToolAnnotations(readOnlyHint=True, idempotentHint=True, openWorldHint=False),
     )
     def list_database_datasources() -> ListDatasourceResult:
-        """List all configured datasources that support database metadata tools and SQL execution.
+        """List all configured datasources that support database metadata tools.
 
-        Use this to narrow datasource selection before browsing schemas, inspecting table metadata,
-        or running SQL.
+        Use this to narrow datasource selection before browsing schemas or inspecting table metadata.
         """
         context_engine = DatabaoContextEngine(domain_dir=context.project_layout.root_domain_dir)
 
