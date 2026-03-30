@@ -58,14 +58,14 @@ class TestValidateDatasourceName:
     def test_name_with_spaces(self) -> None:
         error = validate_datasource_name("my datasource")
         assert error is not None
-        assert "spaces" in error.lower()
+        assert "whitespace" in error.lower()
 
     @pytest.mark.parametrize("name", ["my\tdatasource", "my\ndatasource", "my\u00a0datasource"])
     def test_name_with_non_space_whitespace(self, name: str) -> None:
         """Tabs, newlines, and non-breaking spaces should also be rejected."""
         error = validate_datasource_name(name)
         assert error is not None
-        assert "spaces" in error.lower()
+        assert "whitespace" in error.lower()
 
     @pytest.mark.parametrize("char", ["@", "#", "$", "%", "!", "?", "\\", ":", "*"])
     def test_forbidden_characters(self, char: str) -> None:
