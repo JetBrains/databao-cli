@@ -41,7 +41,7 @@ def validate_datasource_name(name: str) -> str | None:
         return f"Datasource name must be at most {MAX_DATASOURCE_NAME_LENGTH} characters."
 
     if re.search(r"\s", name):
-        return "Datasource name must not contain spaces."
+        return "Datasource name must not contain whitespace."
 
     segments = name.split("/")
     for segment in segments:
