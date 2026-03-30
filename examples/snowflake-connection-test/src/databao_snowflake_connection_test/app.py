@@ -16,23 +16,20 @@ Optional (set automatically in SiS/SPCS):
 import importlib.util
 import logging
 import os
-from contextlib import contextmanager
 from pathlib import Path
-from typing import Any
 
-import snowflake.connector
-import streamlit as st
-from databao.agent.databases.snowflake_adapter import SnowflakeAdapter
-from databao_context_engine import SnowflakeConnectionProperties, SnowflakeKeyPairAuth, SnowflakeOAuthAuth
-from databao_context_engine.plugins.databases.snowflake.snowflake_introspector import (
-    SnowflakeIntrospector,
-)
 import databao.agent as bao
+import streamlit as st
+from databao_context_engine import SnowflakeConnectionProperties, SnowflakeOAuthAuth
 
 logger = logging.getLogger(__name__)
 
 SESSION_TOKEN_PATH = Path("/snowflake/session/token")
 ADBC_LIB = "libadbc_driver_snowflake.so"
+
+SNOWFLAKE_SECRETS: dict[str, str] = {
+    "openai_api_key": "OPENAI_API_KEY",
+}
 
 
 def _is_running_in_snowflake() -> bool:
@@ -73,6 +70,24 @@ def _ensure_adbc_driver() -> None:
     abs_path = str(so_file.resolve())
     os.environ["SNOWFLAKE_ADBC_DRIVER_PATH"] = abs_path
     print(f"[ADBC] Set SNOWFLAKE_ADBC_DRIVER_PATH={abs_path}")
+
+def _load_snowflake_secrets() -> None:
+    conn = st.connection("snowflake")
+    session = conn.session()
+
+    for secret_name, env_var in SNOWFLAKE_SECRETS.items():
+        if os.environ.get(env_var):
+            continue
+        try:
+            row = session.sql(f"SELECT get_secret('{secret_name}')").collect()
+            value = row[0][0] if row else None
+            if value:
+                os.environ[env_var] = value
+                logger.info("Loaded Snowflake secret '%s' -> %s", secret_name, env_var)
+            else:
+                logger.warning("Snowflake secret '%s' returned empty", secret_name)
+        except Exception:
+            logger.warning("Failed to load secret '%s'", secret_name, exc_info=True)
 
 
 def _test_connection(
@@ -125,6 +140,9 @@ _ensure_adbc_driver()
 
 def main() -> None:
     st.title("Snowflake Connection Test")
+
+    if _is_running_in_snowflake():
+        _load_snowflake_secrets()
 
     account = os.environ.get("SNOWFLAKE_ACCOUNT", "")
     warehouse = os.environ.get("SNOWFLAKE_DS_WAREHOUSE", "")
