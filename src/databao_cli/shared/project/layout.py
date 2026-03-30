@@ -56,8 +56,11 @@ class ProjectLayout:
 def write_build_sentinel(domain_dir: Path) -> None:
     """Write a sentinel file to signal that a build has completed."""
     sentinel = domain_dir / BUILD_SENTINEL
-    sentinel.write_text("")
-    logger.debug("Wrote build sentinel: %s", sentinel)
+    try:
+        sentinel.write_text("")
+        logger.debug("Wrote build sentinel: %s", sentinel)
+    except OSError:
+        logger.warning("Failed to write build sentinel: %s", sentinel, exc_info=True)
 
 
 def find_project(initial_dir: Path) -> ProjectLayout | None:
