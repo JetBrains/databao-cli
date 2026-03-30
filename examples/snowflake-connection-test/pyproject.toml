@@ -6,6 +6,7 @@ requires-python = ">=3.11,<3.12"
 dependencies = [
     "databao-context-engine[snowflake]~=0.7.1.dev2",
     "databao-agent~=0.2.1.dev5",
+    "streamlit[snowflake]>=1.53.0",
 ]
 
 [tool.uv]
