@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Minimal Snowflake connection test for Databao"
 requires-python = ">=3.11,<3.12"
 dependencies = [
-    "databao>=0.3.3",
+    "databao-agent~=0.2.1.dev5",
 ]
 
 [tool.uv]
