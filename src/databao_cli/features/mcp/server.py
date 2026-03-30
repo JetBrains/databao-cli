@@ -35,9 +35,9 @@ def run_server(
 
     match transport:
         case "stdio":
-            mcp.run(transport="stdio")
+            mcp.run(transport="stdio", show_banner=False)
         case "sse":
-            mcp.run(transport="sse", host=host, port=port)
+            mcp.run(transport="sse", host=host, port=port, show_banner=False)
         case _:
             raise ValueError(f"Unknown transport: {transport!r}. Supported: stdio, sse")
 
