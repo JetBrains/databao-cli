@@ -89,6 +89,13 @@ def _load_snowflake_secrets() -> None:
         except Exception:
             logger.warning("Failed to load secret '%s'", secret_name, exc_info=True)
 
+def _get_account_identifier() -> str:
+    conn = st.connection("snowflake")
+    session = conn.session()
+
+    return session.sql("""
+    SELECT CURRENT_ORGANIZATION_NAME() || '-' || CURRENT_ACCOUNT_NAME()
+    """).collect()[0][0]
 
 def _test_connection(
     account: str,
@@ -144,17 +151,16 @@ def main() -> None:
     if _is_running_in_snowflake():
         _load_snowflake_secrets()
 
-    account = os.environ.get("SNOWFLAKE_ACCOUNT", "")
+    # account = os.environ.get("SNOWFLAKE_ACCOUNT", "")
+    account = _get_account_identifier()
     warehouse = os.environ.get("SNOWFLAKE_DS_WAREHOUSE", "")
-    database = os.environ.get("SNOWFLAKE_DS_DATABASE", "")
+    database = os.environ.get("SNOWFLAKE_DS_DATABASE", "LS_SF_STREAMLIT_TEST")
     auth_mode = "OAuth session token (SiS)" if _is_running_in_snowflake() else "externalbrowser"
-
-    sis_token = _get_sis_token() if _is_running_in_snowflake() else None
 
     st.markdown("**Connection parameters** (from environment variables)")
     st.table({
-        "Parameter": ["Account", "Warehouse", "Database", "Auth", "SiS Token"],
-        "Value": [account or "—", warehouse or "—", database or "—", auth_mode, sis_token or "—"],
+        "Parameter": ["Account", "Warehouse", "Database", "Auth"],
+        "Value": [account or "—", warehouse or "—", database or "—", auth_mode],
     })
 
     if not account:
