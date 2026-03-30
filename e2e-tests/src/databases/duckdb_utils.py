@@ -6,7 +6,7 @@ import duckdb
 
 @dataclass(frozen=True)
 class DuckdbDB:
-    datasource_name: str | None = "test duckdb conn"
+    datasource_name: str | None = "test_duckdb_conn"
     datasource_type: str = "duckdb"
     database_path: Path | None = None
     check_connection: bool = False
