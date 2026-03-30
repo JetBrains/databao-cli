@@ -99,7 +99,7 @@ def register(mcp: "FastMCP", context: "McpContext") -> None:
 
         try:
             agent = create_agent_for_tool(
-                project_dir=context.project_dir,
+                project=context.project_layout,
                 model=model,
                 temperature=temperature,
                 executor=executor,

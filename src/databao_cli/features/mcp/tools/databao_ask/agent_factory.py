@@ -1,7 +1,5 @@
 """Agent creation logic for the databao_ask tool."""
 
-from pathlib import Path
-
 from databao.agent import Agent
 from databao.agent import domain as create_domain
 from databao.agent.api import agent as create_agent
@@ -13,7 +11,7 @@ from databao_cli.shared.project.layout import ProjectLayout
 
 
 def create_agent_for_tool(
-    project_dir: Path,
+    project: ProjectLayout,
     model: str | None = None,
     temperature: float = 0.0,
     executor: str = "claude_code",
@@ -23,8 +21,6 @@ def create_agent_for_tool(
 
     Raises ValueError if the project is not ready (no datasources, no build).
     """
-    project = ProjectLayout(project_dir)
-
     status = databao_project_status(project)
     if status == DatabaoProjectStatus.NOT_INITIALIZED:
         raise ValueError("Databao project is not initialized. Run 'databao init' first.")

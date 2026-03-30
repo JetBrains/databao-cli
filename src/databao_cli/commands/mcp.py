@@ -2,7 +2,7 @@
 
 import click
 
-from databao_cli.shared.cli_utils import handle_feature_errors
+from databao_cli.shared.cli_utils import get_project_or_raise, handle_feature_errors
 
 
 @click.command()
@@ -43,8 +43,9 @@ def mcp(ctx: click.Context, transport: str, host: str, port: int) -> None:
     """
     from databao_cli.features.mcp.server import mcp_impl
     from databao_cli.shared.log.logging import configure_logging
-    from databao_cli.shared.project.layout import find_project
+
+    project_layout = get_project_or_raise(ctx.obj["project_dir"])
 
     if transport == "stdio":
-        configure_logging(find_project(ctx.obj["project_dir"]), quiet=True)
-    mcp_impl(ctx.obj["project_dir"], transport, host, port)
+        configure_logging(project_layout, quiet=True)
+    mcp_impl(project_layout, transport, host, port)

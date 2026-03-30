@@ -1,18 +1,18 @@
 """Databao MCP server setup and tool registration."""
 
 from dataclasses import dataclass
-from pathlib import Path
 
 from fastmcp import FastMCP
 
 from databao_cli.features.mcp.tools import databao_ask
+from databao_cli.shared.project.layout import ProjectLayout
 
 
 @dataclass(frozen=True)
 class McpContext:
     """Shared context available to all MCP tools."""
 
-    project_dir: Path
+    project_layout: ProjectLayout
 
 
 def create_server(context: McpContext) -> FastMCP:
@@ -40,6 +40,6 @@ def run_server(
             raise ValueError(f"Unknown transport: {transport!r}. Supported: stdio, sse")
 
 
-def mcp_impl(project_dir: Path, transport: str, host: str, port: int) -> None:
-    context = McpContext(project_dir=project_dir)
+def mcp_impl(project_layout: ProjectLayout, transport: str, host: str, port: int) -> None:
+    context = McpContext(project_layout=project_layout)
     run_server(context, transport=transport, host=host, port=port)
