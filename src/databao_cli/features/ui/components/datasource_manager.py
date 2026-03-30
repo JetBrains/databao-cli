@@ -205,12 +205,16 @@ def _render_existing_datasource(project_dir: Path, ds: ConfiguredDatasource, idx
                     disabled=not has_changes,
                     use_container_width=True,
                 ):
-                    try:
-                        save_datasource(project_dir, ds_type, ds_name, edited_values)
-                        st.success("Saved.")
-                        st.rerun()
-                    except Exception as e:
-                        st.error(f"Save failed: {e}")
+                    if config_fields and (field_errors := validate_config_fields(config_fields, edited_values)):
+                        for err in field_errors:
+                            st.error(err)
+                    else:
+                        try:
+                            save_datasource(project_dir, ds_type, ds_name, edited_values)
+                            st.success("Saved.")
+                            st.rerun()
+                        except Exception as e:
+                            st.error(f"Save failed: {e}")
 
             with col_verify:
                 if st.button("Verify", key=f"verify_ds_{idx}", use_container_width=True):
