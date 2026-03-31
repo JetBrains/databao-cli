@@ -32,7 +32,7 @@ nickname:
 	@git config user.email | cut -d@ -f1
 
 lint-skills:
-	scripts/validate-agent-guidance.sh
+	uv run python scripts/validate_agent_guidance.py
 
 smoke-skills:
 	scripts/smoke-test-skills.sh
