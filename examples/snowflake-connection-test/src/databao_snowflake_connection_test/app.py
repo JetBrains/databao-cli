@@ -177,6 +177,27 @@ def _test_connection_sqlalchemy(
         engine.dispose()
 
 
+def _test_connection_databao(
+    account: str,
+    warehouse: str | None,
+    database: str | None,
+) -> str:
+
+    domain = bao.domain()
+    domain.add_db(db = SnowflakeConnectionProperties(
+        account = account,
+        warehouse = warehouse,
+        database = database,
+        auth=SnowflakeOAuthAuth(token=_get_sis_token()),
+    ))
+
+    agent = bao.agent(domain=domain, name="my_agent", llm_config=bao.LLMConfig(name="gpt-5.1", temperature=0))
+
+    agent.thread().ask("How many accidents occurred in total?")
+
+
+
+
 _ensure_adbc_driver()
 
 def main() -> None:
@@ -216,6 +237,14 @@ def main() -> None:
                 st.success(f"SQLAlchemy connection successful. {message}")
             except Exception as exc:
                 st.error(f"SQLAlchemy connection failed: {exc}")
+
+    if st.button("Test Connection (Databao)"):
+        with st.spinner("Connecting via Databao..."):
+            try:
+                message = _test_connection_databao(account, warehouse or None, database or None)
+                st.success(f"Databao connection successful. {message}")
+            except Exception as exc:
+                st.error(f"Databao connection failed: {exc}")
 
 
 main()
