@@ -1,7 +1,6 @@
 # ===== test_duckdb_conn.yaml =====
 datasource_id: test_duckdb_conn.yaml
 datasource_type: duckdb
-context_built_at: 2026-02-27 16:38:36.999625
 context:
   catalogs:
   - name: test_db
@@ -13,206 +12,90 @@ context:
         - name: id
           type: INTEGER
           nullable: false
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: tinyint_col
           type: TINYINT
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: smallint_col
           type: SMALLINT
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: int_col
           type: INTEGER
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: bigint_col
           type: BIGINT
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: hugeint_col
           type: HUGEINT
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: utinyint_col
           type: UTINYINT
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: usmallint_col
           type: USMALLINT
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: uinteger_col
           type: UINTEGER
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: ubigint_col
           type: UBIGINT
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: real_col
           type: FLOAT
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: double_col
           type: DOUBLE
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: decimal_col
           type: DECIMAL(10,2)
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: boolean_col
           type: BOOLEAN
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: char_col
           type: VARCHAR
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: varchar_col
           type: VARCHAR
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: text_col
           type: VARCHAR
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: blob_col
           type: BLOB
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: date_col
           type: DATE
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: time_col
           type: TIME
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: timestamp_col
           type: TIMESTAMP
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: timestamptz_col
           type: TIMESTAMP WITH TIME ZONE
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: interval_col
           type: INTERVAL
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: uuid_col
           type: UUID
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: json_col
           type: JSON
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: int_array_col
           type: INTEGER[]
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: varchar_array_col
           type: VARCHAR[]
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: struct_col
           type: STRUCT("name" VARCHAR, age INTEGER)
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: map_col
           type: MAP(VARCHAR, INTEGER)
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         samples:
         - id: 1
           tinyint_col: 10
@@ -231,40 +114,21 @@ context:
           char_col: ABCDE
           varchar_col: Hello DuckDB
           text_col: This is a text column
-          blob_col: !!binary |
-            REVBREJFRUY=
+          blob_col: <bytes, 8 bytes>
           date_col: 2025-01-01
           time_col: '12:30:00'
           timestamp_col: 2025-01-01 12:30:00
-          timestamptz_col: 2025-01-01 11:30:00+01:00
+          timestamptz_col: 2025-01-01 10:30:00+00:00
           interval_col: 2 days, 0:00:00
           uuid_col: 550e8400-e29b-41d4-a716-446655440000
           json_col: '{"key": "value"}'
-          int_array_col:
-          - 1
-          - 2
-          - 3
-          varchar_array_col:
-          - a
-          - b
-          - c
-          struct_col:
-            name: Alice
-            age: 30
-          map_col:
-            a: 1
-            b: 2
-        partition_info: null
-        description: null
+          int_array_col: '[1, 2, 3]'
+          varchar_array_col: '["a", "b", "c"]'
+          struct_col: '{"name": "Alice", "age": 30}'
+          map_col: '{"a": 1, "b": 2}'
         kind: table
         primary_key:
           name: all_types_demo_id_pkey
           columns:
           - id
           validated: true
-        unique_constraints: []
-        checks: []
-        indexes: []
-        foreign_keys: []
-      description: null
-    description: null

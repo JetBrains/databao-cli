@@ -1165,7 +1165,7 @@ requires-dist = [
     { name = "databao-context-engine", extras = ["clickhouse"], marker = "extra == 'clickhouse'" },
     { name = "databao-context-engine", extras = ["mssql"], marker = "extra == 'mssql'" },
     { name = "databao-context-engine", extras = ["pdf"], marker = "extra == 'pdf'" },
-    { name = "databao-context-engine", extras = ["snowflake"], specifier = "~=0.7.0" },
+    { name = "databao-context-engine", extras = ["snowflake"], specifier = "~=0.7.1" },
     { name = "fastmcp", specifier = ">=2.0.0" },
     { name = "nh3", specifier = ">=0.2.15" },
     { name = "prettytable", specifier = ">=3.10.0" },
@@ -1232,10 +1232,9 @@ wheels = [
 
 [[package]]
 name = "databao-context-engine"
-version = "0.7.0"
+version = "0.7.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "click" },
     { name = "duckdb" },
     { name = "jinja2" },
     { name = "mcp" },
@@ -1246,9 +1245,9 @@ dependencies = [
     { name = "sqlparse" },
     { name = "xxhash" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c4/72/040aa0c0c1fa2302bc350ae0dc18cd82dadad9bcab1b23d2bb2b0491b6a8/databao_context_engine-0.7.0.tar.gz", hash = "sha256:447e7c1cf6bbe899a125296e2362838cc7e5bd4770cb1d9bf682c9c12bac20aa", size = 124182, upload-time = "2026-03-18T09:54:43.204Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8c/44/e42e4b0d3939313fa183569a3494c1d6e24c6c5c66eb678f464014920281/databao_context_engine-0.7.1.tar.gz", hash = "sha256:449d6e292a496b357f18f0e654bf751c52a1c5a380ea0c6029c5ea4eb7f2ed75", size = 132049, upload-time = "2026-03-31T08:07:22.477Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/27/fd/a271eac8b1486f41a4d40b89aa7212f8f1581b9c97b00e9b60b35ca5a32c/databao_context_engine-0.7.0-py3-none-any.whl", hash = "sha256:d4521c63980e87a9906e890424244e672a0bdc953d13c9e484152dd2a8612fd5", size = 195832, upload-time = "2026-03-18T09:54:42.059Z" },
+    { url = "https://files.pythonhosted.org/packages/40/45/f0991598680baa26b852b0c11b0c19f224492885b0768a6f705e0667530f/databao_context_engine-0.7.1-py3-none-any.whl", hash = "sha256:c6527b16c2e74d00f1182bfd8ea18ae2a81e76df68c98e523f399745013cb64a", size = 210892, upload-time = "2026-03-31T08:07:21.261Z" },
 ]
 
 [package.optional-dependencies]
