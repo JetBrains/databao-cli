@@ -7,13 +7,23 @@ Claude Code entrypoint for agent instructions in this repository.
 - Prefer concise updates with clear file/command references.
 - YouTrack MCP must be configured (see DEVELOPMENT.md). Use get_issue / update_issue tools.
 - **Pacing rule**: pause for user confirmation between phases (plan →
-  implement → validate → commit → PR). Present what you intend to do or
-  what you just did, then wait for a go-ahead before moving to the next
-  phase. Small, safe actions within a phase (running tests, reading files)
+  implement → validate → commit → PR). Small, safe actions within a phase
   do not require a pause.
-  - **Exception — autosteer mode**: when the `autosteer` skill is active,
-    skip all inter-phase confirmations and proceed autonomously. Stop only
-    on quality-gate failures. See `.claude/skills/autosteer/SKILL.md`.
+  - **Exception — autosteer mode**: skip all inter-phase confirmations.
+    Stop only on quality-gate failures.
+
+## Output Efficiency
+
+- No sycophantic openers ("Sure!", "Great question!", "Absolutely!") — lead with the answer.
+- No hollow closings ("Let me know if you need anything!", "I hope this helps!").
+- No restating the user's prompt — execute immediately.
+- No unsolicited suggestions or scope creep — answer exact scope only.
+- No redundant file reads — read each file once per session unless changed.
+- No unnecessary disclaimers unless there is a genuine safety risk.
+- When corrected, apply the correction as ground truth — no "You're absolutely right" preamble.
+- Code first, explanation after — only if non-obvious. No inline prose in code blocks.
+- Simplest working solution. No abstractions for single-use operations.
+- ASCII-only output: plain hyphens, straight quotes. Copy-paste safe.
 
 ## References
 
@@ -53,90 +63,66 @@ Key directories:
 
 ## Build, Lint, Test Commands
 
-- Environment setup: `make setup` (installs deps, pre-commit hooks, verifies toolchain)
-- Pre-commit (ruff + mypy): `make check` or `uv run pre-commit run --all-files`
-- Ruff lint: `uv run ruff check src/databao_cli`
-- Ruff format: `uv run ruff format src/databao_cli`
-- Mypy: `uv run mypy src/databao_cli`
-- Unit tests: `make test` or `uv run pytest tests/ -v`
-- Smoke test: `uv run databao --help`
-- Single test file: `uv run pytest tests/test_foo.py -v`
+- Setup: `make setup`
+- Lint + type-check: `make check`
+- Unit tests: `make test`
 - Single test: `uv run pytest tests/test_foo.py::test_bar -v`
 - Coverage check: `make test-cov-check` (fails if below 80%)
-- Coverage report: `make test-cov` (terminal + HTML in `htmlcov/`)
-- Skill validation: `make lint-skills` (static checks on agent guidance)
-- Skill smoke tests: `make smoke-skills` (functional verification of skill commands)
+- Coverage report: `make test-cov` (HTML in `htmlcov/`)
+- Skill validation: `make lint-skills`
+
+### Quality Gates
+
+These three gates are **blocking** before any commit. Skills reference
+this section instead of repeating the commands.
+
+1. `make check` — ruff + mypy. Auto-fix ruff with `uv run ruff check --fix src/databao_cli && uv run ruff format src/databao_cli`, then re-run.
+2. `make test` — pytest. Fix failures before continuing.
+3. `make test-cov-check` — coverage threshold. Write tests if below 80%.
 
 ## Coding Guidelines
 
-Style and formatting are enforced by ruff and mypy — only non-linter-enforceable
-rules are listed here. Use `ruff check --fix` and `ruff format` to auto-fix
-style issues; do not manually fix formatting.
+Style enforced by ruff + mypy. Use `ruff check --fix` and `ruff format` to auto-fix.
 
-- Add type hints for public APIs and non-trivial helpers; strict mypy is enabled.
-- Validate config/args early and raise specific exceptions with actionable
-  messages.
-- Use `logging` for runtime behavior; use `print` only for tiny utilities.
-- CLI framework is Click — follow Click patterns for new commands.
+- Type hints on public APIs; strict mypy enabled.
+- Validate config/args early; raise specific exceptions.
+- Use `logging` for runtime; `print` only for tiny utilities.
+- CLI framework is Click.
 
 ## Change Management
 
-- Prefer minimal, focused edits over broad rewrites.
-- Do not silently alter behavior; document intentional changes.
+- Minimal, focused edits over broad rewrites.
 - Update tests when changing commands, protocols, or behavior.
 - Update `README.md` if command examples or workflows change.
-- Run `make test-cov-check` after changing code in `src/databao_cli/` to
-  verify coverage meets the threshold in `[tool.coverage.report] fail_under`
-  (`pyproject.toml`). If existing tests break, fix the production code —
-  do not weaken tests. If newly written tests are wrong, fix the tests.
-- When modifying agent guidance files (skills, coding-guidelines),
-  run `make lint-skills` to validate consistency.
-  The pre-commit hook runs this automatically on commit.
+- Run `make test-cov-check` after changing `src/databao_cli/`. If existing
+  tests break, fix production code -- do not weaken tests.
+- Run `make lint-skills` after modifying agent guidance files.
 
 ## YouTrack Ticket Workflow
 
-- Before starting work, use the `make-yt-issue` skill to verify or create a
-  YouTrack ticket. It handles asking for the ID, validating it exists, and
-  creating one if needed.
-- If the YouTrack MCP server is unavailable, refer the user to `DEVELOPMENT.md`
-  for setup instructions.
-- If a ticket is provided, read it with the `get_issue` tool to understand the
-  full scope before writing any code.
-- When starting work on a ticket, move it to **Develop** state using
-  `update_issue` (set `State` field).
-- After creating a PR, move the ticket to **Review** state and add a
-  comment with the PR URL and the Claude Code session cost (from `/cost`).
+- Use `make-yt-issue` skill to verify or create a ticket before starting work.
+- Read ticket with `get_issue` to understand scope before coding.
+- Move to **Develop** on start (`update_issue`, set `State`).
+- Move to **Review** after PR, comment with PR URL and session cost (`/cost`).
+- If YouTrack MCP unavailable, refer user to `DEVELOPMENT.md`.
+
 ## Commit Messages
 
 - Format: `[DBA-XXX] <imperative summary>` (max 72 chars)
-- Use imperative mood: "Add feature", not "Added feature" or "Adds feature"
-- Lowercase after the prefix: `[DBA-123] fix auth timeout`
-- No trailing period
-- If a body is needed, add a blank line after the summary:
-  - Explain *why*, not *what* (the diff shows what)
-  - Wrap at 72 characters
-- If no ticket exists, omit the prefix — don't invent one
+- Imperative mood, lowercase after prefix: `[DBA-123] fix auth timeout`
+- No trailing period. Body explains *why*, not *what*. Wrap at 72 chars.
+- No ticket? Omit the prefix.
 
 ## After Completing Work
 
-Each numbered step below is a **phase**. Present the outcome of each
-phase and wait for user confirmation before starting the next one.
-**Exception**: in autosteer mode (`/autosteer`), run all phases
-sequentially without pausing — stop only on quality-gate failures.
+Each step is a **phase** -- pause for confirmation between phases (except in autosteer mode).
 
-1. **Plan** — outline the approach and list files you intend to change.
-2. **Implement** — write the code changes to satisfy the ticket
-   requirements, including tests. Run `make test` to verify they pass.
-3. **Validate** — run `make check` then `make test-cov-check`. Fix any
-   failures before proceeding.
-4. **Review** — run `local-code-review` and `review-architecture` skills.
-   Both run in forked sub-agent context (no prior conversation state)
-   and can run **in parallel**.
-5. **Branch & commit** — use the `create-branch` skill, then stage and
-   commit following **Commit Messages** conventions.
-6. **PR** — use the `create-pr` skill (pushes and opens the PR).
-7. **Update YouTrack** — move the ticket to **Review** state and add
-   a comment with the PR URL and the Claude Code session cost (run
-   `/cost` to obtain it).
+1. **Plan** -- outline approach and files to change.
+2. **Implement** -- code + tests. Run `make test`.
+3. **Validate** -- run quality gates (see above). Fix failures.
+4. **Review** -- run `local-code-review` and `review-architecture` skills in parallel (forked context).
+5. **Branch & commit** -- `create-branch` skill, then commit per **Commit Messages**.
+6. **PR** -- `create-pr` skill.
+7. **Update YouTrack** -- move to **Review**, comment with PR URL + session cost (`/cost`).
 
 Never commit directly to `main`.

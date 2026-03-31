@@ -1,107 +1,57 @@
 ---
 name: eval-skills
-description: Run structured agent-in-the-loop evaluations on skills to measure quality and track improvements. Use after modifying a SKILL.md, after changing `CLAUDE.md` or guidance docs that skills depend on, or periodically to benchmark skill quality and catch regressions.
+description: Run structured evaluations on skills to measure quality and track improvements.
 argument-hint: "[skill-name ...] (e.g. local-code-review review-architecture)"
 ---
 
 # Eval Skills
 
-Run structured evaluations on agent skills to measure quality and track
-improvements across iterations.
-
 ## Steps
 
-### 1. Determine which skills to evaluate
+### 1. Determine skills to evaluate
 
-This skill accepts an optional list of skill names via `$ARGUMENTS`.
+If names provided via `$ARGUMENTS`, evaluate those. Otherwise list skills
+with `evals/evals.json` files and ask user to pick (accept "all").
 
-- If skill names are provided (e.g. `/eval-skills local-code-review review-architecture`),
-  evaluate only those skills.
-- If no arguments are provided, ask the user which skills they want to
-  evaluate. List all skills that have `evals/evals.json` files and let
-  the user pick. Accept "all" to evaluate every skill with evals.
-
-Each skill's test cases live in `.claude/skills/<skill-name>/evals/evals.json`.
-
-### 2. Create an iteration directory
+### 2. Create iteration directory
 
 ```bash
 mkdir -p .claude/evals-workspace/iteration-<N>
 ```
 
-Use the next sequential number. Check existing directories to determine N.
+Use next sequential number.
 
 ### 3. Run eval cases
 
-For each test case in `evals.json`, run it twice:
+For each test case in `evals.json`, run twice:
 
-**With skill** — spawn a subagent with the skill loaded:
-- Provide the skill path: `.claude/skills/<skill-name>`
-- Provide the test prompt from `evals.json`
-- Save outputs to `.claude/evals-workspace/iteration-<N>/<skill>-<eval-id>/with_skill/outputs/`
+- **With skill**: subagent with skill loaded, save to `iteration-<N>/<skill>-<id>/with_skill/outputs/`
+- **Without skill**: subagent without skill, save to `iteration-<N>/<skill>-<id>/without_skill/outputs/`
 
-**Without skill** — spawn a subagent without the skill:
-- Use the same prompt
-- Save outputs to `.claude/evals-workspace/iteration-<N>/<skill>-<eval-id>/without_skill/outputs/`
+Each run starts with clean context.
 
-Each run should start with clean context (no prior state).
+### 4. Grade
 
-### 4. Grade outputs
-
-For each run, evaluate every assertion from `evals.json` against the actual
-output. Record results in `grading.json`:
-
+Evaluate assertions against output. Save `grading.json`:
 ```json
 {
-  "assertion_results": [
-    {
-      "text": "Agent runs make setup",
-      "passed": true,
-      "evidence": "Agent executed `make setup` as first command"
-    }
-  ],
-  "summary": { "passed": 3, "failed": 1, "total": 4, "pass_rate": 0.75 }
+  "assertion_results": [{"text": "...", "passed": true, "evidence": "..."}],
+  "summary": {"passed": 3, "failed": 1, "total": 4, "pass_rate": 0.75}
 }
 ```
 
-Require concrete evidence for every PASS — don't give benefit of the doubt.
+Require concrete evidence for every PASS.
 
-### 5. Aggregate results
+### 5. Aggregate
 
-Compute summary statistics and save to
-`.claude/evals-workspace/iteration-<N>/benchmark.json`:
+Save `iteration-<N>/benchmark.json` with mean pass rates (with/without skill) and delta.
 
-```json
-{
-  "run_summary": {
-    "with_skill": { "pass_rate": { "mean": 0.83 } },
-    "without_skill": { "pass_rate": { "mean": 0.33 } },
-    "delta": { "pass_rate": 0.50 }
-  }
-}
-```
+### 6. Present results
 
-### 6. Present results for human review
-
-Show a summary table:
-- Per-eval pass rates (with vs without skill)
-- Overall delta
-- Any assertions that always pass (candidates for removal)
-- Any assertions that always fail (candidates for revision)
-
-Record human feedback in
-`.claude/evals-workspace/iteration-<N>/feedback.json`.
+Show per-eval pass rates, overall delta, always-pass candidates (remove?),
+always-fail candidates (revise?). Save feedback to `feedback.json`.
 
 ## Iteration loop
 
-After review:
-1. Update the SKILL.md based on failed assertions and feedback.
-2. Run a new iteration (increment N).
-3. Compare benchmark.json across iterations to track improvement.
-4. Stop when feedback is consistently empty or pass rates plateau.
-
-## What this skill does NOT do
-
-- Automatically fix skills — it produces evaluation data for human decision-making.
-- Run Tier 1/2 validation — use `make lint-skills` or `make smoke-skills` for that.
-- Modify evals.json — test cases should be updated deliberately, not during eval runs.
+Update SKILL.md based on findings, run new iteration, compare benchmarks,
+stop when pass rates plateau.

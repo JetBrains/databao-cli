@@ -1,67 +1,42 @@
 ---
 name: create-pr
-description: Stage, commit, push, and open a GitHub PR following project conventions. Use when code is ready to ship — after tests pass, code review, and architecture review are done.
+description: Stage, commit, push, and open a GitHub PR following project conventions. Use when code is ready to ship.
 compatibility: gh must be installed and authenticated.
 ---
 
 # Create PR
 
-Stage changes, commit, push, and open a GitHub pull request following
-project conventions.
-
 ## Steps
 
 ### 1. Verify preconditions
 
-- Confirm you are NOT on `main`. If on `main`, run the `create-branch`
-  skill to create a feature branch before continuing.
-- Check `git status` for changes to commit. If nothing to commit, inform
-  the user and stop.
+- Must NOT be on `main`. If so, run `create-branch` skill first.
+- Check `git status` for changes. If clean, inform user and stop.
+
 ### 2. Run quality gates
 
-These are **blocking** — do not commit until both pass.
+Run all three gates from **Quality Gates** in `CLAUDE.md`. Do not commit
+until they pass.
 
-1. **`make check`** (ruff + mypy)
-   - Run `make check`.
-   - If ruff fails, auto-fix with `uv run ruff check --fix src/databao_cli && uv run ruff format src/databao_cli`, then re-run `make check`.
-   - If mypy fails after ruff is clean, stop and fix the type errors before continuing.
-2. **`make test`** (pytest)
-   - Run `make test`.
-   - If tests fail, stop and fix the failures before continuing.
-3. **`make test-cov-check`** (coverage threshold)
-   - Run `make test-cov-check`.
-   - Warn the user if coverage is below threshold, but do **not** block the PR.
+### 3. Stage and commit
 
-### 3. Determine the ticket ID
+- Extract ticket ID from branch name (`DBA-<number>`) or ask user.
+- Stage specific files (never `git add -A`).
+- Commit per **Commit Messages** in `CLAUDE.md`.
 
-- Extract from the current branch name if it contains `DBA-<number>`.
-- Otherwise ask the user for the ticket ID.
+### 4. Pause for confirmation
 
-### 4. Stage and commit
+Show branch, commit(s), and draft PR description. Wait for explicit approval.
 
-- Stage relevant files (prefer explicit paths over `git add -A`).
-- Commit following the **Commit Messages** section in `CLAUDE.md`.
+> **Autosteer exception**: skip this pause.
 
-### 5. Pause for confirmation
+### 5. Push and create PR
 
-Present the user with:
-
-- The branch name and commit(s) that will be pushed.
-- A draft PR description following the template below.
-
-**Wait for explicit user confirmation before proceeding.**
-
-> **Autosteer exception**: if autosteer mode is active, skip this pause
-> and proceed directly to pushing and creating the PR.
-
-### 6. Push and create PR
-
-- Push with `-u` flag: `git push -u origin <branch>`
-- Create the PR via `gh pr create` using the template:
+Push with `-u` flag. Create PR via `gh pr create` using this template:
 
 ```
 ## Summary
-<1-3 sentence overview of why this change exists>
+<1-3 sentence overview>
 
 ## Changes
 
@@ -69,26 +44,21 @@ Present the user with:
 <Brief description>
 <details><summary>Files</summary>
 
-- `path/to/file1`
-- `path/to/file2`
+- `path/to/file`
 </details>
 
-### <Logical change 2>
-...
-
 ## Test Plan
-- [ ] <Step or check to verify correctness>
+- [ ] <Verification step>
 ```
 
-### 7. Report
+### 6. Report
 
-Output the PR URL so the user can review it.
+Output the PR URL.
 
 ## Guardrails
 
 - Never push to `main`.
-- Never push without explicit user confirmation.
-- Never skip the commit prefix when a ticket is known (see `CLAUDE.md`).
-- Never use `git add -A` or `git add .` — stage specific files.
-- If `gh` CLI is not available, show the push command and PR URL for
-  manual creation.
+- Never push without user confirmation (except autosteer).
+- Never skip commit prefix when ticket is known.
+- Never use `git add -A` or `git add .`.
+- If `gh` unavailable, show manual push/PR instructions.
