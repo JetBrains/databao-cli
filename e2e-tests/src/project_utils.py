@@ -38,7 +38,7 @@ def execute_init(project_dir: Path, db: PostgresDB | MysqlDB | SnowflakeDB | Big
 def execute_build(project_dir: Path):
     log_file_path = project_dir / "cli.log"
     with open(log_file_path, "w") as logfile:
-        env = {**os.environ, "NO_COLOR": "1"}
+        env = {**os.environ, "NO_COLOR": "1", "TERM": "dumb"}
         child = pexpect.spawn("uv run databao build", cwd=project_dir, encoding="utf-8", timeout=900, logfile=logfile, env=env)
         try:
             with allure.step("Checking for Ollama model"):
