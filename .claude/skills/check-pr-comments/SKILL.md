@@ -26,9 +26,11 @@ gh api graphql -f query="
     repository(owner:\$owner, name:\$repo) {
       pullRequest(number:\$number) {
         reviewThreads(first:100) {
+          pageInfo { hasNextPage endCursor }
           nodes {
             id isResolved isOutdated
             comments(first:20) {
+              pageInfo { hasNextPage endCursor }
               nodes { id author{login} body path line url }
             }
           }

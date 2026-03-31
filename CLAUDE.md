@@ -6,22 +6,22 @@ Claude Code entrypoint for agent instructions in this repository.
 
 - Prefer concise updates with clear file/command references.
 - YouTrack MCP must be configured (see DEVELOPMENT.md). Use get_issue / update_issue tools.
-- **Pacing rule**: pause for user confirmation between phases (plan →
-  implement → validate → commit → PR). Small, safe actions within a phase
+- **Pacing rule**: pause for user confirmation between phases (plan ->
+  implement -> validate -> commit -> PR). Small, safe actions within a phase
   do not require a pause.
-  - **Exception — autosteer mode**: skip all inter-phase confirmations.
+  - **Exception -- autosteer mode**: skip all inter-phase confirmations.
     Stop only on quality-gate failures.
 
 ## Output Efficiency
 
-- No sycophantic openers ("Sure!", "Great question!", "Absolutely!") — lead with the answer.
+- No sycophantic openers ("Sure!", "Great question!", "Absolutely!") -- lead with the answer.
 - No hollow closings ("Let me know if you need anything!", "I hope this helps!").
-- No restating the user's prompt — execute immediately.
-- No unsolicited suggestions or scope creep — answer exact scope only.
-- No redundant file reads — read each file once per session unless changed.
+- No restating the user's prompt -- execute immediately.
+- No unsolicited suggestions or scope creep -- answer exact scope only.
+- No redundant file reads -- read each file once per session unless changed.
 - No unnecessary disclaimers unless there is a genuine safety risk.
-- When corrected, apply the correction as ground truth — no "You're absolutely right" preamble.
-- Code first, explanation after — only if non-obvious. No inline prose in code blocks.
+- When corrected, apply the correction as ground truth -- no "You're absolutely right" preamble.
+- Code first, explanation after -- only if non-obvious. No inline prose in code blocks.
 - Simplest working solution. No abstractions for single-use operations.
 - ASCII-only output: plain hyphens, straight quotes. Copy-paste safe.
 
@@ -76,9 +76,9 @@ Key directories:
 These three gates are **blocking** before any commit. Skills reference
 this section instead of repeating the commands.
 
-1. `make check` — ruff + mypy. Auto-fix ruff with `uv run ruff check --fix src/databao_cli && uv run ruff format src/databao_cli`, then re-run.
-2. `make test` — pytest. Fix failures before continuing.
-3. `make test-cov-check` — coverage threshold. Write tests if below 80%.
+1. `make check` -- ruff + mypy. Auto-fix ruff with `uv run ruff check --fix src/databao_cli && uv run ruff format src/databao_cli`, then re-run.
+2. `make test` -- pytest. Fix failures before continuing.
+3. `make test-cov-check` -- coverage threshold. Write tests if below 80%.
 
 ## Coding Guidelines
 

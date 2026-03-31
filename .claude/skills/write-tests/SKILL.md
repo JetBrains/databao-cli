@@ -22,10 +22,10 @@ Tests in `tests/` mirror source modules:
 
 | Source | Test file |
 |---|---|
-| `commands/init.py` | `tests/test_init.py` |
-| `commands/build.py` | `tests/test_build.py` |
-| `mcp/tools/<name>.py` | `tests/test_mcp.py` |
-| `commands/datasource/add.py` | `tests/test_add_datasource.py` |
+| `src/databao_cli/commands/init.py` | `tests/test_init.py` |
+| `src/databao_cli/commands/build.py` | `tests/test_build.py` |
+| `src/databao_cli/mcp/tools/<name>.py` | `tests/test_mcp.py` |
+| `src/databao_cli/commands/datasource/add.py` | `tests/test_add_datasource.py` |
 
 Add to existing file when possible.
 
