@@ -1165,7 +1165,7 @@ requires-dist = [
     { name = "databao-context-engine", extras = ["clickhouse"], marker = "extra == 'clickhouse'" },
     { name = "databao-context-engine", extras = ["mssql"], marker = "extra == 'mssql'" },
     { name = "databao-context-engine", extras = ["pdf"], marker = "extra == 'pdf'" },
-    { name = "databao-context-engine", extras = ["snowflake"], specifier = "~=0.7.1.dev1" },
+    { name = "databao-context-engine", extras = ["snowflake"], specifier = "~=0.7.1" },
     { name = "fastmcp", specifier = ">=2.0.0" },
     { name = "nh3", specifier = ">=0.2.15" },
     { name = "prettytable", specifier = ">=3.10.0" },
@@ -1232,7 +1232,7 @@ wheels = [
 
 [[package]]
 name = "databao-context-engine"
-version = "0.7.1.dev1"
+version = "0.7.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "duckdb" },
@@ -1245,9 +1245,9 @@ dependencies = [
     { name = "sqlparse" },
     { name = "xxhash" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/52/9c/6e11b09afbad26edf9326a53ffd4d384e86825a3f7bfc5eab36b252a61c0/databao_context_engine-0.7.1.dev1.tar.gz", hash = "sha256:dd58cbd284990f334c7c768b5ecb25ac63bd8cafae1022082c7e5c4d4847e771", size = 132709, upload-time = "2026-03-30T07:43:43.413Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8c/44/e42e4b0d3939313fa183569a3494c1d6e24c6c5c66eb678f464014920281/databao_context_engine-0.7.1.tar.gz", hash = "sha256:449d6e292a496b357f18f0e654bf751c52a1c5a380ea0c6029c5ea4eb7f2ed75", size = 132049, upload-time = "2026-03-31T08:07:22.477Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/8f/07/429773157c29576b347672a9433d3fa35482bd201827c6c6d764e9d25c87/databao_context_engine-0.7.1.dev1-py3-none-any.whl", hash = "sha256:cbe2ded07c733c2da509a23810f27e9535ee9763d1be059354e77a4f8df24bd5", size = 210150, upload-time = "2026-03-30T07:43:41.92Z" },
+    { url = "https://files.pythonhosted.org/packages/40/45/f0991598680baa26b852b0c11b0c19f224492885b0768a6f705e0667530f/databao_context_engine-0.7.1-py3-none-any.whl", hash = "sha256:c6527b16c2e74d00f1182bfd8ea18ae2a81e76df68c98e523f399745013cb64a", size = 210892, upload-time = "2026-03-31T08:07:21.261Z" },
 ]
 
 [package.optional-dependencies]
