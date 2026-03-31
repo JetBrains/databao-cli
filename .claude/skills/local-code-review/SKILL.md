@@ -1,6 +1,6 @@
 ---
 name: local-code-review
-description: Review local code changes in Databao repositories before a commit or PR. Use when the user wants a review of staged or unstaged diffs, local branches, or pre-merge changes. Focus on correctness, regressions, missing tests, API/CLI behavior changes, executor or tooling changes, dependency or plugin-loading risks, and user-visible behavior changes.
+description: Review local code changes for correctness, regressions, missing tests, and Databao-specific risks.
 argument-hint: "[scope: staged | branch | files:<path>]"
 context: fork
 agent: reviewer
@@ -8,150 +8,63 @@ agent: reviewer
 
 # Local Code Review
 
-You are reviewing code changes for the Databao CLI project.
-You have NO prior context about why these changes were made — review
-purely on merit.
+You are reviewing code changes for Databao CLI with NO prior context.
 
 ## Scope
 
-Review scope: $ARGUMENTS
+Review scope: $ARGUMENTS (default: `branch`)
 
-If no scope was provided, default to `branch`.
-
-Accepted scopes:
-
-- `staged` — review only staged changes (`git diff --cached`)
-- `branch` — review the branch diff against main (default)
-- `files:<path>` — review specific files or directories (e.g. `files:src/databao_cli/mcp/`)
-
-## Review Goal
-
-Find the highest-signal problems in the changes under review:
-
-- correctness bugs
-- regressions in user-visible behavior
-- broken or inconsistent integration behavior
-- dependency, packaging, or plugin-loading risks
-- missing or misaligned tests
-- docs or help-text drift for user-visible changes
-- formatting or linting issues
-
-Keep summaries brief.
+- `staged` -- `git diff --cached`
+- `branch` -- diff against main
+- `files:<path>` -- specific files/directories
 
 ## Steps
 
-### 1. Scope Discovery
+### 1. Discover changes
 
-Start by identifying what changed:
+Run `git status --short`, then inspect the relevant diff. Read diffs before
+reading large surrounding files.
 
-1. Run `git status --short`.
-2. Inspect the relevant changes based on the scope you were given:
-   - **branch**: diff from the merge base with the main branch
-   - **staged**: `git diff --cached --stat` and `git diff --cached`
-   - **files**: read the specified files and their recent git history
-3. Read the actual diffs for changed files before reading large surrounding files.
+### 2. Review
 
-Prefer `rg`, `git diff`, and targeted file reads over broad scans.
+1. Read the diff carefully.
+2. Read surrounding implementation for changed logic.
+3. Check related tests -- identify where tests should have changed but did not.
 
-### Databao Review Priorities
+#### Databao-specific priorities
 
-Pay extra attention to these repository-specific areas:
+Pay extra attention when changes touch:
+- CLI/API/UI behavior (defaults, help text, argument handling, output)
+- Agent/executor/model-provider wiring (provider defaults, tool contracts)
+- MCP/plugin/integration boundaries
+- Config/build/init flows, datasource/schema/context logic
+- Packaging/deps/lockfile (extras, entrypoints, transitive impact)
+- Test coverage for changed behavior
 
-- CLI, API, or UI behavior
-- agent, executor, or model-provider wiring
-- MCP, plugin, or integration boundaries
-- configuration, build, or initialization flows
-- datasource, schema, or context-building logic
-- dependency, packaging, extras, and lockfile changes
-- test coverage for changed behavior
+#### Validation
 
-If a change touches one of those areas, review both the changed code and related tests.
+Run non-mutating checks only:
+- `uv run pytest <targeted paths>` or full suite if practical
+- `uv run ruff check <paths>`, `uv run ruff format --check <paths>`
+- `uv run mypy <paths>`, `uv lock --check`
 
-Use these targeted checks when the diff touches the corresponding area:
+Never run `--fix` or mutating formatters in review mode.
 
-- CLI, API, or UI behavior:
-  check defaults, help text, argument handling, request or response contracts, and user-visible output
-- agent, executor, or integration wiring:
-  check provider and model defaults, executor names, tool contracts, and consistency across callers
-- plugin, datasource, or build flows:
-  check configuration prompts, validation paths, plugin-loading expectations, and schema or context drift
-- packaging and dependencies:
-  check extras wiring, entrypoints, transitive dependency impact, lockfile drift, and docs/help drift
-- tests:
-  verify that changed behavior has corresponding assertions or call out the gap explicitly.
-  Make sure the tests cover some real logical path and are not only trivial assertions.
+### 3. Report findings
 
-### 2. Review Workflow
+Order by severity. Each finding:
+- Severity label + concise title
+- Why it matters
+- File and line reference
+- Remediation direction (brief)
 
-1. Establish the review scope from git.
-2. Read the diff carefully.
-3. Read the surrounding implementation for changed logic.
-4. Check related tests, identify where tests should have changed but did not.
-5. Evaluate if new tests should be added to cover added functionality.
+Then: open questions, testing gaps, validation performed.
 
-Good validation options:
-
-- the full test suite when it is practical for the repo and review scope
-- targeted test runs for modified areas when they give a faster or more relevant signal
-- non-mutating lint checks
-- non-mutating formatter checks
-- type checks
-- lockfile or dependency metadata validation when package definitions changed
-
-Before running validation, inspect the repo's local tooling configuration and use commands that actually exist there.
-
-Examples, when configured in the current repo:
-
-- `uv run pytest <targeted paths>`
-- `uv run ruff check <targeted paths>`
-- `uv run ruff format --check <targeted paths>`
-- `uv run mypy <targeted paths>`
-- `uv lock --check`
-
-Default to running the full test suite when it is practical and likely to add useful confidence. Use targeted tests instead when the diff is narrow and a focused run is the better fit.
-
-Avoid mutating validation in review mode:
-
-- do not run formatter or linter commands with `--fix`
-- do not run formatting commands without a check-only mode when one exists
-- do not run wrapper commands like `make check` or `pre-commit` unless you have verified they are non-mutating
-
-### 3. Findings
-
-A good finding should:
-
-- identify a concrete bug, regression, or meaningful risk
-- explain why it matters in real behavior
-- point to the exact file and line
-- mention the missing validation if that is part of the risk
-
-Avoid weak findings like stylistic opinions, speculative architecture preferences, or advice not grounded in the diff.
-
-#### Output Format
-
-Return findings first, ordered by severity.
-
-For each finding:
-
-- short severity label
-- concise title
-- why it is a problem
-- file and line reference
-- brief remediation direction when obvious
-
-Then include:
-
-- open questions or assumptions
-- a short note on testing gaps or validation performed
-
-If there are no findings, say that clearly and still mention any residual risk or untested surface.
-
-Format the results using Markdown.
+No findings? Say so, mention residual risk or untested surface.
 
 ## Guardrails
 
-- Include short code snippets to illustrate suggested fixes, but keep them conceptual — avoid pasting full rewrites or verbose replacement blocks.
-- Do not bury findings under a long summary.
+- Short code snippets for fixes, not full rewrites.
+- Do not bury findings under summaries.
 - Do not claim tests passed unless you ran them.
-- Do not over-index on style when behavior risks exist.
-- Prefer explicit evidence from the diff and nearby code.
+- Prefer evidence from the diff over style opinions.

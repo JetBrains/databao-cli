@@ -1,6 +1,6 @@
 ---
 name: review-architecture
-description: Review architecture quality, maintainability, and developer experience before or after significant changes. Use when introducing a new CLI command or MCP tool, refactoring core module boundaries, diagnosing repeated dev friction, or preparing a PR with broad structural impact.
+description: Review architecture quality, maintainability, and developer experience.
 argument-hint: "[scope: branch | module:<path> | full]"
 context: fork
 agent: reviewer
@@ -8,82 +8,52 @@ agent: reviewer
 
 # Review Architecture
 
-You are reviewing the architecture of the Databao CLI project.
-You have NO prior context about why these changes were made — review
-purely on merit.
+You are reviewing Databao CLI architecture with NO prior context.
 
 ## Scope
 
-Review scope: $ARGUMENTS
+Review scope: $ARGUMENTS (default: `branch`)
 
-If no scope was provided, default to `branch`.
+- `branch` -- architecture of code changed on current branch
+- `module:<path>` -- specific module
+- `full` -- full project architecture
 
-Accepted scopes:
-
-- `branch` — review architecture of code changed on the current branch (default)
-- `module:<path>` — review a specific module (e.g. `module:src/databao_cli/mcp/`)
-- `full` — review the full project architecture
-
-## Primary sources of truth
-
-Review in this order:
+## Sources of truth
 
 1. `docs/architecture.md`
 2. `docs/python-coding-guidelines.md`
 3. `docs/testing-strategy.md`
 4. `CLAUDE.md`
-5. `README.md` (CLI usage and user-facing workflows)
-
-## Review goals
-
-- Confirm boundaries are clear and responsibilities are separated.
-- Confirm extension paths are low-friction (new command, MCP tool, UI page).
-- Confirm docs reflect real behavior and command paths.
-- Identify highest-impact improvements with minimal disruption.
+5. `README.md`
 
 ## Architecture checklist
 
-- Are modules aligned with single responsibility?
-- Are CLI concerns separated from business logic?
-- Is the Click command structure clean and discoverable?
-- Does `workflows/` stay free of business logic (delegates to `features/`)?
-- Are `features/` functions free of Click dependency (pure business operations)?
-- Is `shared/` limited to cross-feature utilities with no business logic of its own?
-- Are MCP tools properly isolated in their own module?
-- Are UI components reusable and page-specific logic separated?
-- Are errors actionable and surfaced at the right layer?
+- Modules aligned with single responsibility?
+- CLI concerns separated from business logic?
+- Click command structure clean and discoverable?
+- `workflows/` delegates to `features/`, no business logic?
+- `features/` free of Click dependency?
+- `shared/` limited to cross-feature utilities?
+- MCP tools properly isolated?
+- Errors actionable and surfaced at right layer?
 
 ## Dev UX checklist
 
-- Can a new contributor find the right entrypoints quickly?
-- Are `uv` / `make` commands obvious and consistent across docs/code?
-- Is local verification clear (`make check`, `make test`)?
-- Are defaults safe when environment/dependencies are missing?
-- Do naming and file layout reduce cognitive load?
-- Are common workflows discoverable in README + docs?
+- New contributors find entrypoints quickly?
+- `uv`/`make` commands obvious and consistent?
+- Defaults safe when deps missing?
+- Naming and layout reduce cognitive load?
 
 ## Output format
 
-Provide a concise report with these sections:
-
-1. **Current State**: 3-6 bullets on what is working well.
-2. **Risks / Gaps**: prioritized issues (High/Med/Low) with evidence.
-3. **Recommendations**: concrete changes, ordered by impact vs effort.
-4. **Doc Sync Needed**: exact files that should be updated.
-5. **Validation Plan**: minimal commands to verify proposed changes.
-
-## Recommendation style
-
-- Prefer small, composable changes over sweeping rewrites.
-- Tie every recommendation to a specific pain point.
-- Include expected developer benefit (speed, clarity, reliability).
-- Flag trade-offs explicitly.
-- Separate immediate actions from longer-term improvements.
+1. **Current State**: 3-6 bullets on what works well
+2. **Risks/Gaps**: prioritized (High/Med/Low) with evidence
+3. **Recommendations**: concrete, ordered by impact vs effort
+4. **Doc Sync**: files needing updates
+5. **Validation Plan**: commands to verify changes
 
 ## Guardrails
 
-- Do not invent architecture that conflicts with current code unless proposing it
-  explicitly as a future direction.
-- Do not request broad rewrites without clear ROI.
-- Keep proposals compatible with existing `uv` workflow and Click-based CLI.
-- Keep feedback actionable for the next pull request, not just aspirational.
+- Small composable changes over rewrites. Tie recommendations to pain points.
+- Keep proposals compatible with `uv` workflow and Click CLI.
+- Actionable for next PR, not aspirational.
