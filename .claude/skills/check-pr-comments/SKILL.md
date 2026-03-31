@@ -40,7 +40,9 @@ gh api graphql -f query="
   }" -F owner=<OWNER> -F repo=<REPO> -F number=<PR_NUMBER>
 ```
 
-Paginate if `hasNextPage` is true. Focus on `isResolved: false` threads.
+If `hasNextPage` is true, re-run the query adding `after: "<endCursor>"`
+to the corresponding connection (e.g., `reviewThreads(first:100, after:"<cursor>")`).
+Focus on `isResolved: false` threads.
 
 ### 3. Triage table -- stop for approval
 

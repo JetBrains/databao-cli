@@ -76,7 +76,7 @@ Key directories:
 These three gates are **blocking** before any commit. Skills reference
 this section instead of repeating the commands.
 
-1. `make check` -- ruff + mypy. Auto-fix ruff with `uv run ruff check --fix src/databao_cli && uv run ruff format src/databao_cli`, then re-run.
+1. `make check` -- runs `pre-commit run --all-files` (ruff, mypy, uv lock, agent guidance validation). Auto-fix ruff with `uv run ruff check --fix . && uv run ruff format .`, then re-run.
 2. `make test` -- pytest. Fix failures before continuing.
 3. `make test-cov-check` -- coverage threshold. Write tests if below 80%.
 

@@ -42,7 +42,7 @@ Set `State` to **Develop** via `update_issue`.
 
 ## Guardrails
 
-- Never create without user approval of summary/description/type.
+- Never create without user approval of summary/description/type (except in autosteer mode).
 - Always validate when user provides an existing ID.
 - If YouTrack MCP unavailable, refer to `DEVELOPMENT.md`.
 - Default to **DBA** project. Accept `DBA-XXX`, bare numbers, or URLs.
