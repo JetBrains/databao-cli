@@ -1,0 +1,88 @@
+[?25l⠋ Building datasources                                                       0/1
+⠋   [2mstarting…[0m                                                  ━━━━━━━━━━    0/?[2K[1A[2KDEBUG    Starting to build datasources in project                               
+         /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmpy41fes
+         x3test_databao_build_sqlite/databao/domains/root                       
+⠋ Building datasources                                                       0/1
+⠋   [2mstarting…[0m                                                  ━━━━━━━━━━    0/?[2K[1A[2KDEBUG    Running migrations on database:                                        
+         /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmpy41fes
+         x3test_databao_build_sqlite/databao/domains/root/output/dce.duckdb     
+⠋ Building datasources                                                       0/1
+⠋   [2mstarting…[0m                                                  ━━━━━━━━━━    0/?[2K[1A[2KDEBUG    Applied migrations: [1m[[0m[1m][0m                                                 
+⠋ Building datasources                                                       0/1
+⠋   [2mstarting…[0m                                                  ━━━━━━━━━━    0/?[2K[1A[2KDEBUG    Migrations to apply: [1m1[0m: V01__init.sql, [1m2[0m:                              
+         V02__add_keyword_index_text.sql, [1m3[0m:                                    
+         V03__add_indexed_datasource_table.sql, [1m4[0m: V04__add_chunk_type.sql      
+⠋ Building datasources                                                       0/1
+⠋   [2mstarting…[0m                                                  ━━━━━━━━━━    0/?[2K[1A[2KDEBUG    Applying migration V01__init.sql                                       
+⠋ Building datasources                                                       0/1
+⠋   [2mstarting…[0m                                                  ━━━━━━━━━━    0/?[2K[1A[2K⠙ Building datasources                                                       0/1
+⠙   [2mstarting…[0m                                        ━          ━━━━━━━━━━   0/?[2K[1A[2KDEBUG    Applying migration V02__add_keyword_index_text.sql                     
+⠙ Building datasources                                                       0/1
+⠙   [2mstarting…[0m                                        ━          ━━━━━━━━━━   0/?[2K[1A[2KDEBUG    Applying migration V03__add_indexed_datasource_table.sql               
+⠙ Building datasources                                                       0/1
+⠙   [2mstarting…[0m                                        ━          ━━━━━━━━━━   0/?[2K[1A[2KDEBUG    Applying migration V04__add_chunk_type.sql                             
+⠙ Building datasources                                                       0/1
+⠙   [2mstarting…[0m                                        ━          ━━━━━━━━━━   0/?[2K[1A[2KDEBUG    Migration complete                                                     
+⠙ Building datasources                                                       0/1
+⠙   [2mstarting…[0m                                        ━          ━━━━━━━━━━   0/?[2K[1A[2KDEBUG    Connected to DuckDB database at                                        
+         /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmpy41fes
+         x3test_databao_build_sqlite/databao/domains/root/output/dce.duckdb     
+⠙ Building datasources                                                       0/1
+⠙   [2mstarting…[0m                                        ━          ━━━━━━━━━━   0/?[2K[1A[2K⠹ Building datasources                                                       0/1
+⠹   [2mstarting…[0m                                        ━━━          ━━━━━━━━━━ 0/?[2K[1A[2K⠼ Building datasources                                                       0/1
+⠼   [2mstarting…[0m                                        ━━━━━          ━━━━━━━━ 0/?[2K[1A[2KDEBUG    Loaded full-text and vector search extensions                          
+⠼ Building datasources                                                       0/1
+⠼   [2mstarting…[0m                                        ━━━━━          ━━━━━━━━ 0/?[2K[1A[2KINFO     Ollama server not running. Starting Ollama server...                   
+⠼ Building datasources                                                       0/1
+⠼   [2mstarting…[0m                                        ━━━━━          ━━━━━━━━ 0/?[2K[1A[2K⠴ Building datasources                                                       0/1
+⠴   [2mstarting…[0m                                        ━━━━━━          ━━━━━━━ 0/?[2K[1A[2K⠦ Building datasources                                                       0/1
+⠦   [2mstarting…[0m                                        ━━━━━━━━          ━━━━━ 0/?[2K[1A[2K⠧ Building datasources                                                       0/1
+⠧   [2mstarting…[0m                                        ━━━━━━━━━          ━━━━ 0/?[2K[1A[2K⠏ Building datasources                                                       0/1
+⠏   [2mstarting…[0m                                         ━━━━━━━━━━          ━━ 0/?[2K[1A[2K⠋ Building datasources                                                       0/1
+⠋   [2mstarting…[0m                                          ━━━━━━━━━━          ━ 0/?[2K[1A[2KINFO     Started Ollama server                                                  
+⠋ Building datasources                                                       0/1
+⠋   [2mstarting…[0m                                          ━━━━━━━━━━          ━ 0/?[2K[1A[2KDEBUG    Ollama model nomic-embed-text:v1.[1m5[0m was already available, skipping pull
+⠋ Building datasources                                                       0/1
+⠋   [2mstarting…[0m                                          ━━━━━━━━━━          ━ 0/?[2K[1A[2KINFO     Found datasource of type "sqlite" with name test_sqlite_conn           
+⠋ Building datasources                                                       0/1
+⠋   [2mstarting…[0m                                          ━━━━━━━━━━          ━ 0/?[2K[1A[2KINFO     Exported result to                                                     
+         /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmpy41fes
+         x3test_databao_build_sqlite/databao/domains/root/output/test_sqlite_con
+         n.yaml                                                                 
+⠋ Building datasources                                                       0/1
+⠋   [2mstarting…[0m                                          ━━━━━━━━━━          ━ 0/?[2K[1A[2KDEBUG    Embedding [1m20[0m chunks for datasource test_sqlite_conn.yaml               
+⠋ Building datasources                                                       0/1
+⠋   [2mstarting…[0m                                          ━━━━━━━━━━          ━ 0/?[2K[1A[2K⠙ Building datasources                                                       0/1
+⠙   [2mtest_sqlite_conn[0m                                     ━━━━━━━━━━          0/?[2K[1A[2K⠸ Building datasources                                                       0/1
+⠸   [2mtest_sqlite_conn[0m                                       ━━━━━━━━━━        0/?[2K[1A[2K⠼ Building datasources                                                       0/1
+⠼   [2mtest_sqlite_conn[0m                                        ━━━━━━━━━━       0/?[2K[1A[2K⠴ Building datasources                                                       0/1
+⠴   [2mtest_sqlite_conn[0m                                          ━━━━━━━━━━     0/?[2K[1A[2K⠦ Building datasources                                                       0/1
+⠦   [2mtest_sqlite_conn[0m                                           ━━━━━━━━━━    0/?[2K[1A[2K⠇ Building datasources                                                       0/1
+⠇   [2mtest_sqlite_conn[0m                                 ━━          ━━━━━━━━━━  0/?[2K[1A[2K⠏ Building datasources                                                       0/1
+⠏   [2mtest_sqlite_conn[0m                                 ━━━          ━━━━━━━━━━ 0/?[2K[1A[2K⠋ Building datasources                                                       0/1
+⠋   [2mtest_sqlite_conn[0m                                 ━━━━━          ━━━━━━━━ 0/?[2K[1A[2K⠙ Building datasources                                                       0/1
+⠙   [2mtest_sqlite_conn[0m                                 ━━━━━━          ━━━━━━━ 0/?[2K[1A[2K⠸ Building datasources                                                       0/1
+⠸   [2mtest_sqlite_conn[0m                                 ━━━━━━━━          ━━━━━ 0/?[2K[1A[2K⠼ Building datasources                                                       0/1
+⠼   [2mtest_sqlite_conn[0m                                 ━━━━━━━━━          ━━━━ 0/?[2K[1A[2K⠴ Building datasources                                                       0/1
+⠴   [2mtest_sqlite_conn[0m                                  ━━━━━━━━━━          ━━ 0/?[2K[1A[2K⠧ Building datasources                                                       0/1
+⠧   [2mtest_sqlite_conn[0m                                   ━━━━━━━━━━          ━ 0/?[2K[1A[2K⠇ Building datasources                                                       0/1
+⠇   [2mtest_sqlite_conn[0m                                     ━━━━━━━━━━          0/?[2K[1A[2K⠏ Building datasources                                                       0/1
+⠏   [2mtest_sqlite_conn[0m                                       ━━━━━━━━━━        0/?[2K[1A[2K⠋ Building datasources                                                       0/1
+⠋   [2mtest_sqlite_conn[0m                                        ━━━━━━━━━━       0/?[2K[1A[2K⠹ Building datasources                                                       0/1
+⠹   [2mtest_sqlite_conn[0m                                          ━━━━━━━━━━     0/?[2K[1A[2K⠸ Building datasources                                                       0/1
+⠸   [2mtest_sqlite_conn[0m                                           ━━━━━━━━━━    0/?[2K[1A[2K⠼ Building datasources                                                       0/1
+⠼   [2mtest_sqlite_conn[0m                                 ━━          ━━━━━━━━━━  0/?[2K[1A[2K⠦ Building datasources                                                       0/1
+⠦   [2mtest_sqlite_conn[0m                                 ━━━          ━━━━━━━━━━ 0/?[2K[1A[2K⠧ Building datasources                                                       0/1
+⠧   [2mtest_sqlite_conn[0m                                 ━━━━━          ━━━━━━━━ 0/?[2K[1A[2K⠇ Building datasources                                                       0/1
+⠇   [2mtest_sqlite_conn[0m                                 ━━━━━━          ━━━━━━━ 0/?[2K[1A[2K⠏ Building datasources                                                       0/1
+⠏   [2mtest_sqlite_conn[0m                                 ━━━━━━━━          ━━━━━ 0/?[2K[1A[2K⠙ Building datasources                                                       0/1
+⠙   [2mtest_sqlite_conn[0m                                 ━━━━━━━━━          ━━━━ 0/?[2K[1A[2K⠹ Building datasources                                                       0/1
+⠹   [2mtest_sqlite_conn[0m                                  ━━━━━━━━━━          ━━ 0/?[2K[1A[2K⠸ Building datasources                                                       0/1
+⠸   [2mtest_sqlite_conn[0m                                   ━━━━━━━━━━          ━ 0/?[2K[1A[2K⠴ Building datasources                                                       0/1
+⠴   [2mtest_sqlite_conn[0m                                     ━━━━━━━━━━          0/?[2K[1A[2K⠦ Building datasources                                                       0/1
+⠦   [2mtest_sqlite_conn[0m                                       ━━━━━━━━━━        0/?[2K[1A[2K⠧ Building datasources                                                       0/1
+⠧   [2mtest_sqlite_conn[0m                                        ━━━━━━━━━━       0/?[2K[1A[2KDEBUG    Successfully built [1m1[0m/[1m1[0m datasources.                                    
+⠧ Building datasources                                                       0/1
+⠧   [2mtest_sqlite_conn[0m                                        ━━━━━━━━━━       0/?[2K[1A[2K⠇ Building datasources                                                       0/1
+⠇   [2mtest_sqlite_conn[0m                                         ━━━━━━━━━━      0/?
+[?25h[1A[2K[1A[2KBuild complete. Processed 1 datasources.
