@@ -1,5 +1,0 @@
-Ollama server not running. Starting Ollama server...
-Started Ollama server
-Found datasource of type "duckdb" with name test_duckdb_conn
-Exported result to /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmpl0e9n33mtest_databao_build_duckdb/databao/domains/root/output/test_duckdb_conn.yaml
-Build complete. Processed 1 datasources.
