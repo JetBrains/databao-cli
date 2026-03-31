@@ -13,7 +13,6 @@ _INDEX_START_RE = re.compile(r"^Indexing datasource (.+)$")
 _ENRICH_START_RE = re.compile(r"^Enriching context for datasource (.+)$")
 _SKIP_RE = re.compile(r"^Skipping disabled datasource (.+)$")
 _FAIL_RE = re.compile(r"^Failed to build source at \((.+?)\)")
-_FAIL_INDEX_RE = re.compile(r"^Failed to build source at \((.+?)\)")
 _FAIL_ENRICH_RE = re.compile(r"^Failed to enrich context for datasource \((.+?)\)")
 
 
@@ -58,7 +57,7 @@ class _ProgressTrackingHandler(logging.Handler):
             return
 
         # Datasource failed (after "Found datasource", so active is already True)
-        if _FAIL_RE.match(msg) or _FAIL_INDEX_RE.match(msg) or _FAIL_ENRICH_RE.match(msg):
+        if _FAIL_RE.match(msg) or _FAIL_ENRICH_RE.match(msg):
             if self._has_active:
                 self._progress.advance(self._overall_task)
                 self._has_active = False
