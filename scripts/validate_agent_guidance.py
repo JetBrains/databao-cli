@@ -53,7 +53,11 @@ class MdFile:
         m = re.match(r"^---\r?\n(.*?)\r?\n---(?:\r?\n|$)", self._content, re.DOTALL)
         if not m:
             return {}
-        parsed = yaml.safe_load(m.group(1))
+        try:
+            parsed = yaml.safe_load(m.group(1))
+        except yaml.YAMLError:
+            # Invalid YAML frontmatter: treat as missing frontmatter to avoid crashing.
+            return {}
         if not isinstance(parsed, dict):
             return {}
         return {str(k): str(v) for k, v in parsed.items()}
