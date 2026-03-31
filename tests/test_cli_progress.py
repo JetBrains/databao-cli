@@ -9,10 +9,10 @@ from unittest.mock import MagicMock, patch
 from databao_cli.shared.log.cli_progress import cli_progress
 
 
-def test_cli_progress_noop_when_not_tty() -> None:
-    """Progress context manager yields without error when stderr is not a TTY."""
-    with patch("sys.stderr") as mock_stderr:
-        mock_stderr.isatty.return_value = False
+def test_cli_progress_noop_when_not_terminal() -> None:
+    """Progress context manager yields without error when console is not a terminal."""
+    with patch("rich.console.Console") as mock_console_cls:
+        mock_console_cls.return_value.is_terminal = False
         with cli_progress(total=5, label="Test"):
             pass  # Should not raise
 

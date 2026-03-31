@@ -97,11 +97,13 @@ def cli_progress(total: int | None = None, label: str = "Datasources") -> Iterat
         yield
         return
 
-    if not sys.stderr.isatty():
+    console = Console(stderr=True)
+
+    # Rich's is_terminal already checks isatty(), NO_COLOR, TERM=dumb, etc.
+    # This prevents progress bar ANSI output from breaking pexpect-based e2e tests.
+    if not console.is_terminal:
         yield
         return
-
-    console = Console(stderr=True)
 
     progress = Progress(
         SpinnerColumn(),
