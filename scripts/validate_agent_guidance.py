@@ -119,16 +119,12 @@ def validate_skill_structure(claude: ClaudeDir) -> list[str]:
                 value = fm.get(field)
                 # Require non-empty string values for required fields
                 if not isinstance(value, str) or not value.strip():
-                    errors.append(
-                        f"{skill_name}/SKILL.md frontmatter field '{field}' must be a non-empty string"
-                    )
+                    errors.append(f"{skill_name}/SKILL.md frontmatter field '{field}' must be a non-empty string")
             name_value = fm.get("name")
             if isinstance(name_value, str):
                 name_stripped = name_value.strip()
                 if name_stripped and name_stripped != skill_name:
-                    errors.append(
-                        f"{skill_name}/SKILL.md frontmatter 'name' ({name_value!r}) does not match directory name"
-                    )
+                    errors.append(f"{skill_name}/SKILL.md frontmatter 'name' ({name_value!r}) does not match directory name")
 
         if not md.has_top_level_heading:
             errors.append(f"{skill_name}/SKILL.md missing top-level heading (# Title)")
