@@ -7,11 +7,14 @@ from databao_context_engine import Choice, UserInputCallback
 class ClickUserInputCallback(UserInputCallback):
     def prompt(
         self,
-        text: str,
+        property_key: str,
+        required: bool,
         type: Choice | Any | None = None,
         default_value: Any | None = None,
         is_secret: bool = False,
     ) -> Any:
+        prompt_text = f"{property_key}?{' (Optional)' if not required else ''}"
+
         show_default = default_value is not None and default_value != ""
         final_type = click.Choice(type.choices) if isinstance(type, Choice) else str
 
@@ -22,7 +25,7 @@ class ClickUserInputCallback(UserInputCallback):
             click_default = ""
 
         return click.prompt(
-            text=text,
+            text=prompt_text,
             default=click_default,
             hide_input=is_secret,
             type=final_type,
