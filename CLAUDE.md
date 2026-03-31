@@ -11,6 +11,9 @@ Claude Code entrypoint for agent instructions in this repository.
   what you just did, then wait for a go-ahead before moving to the next
   phase. Small, safe actions within a phase (running tests, reading files)
   do not require a pause.
+  - **Exception — autosteer mode**: when the `autosteer` skill is active,
+    skip all inter-phase confirmations and proceed autonomously. Stop only
+    on quality-gate failures. See `.claude/skills/autosteer/SKILL.md`.
 
 ## References
 
@@ -101,8 +104,8 @@ style issues; do not manually fix formatting.
   full scope before writing any code.
 - When starting work on a ticket, move it to **Develop** state using
   `update_issue` (set `State` field).
-- After creating a PR, move the ticket to **Review** state and add the
-  PR URL as a comment.
+- After creating a PR, move the ticket to **Review** state and add a
+  comment with the PR URL and the Claude Code session cost (from `/cost`).
 ## Commit Messages
 
 - Format: `[DBA-XXX] <imperative summary>` (max 72 chars)
@@ -118,6 +121,8 @@ style issues; do not manually fix formatting.
 
 Each numbered step below is a **phase**. Present the outcome of each
 phase and wait for user confirmation before starting the next one.
+**Exception**: in autosteer mode (`/autosteer`), run all phases
+sequentially without pausing — stop only on quality-gate failures.
 
 1. **Plan** — outline the approach and list files you intend to change.
 2. **Implement** — write the code changes to satisfy the ticket
@@ -131,6 +136,7 @@ phase and wait for user confirmation before starting the next one.
    commit following **Commit Messages** conventions.
 6. **PR** — use the `create-pr` skill (pushes and opens the PR).
 7. **Update YouTrack** — move the ticket to **Review** state and add
-   a comment with the PR URL.
+   a comment with the PR URL and the Claude Code session cost (run
+   `/cost` to obtain it).
 
 Never commit directly to `main`.

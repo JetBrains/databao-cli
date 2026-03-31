@@ -1,4 +1,4 @@
-from databao_context_engine import ChunkEmbeddingMode, DatabaoContextDomainManager, DatasourceId, IndexDatasourceResult
+from databao_context_engine import DatabaoContextDomainManager, DatasourceId, IndexDatasourceResult
 
 from databao_cli.shared.log.cli_progress import cli_progress
 from databao_cli.shared.project.layout import ProjectLayout
@@ -16,8 +16,6 @@ def index_impl(
     total = len(datasource_ids) if datasource_ids is not None else len(manager.get_configured_datasource_list())
 
     with cli_progress(total=total, label="Indexing datasources"):
-        results: list[IndexDatasourceResult] = manager.index_built_contexts(
-            datasource_ids=datasource_ids, chunk_embedding_mode=ChunkEmbeddingMode.EMBEDDABLE_TEXT_ONLY
-        )
+        results: list[IndexDatasourceResult] = manager.index_built_contexts(datasource_ids=datasource_ids)
 
     return results

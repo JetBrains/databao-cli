@@ -1,14 +1,23 @@
 [![official project](https://jb.gg/badges/official.svg)](https://github.com/JetBrains#jetbrains-on-github)
 [![PyPI version](https://img.shields.io/pypi/v/databao.svg)](https://pypi.org/project/databao)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/JetBrains/databao-cli?tab=License-1-ov-file)
 
 <h1 align="center">Databao CLI</h1>
 
 <p align="center">A command-line interface tool for working with <a href="https://github.com/JetBrains/databao-agent">Databao Agent</a> and <a href="https://github.com/JetBrains/databao-context-engine">Databao Context Engine</a></p>
 
+<p align="center">
+ <a href="https://jetbrains.com/databao">Website</a> •
+ <a href="#quickstart">Quickstart</a> •
+ <a href="https://docs.databao.app">Docs</a> •
+ <a href="https://discord.gg/hEUqCcWdVh">Discord</a>
+</p>
+
+---
 
 ## Installation
 
-Databao CLI is [available on PyPI](https://pypi.org/project/databao/) 
+Databao CLI is [available on PyPI](https://pypi.org/project/databao/)
 and can be installed with uv, pip, or another package manager.
 
 ### Using uv
@@ -23,13 +32,17 @@ uv add databao
 pip install databao
 ```
 
-## Quick start
+## Quickstart
 
 1. Create a project directory and navigate to it:
 
    ```bash
    mkdir databao-project && cd databao-project
    ```
+
+   > [!TIP]
+   > Databao is not terminal-only.
+   > If you prefer the web interface, run `databao app` in your project directory.
 
 1. Initialize the project:
 
@@ -48,12 +61,16 @@ pip install databao
    databao build
    ```
 
-1. Pass your OpenAI API key as an environment variable:
+1. Pass your API key as an environment variable:
 
    ```bash
+   # OpenAI or OpenAI-compatible APIs
    export OPENAI_API_KEY=<your-key>
+
+   # Anthropic Claude
+   export ANTHROPIC_API_KEY=<your-key>
    ```
-   
+
 1. Run the Databao Agent:
 
    ```bash
@@ -67,6 +84,9 @@ pip install databao
    What is our refund rate by month?
    What is our 90-day repeat purchase rate
    ```
+
+For more details about commands, supported data sources, and configuration options,
+visit the [docs](https://docs.databao.app).
 
 ## Contributing
 
@@ -85,7 +105,7 @@ New to open source? No worries! We’re friendly and happy to help you get start
 
 Apache 2.0 — use it however you want.
 
-[//]: # (See the [LICENSE]&#40;LICENSE.md&#41; file for details.)
+See the [LICENSE](LICENSE) file for details.
 
 ---
 
@@ -94,6 +114,7 @@ Apache 2.0 — use it however you want.
 </p>
 
 <p align="center">
- <a href="https://databao.app">Website</a> •
+ <a href="https://jetbrains.com/databao">Website</a> •
+ <a href="https://docs.databao.app">Docs</a> •
  <a href="https://discord.gg/hEUqCcWdVh">Discord</a>
 </p>

@@ -10,9 +10,14 @@ from typing import Any, cast
 
 import streamlit as st
 from databao_context_engine import ConfiguredDatasource, DatasourceConnectionStatus
+from databao_context_engine.pluginlib.config import ConfigPropertyDefinition
 
+from databao_cli.features.datasource.validation import validate_datasource_name
 from databao_cli.features.ui.app import invalidate_agent
-from databao_cli.features.ui.components.datasource_form import render_datasource_config_form
+from databao_cli.features.ui.components.datasource_form import (
+    render_datasource_config_form,
+    validate_config_fields,
+)
 from databao_cli.features.ui.services.dce_operations import (
     add_datasource,
     get_available_datasource_types,
@@ -56,6 +61,22 @@ def render_datasource_manager(project_dir: Path, *, read_only: bool = False) -> 
         _render_existing_datasource(project_dir, ds, idx, read_only=read_only)
 
 
+def _validate_new_datasource_inputs(ds_name: str | None, selected_type: str | None) -> str | None:
+    """Validate the datasource name and type, showing errors via ``st.error``.
+
+    Returns the stripped name on success, or ``None`` if validation failed.
+    """
+    stripped_name = (ds_name or "").strip()
+    name_error = validate_datasource_name(stripped_name)
+    if name_error:
+        st.error(name_error)
+        return None
+    if not selected_type:
+        st.error("Please select a datasource type.")
+        return None
+    return stripped_name
+
+
 def _get_form_version() -> int:
     """Get the current form version counter used to reset widget keys."""
     if "_new_ds_form_version" not in st.session_state:
@@ -89,6 +110,7 @@ def _render_add_datasource_section(project_dir: Path) -> None:
     )
 
     config_values: dict[str, Any] = {}
+    config_fields: list[ConfigPropertyDefinition] = []
     if selected_type:
         try:
             config_fields = get_datasource_config_fields(selected_type)
@@ -105,13 +127,15 @@ def _render_add_datasource_section(project_dir: Path) -> None:
 
     with col_add:
         if st.button("Add datasource", key="add_ds_btn", type="primary", use_container_width=True):
-            if not ds_name or not ds_name.strip():
-                st.error("Please provide a datasource name.")
-            elif not selected_type:
-                st.error("Please select a datasource type.")
+            validated = _validate_new_datasource_inputs(ds_name, selected_type)
+            if validated is None:
+                pass  # errors already shown
+            elif config_fields and (field_errors := validate_config_fields(config_fields, config_values)):
+                for err in field_errors:
+                    st.error(err)
             else:
                 try:
-                    add_datasource(project_dir, selected_type, ds_name.strip(), config_values)
+                    add_datasource(project_dir, selected_type, validated, config_values)
                     _clear_new_datasource_form()
                     st.rerun()
                 except Exception as e:
@@ -120,11 +144,15 @@ def _render_add_datasource_section(project_dir: Path) -> None:
 
     with col_verify_new:
         if st.button("Verify connection", key="verify_new_ds_btn", use_container_width=True):
-            if not ds_name or not ds_name.strip() or not selected_type:
-                st.error("Please provide a datasource name and type first.")
+            validated = _validate_new_datasource_inputs(ds_name, selected_type)
+            if validated is None:
+                pass  # errors already shown
+            elif config_fields and (field_errors := validate_config_fields(config_fields, config_values)):
+                for err in field_errors:
+                    st.error(err)
             else:
                 try:
-                    result = verify_datasource_config(selected_type, ds_name.strip(), config_values)
+                    result = verify_datasource_config(selected_type, validated, config_values)
                     if result.connection_status == DatasourceConnectionStatus.VALID:
                         st.success("Connection valid.")
                     elif result.connection_status == DatasourceConnectionStatus.UNKNOWN:
@@ -177,12 +205,16 @@ def _render_existing_datasource(project_dir: Path, ds: ConfiguredDatasource, idx
                     disabled=not has_changes,
                     use_container_width=True,
                 ):
-                    try:
-                        save_datasource(project_dir, ds_type, ds_name, edited_values)
-                        st.success("Saved.")
-                        st.rerun()
-                    except Exception as e:
-                        st.error(f"Save failed: {e}")
+                    if config_fields and (field_errors := validate_config_fields(config_fields, edited_values)):
+                        for err in field_errors:
+                            st.error(err)
+                    else:
+                        try:
+                            save_datasource(project_dir, ds_type, ds_name, edited_values)
+                            st.success("Saved.")
+                            st.rerun()
+                        except Exception as e:
+                            st.error(f"Save failed: {e}")
 
             with col_verify:
                 if st.button("Verify", key=f"verify_ds_{idx}", use_container_width=True):

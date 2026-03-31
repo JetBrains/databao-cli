@@ -5,7 +5,7 @@ from pathlib import Path
 
 @dataclass(frozen=True)
 class SqliteDB:
-    datasource_name: str | None = "test sqlite conn"
+    datasource_name: str | None = "test_sqlite_conn"
     datasource_type: str = "sqlite"
     database_path: Path | None = None
     check_connection: bool = False

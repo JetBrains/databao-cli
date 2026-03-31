@@ -54,6 +54,9 @@ Description:
 Ask the user to **approve, edit, or reject** the draft.
 If the user rejects and does not want a ticket, respect that and stop.
 
+> **Autosteer exception**: if autosteer mode is active, skip the approval
+> prompt and create the issue immediately using the drafted values.
+
 ### 4. Create the issue
 
 After the user approves (or edits and then approves):

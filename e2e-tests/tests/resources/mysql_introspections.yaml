@@ -1,7 +1,6 @@
 # ===== test_mysql_conn.yaml =====
 datasource_id: test_mysql_conn.yaml
 datasource_type: mysql
-context_built_at: 2026-02-26 16:12:59.000053
 context:
   catalogs:
   - name: test
@@ -13,241 +12,106 @@ context:
         - name: id
           type: int
           nullable: false
-          description: null
-          default_expression: null
           generated: identity
-          checks: []
         - name: tinyint_col
           type: tinyint
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: smallint_col
           type: smallint
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: mediumint_col
           type: mediumint
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: int_col
           type: int
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: bigint_col
           type: bigint
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: decimal_col
           type: decimal(10,2)
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: float_col
           type: float
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: double_col
           type: double
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: bit_col
           type: bit(4)
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: boolean_col
           type: tinyint(1)
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: date_col
           type: date
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: time_col
           type: time
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: datetime_col
           type: datetime
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: timestamp_col
           type: timestamp
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: year_col
           type: year
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: char_col
           type: char(5)
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: varchar_col
           type: varchar(50)
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: binary_col
           type: binary(4)
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: varbinary_col
           type: varbinary(10)
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: tinytext_col
           type: tinytext
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: text_col
           type: text
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: mediumtext_col
           type: mediumtext
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: longtext_col
           type: longtext
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: tinyblob_col
           type: tinyblob
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: blob_col
           type: blob
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: mediumblob_col
           type: mediumblob
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: longblob_col
           type: longblob
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: enum_col
           type: enum('active','inactive','pending')
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: set_col
           type: set('a','b','c')
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: json_col
           type: json
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: point_col
           type: point
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: linestring_col
           type: linestring
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         - name: polygon_col
           type: polygon
           nullable: true
-          description: null
-          default_expression: null
-          generated: null
-          checks: []
         samples:
         - id: 1
           tinyint_col: 1
@@ -258,8 +122,7 @@ context:
           decimal_col: '12345.67'
           float_col: 3.14
           double_col: 3.1415926535
-          bit_col: !!binary |
-            Cg==
+          bit_col: <bytes, 1 bytes>
           boolean_col: 1
           date_col: 2025-01-01
           time_col: '12:30:00'
@@ -268,44 +131,25 @@ context:
           year_col: 2025
           char_col: ABCDE
           varchar_col: Hello MySQL
-          binary_col: !!binary |
-            QUJDRA==
-          varbinary_col: !!binary |
-            dmFyYmlu
+          binary_col: <bytes, 4 bytes>
+          varbinary_col: <bytes, 6 bytes>
           tinytext_col: tiny text
           text_col: regular text column
           mediumtext_col: medium text column
           longtext_col: long text column
-          tinyblob_col: !!binary |
-            qg==
-          blob_col: !!binary |
-            3q2+7w==
-          mediumblob_col: !!binary |
-            3q2+796tvu8=
-          longblob_col: !!binary |
-            3q2+796tvu/erb7v
+          tinyblob_col: <bytes, 1 bytes>
+          blob_col: <bytes, 4 bytes>
+          mediumblob_col: <bytes, 8 bytes>
+          longblob_col: <bytes, 12 bytes>
           enum_col: active
           set_col: a,b
           json_col: '{"key": "value"}'
-          point_col: !!binary |
-            AAAAAAEBAAAAAAAAAAAA8D8AAAAAAAAAQA==
-          linestring_col: !!binary |
-            AAAAAAECAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwPwAAAAAAAPA/AAAAAAAAAEAAAAAA
-            AAAAQA==
-          polygon_col: !!binary |
-            AAAAAAEDAAAAAQAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUQAAAAAAAABRA
-            AAAAAAAAFEAAAAAAAAAUQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==
-        partition_info: null
-        description: null
+          point_col: <bytes, 25 bytes>
+          linestring_col: <bytes, 61 bytes>
+          polygon_col: <bytes, 97 bytes>
         kind: table
         primary_key:
           name: PRIMARY
           columns:
           - id
           validated: true
-        unique_constraints: []
-        checks: []
-        indexes: []
-        foreign_keys: []
-      description: null
-    description: null

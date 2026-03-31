@@ -17,7 +17,12 @@ from streamlit.navigation.page import StreamlitPage
 from databao_cli.features.ui.components.status import AppStatus, set_status, status_context
 from databao_cli.features.ui.models.chat_session import ChatSession
 from databao_cli.features.ui.models.settings import LLMSettings
-from databao_cli.features.ui.project_utils import DatabaoProjectStatus, databao_project_status, has_build_output
+from databao_cli.features.ui.project_utils import (
+    DatabaoProjectStatus,
+    databao_project_status,
+    get_build_fingerprint,
+    has_build_output,
+)
 from databao_cli.features.ui.services.storage import get_cache_dir
 from databao_cli.shared.project.layout import ProjectLayout, find_project
 
@@ -128,6 +133,8 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
         _agent = create_agent(**kwargs)  # type: ignore[arg-type]
 
         st.session_state.agent = _agent
+        st.session_state.build_fingerprint = get_build_fingerprint(project)
+        st.session_state.new_build_available = False
 
         return _agent
 
@@ -310,6 +317,11 @@ def init_session_state() -> None:
 
     if "title_futures" not in st.session_state:
         st.session_state.title_futures = {}
+
+    if "build_fingerprint" not in st.session_state:
+        st.session_state.build_fingerprint = 0.0
+    if "new_build_available" not in st.session_state:
+        st.session_state.new_build_available = False
 
     if "build_status" not in st.session_state:
         st.session_state.build_status = "not_started"

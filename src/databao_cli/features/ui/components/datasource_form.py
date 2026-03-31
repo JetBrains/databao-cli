@@ -14,7 +14,106 @@ from databao_context_engine.pluginlib.config import (
     ConfigUnionPropertyDefinition,
 )
 
+from databao_cli.features.datasource.validation import validate_hostname, validate_port
+
 SKIP_TOP_LEVEL_KEYS = {"type", "name"}
+
+# Field keys that represent a network host.
+_HOST_KEYS = {"host", "hostname"}
+
+# Field keys that represent a network port.
+_PORT_KEYS = {"port"}
+
+
+def validate_config_fields(
+    config_fields: list[ConfigPropertyDefinition],
+    values: dict[str, Any],
+) -> list[str]:
+    """Return human-readable error strings for invalid or missing fields.
+
+    Checks are applied recursively but only to leaf
+    ``ConfigSinglePropertyDefinition`` nodes.  Checks performed:
+
+    * Required fields must not be empty.
+    * ``int``-typed fields must be valid integers.
+    * Fields named ``port`` must be in the 1-65535 range.
+    * Fields named ``host`` / ``hostname`` must be valid hostnames or IPs.
+    """
+    return _validate_fields_recursive(config_fields, values)
+
+
+def _validate_fields_recursive(
+    config_fields: list[ConfigPropertyDefinition],
+    values: dict[str, Any],
+    path_prefix: str = "",
+) -> list[str]:
+    errors: list[str] = []
+    for prop in config_fields:
+        # Only skip special top-level keys like "type" / "name".
+        if not path_prefix and prop.property_key in SKIP_TOP_LEVEL_KEYS:
+            continue
+
+        full_key = f"{path_prefix}{prop.property_key}" if path_prefix else prop.property_key
+
+        if isinstance(prop, ConfigUnionPropertyDefinition):
+            union_vals = values.get(prop.property_key, {})
+            if not isinstance(union_vals, dict):
+                union_vals = {}
+            type_choices = {t.__name__: t for t in prop.types}
+            selected_name = union_vals.get("type") or _infer_union_type(union_vals, type_choices, prop.type_properties)
+            if selected_name and selected_name in type_choices:
+                selected_type = type_choices[selected_name]
+                nested_props = prop.type_properties.get(selected_type, [])
+                errors.extend(_validate_fields_recursive(nested_props, union_vals, f"{full_key}."))
+            elif len(prop.types) == 1:
+                sole_type = prop.types[0]
+                nested_props = prop.type_properties.get(sole_type, [])
+                errors.extend(_validate_fields_recursive(nested_props, union_vals, f"{full_key}."))
+            elif len(prop.types) > 1:
+                errors.append(
+                    f"{full_key}: union type could not be determined; "
+                    "select a configuration variant and provide required fields"
+                )
+            continue
+
+        if isinstance(prop, ConfigSinglePropertyDefinition):
+            if prop.nested_properties:
+                nested_vals = values.get(prop.property_key, {})
+                if not isinstance(nested_vals, dict):
+                    nested_vals = {}
+                errors.extend(_validate_fields_recursive(prop.nested_properties, nested_vals, f"{full_key}."))
+                continue
+
+            raw = values.get(prop.property_key)
+            text = str(raw).strip() if raw is not None else ""
+
+            # Required check.
+            if prop.required and not text:
+                errors.append(f"{full_key}: required field is empty")
+                continue
+
+            if not text:
+                continue
+
+            # Type-specific checks.
+            if prop.property_key in _PORT_KEYS:
+                port_err = validate_port(text)
+                if port_err:
+                    errors.append(f"{full_key}: {port_err}")
+                    continue
+            elif prop.property_type is int:
+                try:
+                    int(text)
+                except ValueError:
+                    errors.append(f"{full_key}: must be a valid integer")
+                    continue
+
+            if prop.property_key in _HOST_KEYS:
+                host_err = validate_hostname(text)
+                if host_err:
+                    errors.append(f"{full_key}: {host_err}")
+
+    return errors
 
 
 def render_datasource_config_form(

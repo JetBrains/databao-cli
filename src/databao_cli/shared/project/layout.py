@@ -1,8 +1,12 @@
+import logging
 import os
 from dataclasses import dataclass
 from pathlib import Path
 
+logger = logging.getLogger(__name__)
+
 ROOT_DOMAIN = "root"
+BUILD_SENTINEL = ".build_complete"
 
 
 def get_databao_project_dir(project_dir: Path) -> Path:
@@ -47,6 +51,16 @@ class ProjectLayout:
     def get_domain_names(self) -> list[str]:
         domains_dir = self.domains_dir
         return [domain for domain in os.listdir(domains_dir) if (domains_dir / domain).is_dir()]
+
+
+def write_build_sentinel(domain_dir: Path) -> None:
+    """Write a sentinel file to signal that a build has completed."""
+    sentinel = domain_dir / BUILD_SENTINEL
+    try:
+        sentinel.write_text("")
+        logger.debug("Wrote build sentinel: %s", sentinel)
+    except OSError:
+        logger.warning("Failed to write build sentinel: %s", sentinel, exc_info=True)
 
 
 def find_project(initial_dir: Path) -> ProjectLayout | None:

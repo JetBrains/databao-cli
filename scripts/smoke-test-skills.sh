@@ -24,7 +24,7 @@ run_test() {
 }
 
 echo "=== Tier 1: Static validation ==="
-run_test "validate-agent-guidance" "scripts/validate-agent-guidance.sh"
+run_test "validate-agent-guidance" "make lint-skills"
 
 echo ""
 echo "=== Tier 2: Functional smoke tests ==="
