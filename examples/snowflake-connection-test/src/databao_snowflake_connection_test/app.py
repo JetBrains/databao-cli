@@ -212,11 +212,12 @@ def main() -> None:
     database = os.environ.get("SNOWFLAKE_DS_DATABASE", "LS_SF_STREAMLIT_TEST")
     auth_mode = "OAuth session token (SiS)" if _is_running_in_snowflake() else "externalbrowser"
     token = _get_sis_token() if _is_running_in_snowflake() else None
+    host = _get_snowflake_host() if _is_running_in_snowflake() else None
 
     st.markdown("**Connection parameters** (from environment variables)")
     st.table({
-        "Parameter": ["Account", "Warehouse", "Database", "Auth", "Token"],
-        "Value": [account or "—", warehouse or "—", database or "—", auth_mode, token or "—"],
+        "Parameter": ["Account", "Warehouse", "Database", "Host", "Auth", "Token"],
+        "Value": [account or "—", warehouse or "—", database or "—", host or "—", auth_mode, token or "—"],
     })
 
     if not account:
