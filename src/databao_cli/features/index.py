@@ -13,9 +13,7 @@ def index_impl(
 
     manager = DatabaoContextDomainManager(domain_dir=dce_project_dir)
 
-    total = len(datasource_ids) if datasource_ids is not None else len(manager.get_configured_datasource_list())
-
-    with cli_progress(total=total, label="Indexing datasources"):
-        results: list[IndexDatasourceResult] = manager.index_built_contexts(datasource_ids=datasource_ids)
+    with cli_progress() as progress:
+        results: list[IndexDatasourceResult] = manager.index_built_contexts(datasource_ids=datasource_ids, progress=progress)
 
     return results

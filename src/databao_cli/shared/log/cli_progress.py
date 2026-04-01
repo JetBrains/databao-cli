@@ -1,108 +1,103 @@
 from __future__ import annotations
 
 import logging
-import re
 import sys
 from collections.abc import Iterator
 from contextlib import contextmanager
-from typing import Any
+from typing import TypedDict
 
-# Log patterns emitted by databao_context_engine.build_sources.build_runner
-_BUILD_START_RE = re.compile(r'^Found datasource of type ".*" with name (.+)$')
-_INDEX_START_RE = re.compile(r"^Indexing datasource (.+)$")
-_ENRICH_START_RE = re.compile(r"^Enriching context for datasource (.+)$")
-_SKIP_RE = re.compile(r"^Skipping disabled datasource (.+)$")
-_FAIL_RE = re.compile(r"^Failed to build source at \((.+?)\)")
-_FAIL_ENRICH_RE = re.compile(r"^Failed to enrich context for datasource \((.+?)\)")
+from databao_context_engine.progress.progress import (
+    ProgressCallback,
+    ProgressEvent,
+    ProgressKind,
+    ProgressStep,
+)
 
 
-class _ProgressTrackingHandler(logging.Handler):
-    """Intercepts databao_context_engine log messages to drive a Rich progress bar.
+def _noop_progress_cb(_: ProgressEvent) -> None:
+    return
 
-    The library processes datasources sequentially. It logs "Found datasource..."
-    at the START of each one. We advance the progress bar when we detect that
-    a new datasource has started (meaning the previous one finished), and once
-    more when the context manager exits (for the last datasource).
-    """
 
-    def __init__(
-        self,
-        progress: Any,
-        overall_task: Any,
-        datasource_task: Any,
-    ) -> None:
-        super().__init__()
-        self._progress = progress
-        self._overall_task = overall_task
-        self._datasource_task = datasource_task
-        self._has_active = False  # whether a datasource is currently being processed
-
-    def emit(self, record: logging.LogRecord) -> None:
-        msg = record.getMessage()
-
-        # Datasource processing started
-        m = _BUILD_START_RE.match(msg) or _INDEX_START_RE.match(msg) or _ENRICH_START_RE.match(msg)
-        if m:
-            if self._has_active:
-                # Previous datasource finished — advance
-                self._progress.advance(self._overall_task)
-            self._has_active = True
-            name = m.group(1)
-            self._progress.update(self._datasource_task, description=f"  [dim]{name}[/dim]")
-            return
-
-        # Datasource skipped (immediately done)
-        if _SKIP_RE.match(msg):
-            self._progress.advance(self._overall_task)
-            return
-
-        # Datasource failed (after "Found datasource", so active is already True)
-        if _FAIL_RE.match(msg) or _FAIL_ENRICH_RE.match(msg):
-            if self._has_active:
-                self._progress.advance(self._overall_task)
-                self._has_active = False
-            return
-
-    def finish(self) -> None:
-        """Advance for the last datasource that was being processed."""
-        if self._has_active:
-            self._progress.advance(self._overall_task)
-            self._has_active = False
+class _UIState(TypedDict):
+    datasource_index: int | None
+    datasource_total: int | None
+    step_plan: tuple[ProgressStep, ...] | None
+    completed_steps: set[ProgressStep]
+    active_step: ProgressStep | None
+    current_units_completed: int | None
+    current_units_total: int | None
+    last_percent: float
 
 
 @contextmanager
-def cli_progress(total: int | None = None, label: str = "Datasources") -> Iterator[None]:
-    """Show a Rich progress bar during build/index operations.
-
-    Intercepts ``databao_context_engine`` log messages to track per-datasource progress.
-    Redirects library logging through Rich for clean TTY output.
-
-    Args:
-        total: Number of datasources to process.
-        label: Label for the overall progress bar.
-    """
+def cli_progress() -> Iterator[ProgressCallback]:
     try:
         from rich.console import Console
         from rich.logging import RichHandler
         from rich.progress import (
             BarColumn,
-            MofNCompleteColumn,
             Progress,
             SpinnerColumn,
+            TaskID,
+            TaskProgressColumn,
             TextColumn,
         )
         from rich.table import Column
     except ImportError:
-        yield
+        yield _noop_progress_cb
+        return
+
+    if not sys.stderr.isatty():
+        yield _noop_progress_cb
         return
 
     console = Console(stderr=True)
 
-    # Rich's is_terminal already checks isatty(), NO_COLOR, TERM=dumb, etc.
-    # This prevents progress bar ANSI output from breaking pexpect-based e2e tests.
-    if not console.is_terminal:
-        yield
-        return
+    @contextmanager
+    def _use_rich_console_logging() -> Iterator[None]:
+        logger_names = ("databao_context_engine", "databao_cli")
+        previous_state: dict[str, tuple[list[logging.Handler], bool]] = {}
+
+        def _is_console_handler(h: logging.Handler) -> bool:
+            return isinstance(h, logging.StreamHandler) and getattr(h, "stream", None) in (sys.stderr, sys.stdout)
+
+        rich_handler = RichHandler(
+            console=console,
+            show_time=False,
+            show_level=True,
+            show_path=False,
+            rich_tracebacks=False,
+        )
+
+        try:
+            for logger_name in logger_names:
+                logger = logging.getLogger(logger_name)
+                prev_handlers = list(logger.handlers)
+                prev_propagate = logger.propagate
+                previous_state[logger_name] = (prev_handlers, prev_propagate)
+
+                kept_handlers = [h for h in prev_handlers if not _is_console_handler(h)]
+                logger.handlers = [*kept_handlers, rich_handler]
+                logger.propagate = False
+
+            yield
+        finally:
+            for logger_name, (prev_handlers, prev_propagate) in previous_state.items():
+                logger = logging.getLogger(logger_name)
+                logger.handlers = prev_handlers
+                logger.propagate = prev_propagate
+
+    task_ids: dict[str, TaskID] = {}
+    progress_state: _UIState = {
+        "datasource_index": None,
+        "datasource_total": None,
+        "step_plan": None,
+        "completed_steps": set(),
+        "active_step": None,
+        "current_units_completed": None,
+        "current_units_total": None,
+        "last_percent": 0.0,
+    }
 
     progress = Progress(
         SpinnerColumn(),
@@ -111,49 +106,123 @@ def cli_progress(total: int | None = None, label: str = "Datasources") -> Iterat
             table_column=Column(width=50, overflow="ellipsis", no_wrap=True),
         ),
         BarColumn(),
-        MofNCompleteColumn(),
+        TaskProgressColumn(),
         transient=True,
         console=console,
+        redirect_stdout=True,
+        redirect_stderr=True,
     )
 
-    overall_task = progress.add_task(label, total=total)
-    datasource_task = progress.add_task("  [dim]starting…[/dim]", total=None)
+    def _get_or_create_overall_task(total: int | None) -> TaskID:
+        if "overall" not in task_ids:
+            task_ids["overall"] = progress.add_task("Datasources", total=total)
+        elif total is not None:
+            progress.update(task_ids["overall"], total=total)
+        return task_ids["overall"]
 
-    # --- logging setup ---
-    engine_logger = logging.getLogger("databao_context_engine")
-    cli_logger = logging.getLogger("databao_cli")
+    def _get_or_create_datasource_task() -> TaskID:
+        if "datasource" not in task_ids:
+            task_ids["datasource"] = progress.add_task("Datasource", total=None)
+        return task_ids["datasource"]
 
-    prev_engine = (list(engine_logger.handlers), engine_logger.propagate)
-    prev_cli = (list(cli_logger.handlers), cli_logger.propagate)
+    def _set_datasource_percent(percent: float) -> None:
+        task_id = _get_or_create_datasource_task()
+        clamped = max(0.0, min(100.0, percent))
+        progress.update(task_id, total=100.0, completed=clamped)
 
-    def _is_console_handler(h: logging.Handler) -> bool:
-        return isinstance(h, logging.StreamHandler) and getattr(h, "stream", None) in (sys.stderr, sys.stdout)
+    def _update_overall_description() -> None:
+        if "overall" not in task_ids:
+            return
+        idx = progress_state["datasource_index"]
+        total = progress_state["datasource_total"]
+        if idx is not None and total is not None:
+            progress.update(task_ids["overall"], description=f"Datasources {idx}/{total}")
 
-    rich_handler = RichHandler(
-        console=console,
-        show_time=False,
-        show_level=True,
-        show_path=False,
-        rich_tracebacks=False,
-    )
+    def _compute_percent() -> float | None:
+        step_plan = progress_state["step_plan"]
+        if not step_plan:
+            return None
 
-    tracker = _ProgressTrackingHandler(progress, overall_task, datasource_task)
-    tracker.setLevel(logging.DEBUG)
+        completed_count = sum(1 for step in step_plan if step in progress_state["completed_steps"])
 
-    try:
-        for lgr in (engine_logger, cli_logger):
-            kept = [h for h in lgr.handlers if not _is_console_handler(h)]
-            lgr.handlers = [*kept, rich_handler]
-            lgr.propagate = False
+        fraction = 0.0
+        active_step = progress_state["active_step"]
+        if (
+            active_step is not None
+            and active_step in step_plan
+            and active_step not in progress_state["completed_steps"]
+            and progress_state["current_units_completed"] is not None
+            and progress_state["current_units_total"] is not None
+            and progress_state["current_units_total"] > 0
+        ):
+            fraction = progress_state["current_units_completed"] / progress_state["current_units_total"]
 
-        engine_logger.addHandler(tracker)
+        return ((completed_count + fraction) / len(step_plan)) * 100.0
 
-        with progress:
-            yield
+    def _update_datasource_percent() -> None:
+        percent = _compute_percent()
+        if percent is None:
+            return
+        percent = max(progress_state["last_percent"], percent)
+        progress_state["last_percent"] = percent
+        _set_datasource_percent(percent)
 
-        tracker.finish()
-    finally:
-        engine_logger.handlers = prev_engine[0]
-        engine_logger.propagate = prev_engine[1]
-        cli_logger.handlers = prev_cli[0]
-        cli_logger.propagate = prev_cli[1]
+    def on_event(ev: ProgressEvent) -> None:
+        match ev.kind:
+            case ProgressKind.OPERATION_STARTED:
+                _get_or_create_overall_task(ev.operation_total)
+                return
+
+            case ProgressKind.OPERATION_FINISHED:
+                return
+
+            case ProgressKind.DATASOURCE_STARTED:
+                progress_state["datasource_index"] = ev.datasource_index
+                progress_state["datasource_total"] = ev.datasource_total
+                progress_state["step_plan"] = None
+                progress_state["completed_steps"] = set()
+                progress_state["active_step"] = None
+                progress_state["current_units_completed"] = None
+                progress_state["current_units_total"] = None
+                progress_state["last_percent"] = 0.0
+
+                _get_or_create_overall_task(ev.datasource_total)
+                _update_overall_description()
+
+                task_id = _get_or_create_datasource_task()
+
+                progress.reset(task_id, completed=0, total=None, description=f"    {ev.datasource_id or 'datasource'}")
+                return
+
+            case ProgressKind.DATASOURCE_STEP_PLAN_SET:
+                progress_state["step_plan"] = ev.step_plan
+                _update_datasource_percent()
+                return
+
+            case ProgressKind.DATASOURCE_STEP_COMPLETED:
+                if ev.step is not None:
+                    progress_state["completed_steps"].add(ev.step)
+                    if progress_state["active_step"] == ev.step:
+                        progress_state["active_step"] = None
+                        progress_state["current_units_completed"] = None
+                        progress_state["current_units_total"] = None
+                _update_datasource_percent()
+                return
+
+            case ProgressKind.DATASOURCE_STEP_PROGRESS:
+                progress_state["active_step"] = ev.step
+                progress_state["current_units_completed"] = ev.current_units_completed
+                progress_state["current_units_total"] = ev.current_units_total
+                _update_datasource_percent()
+                return
+
+            case ProgressKind.DATASOURCE_FINISHED:
+                _set_datasource_percent(100.0)
+
+                _get_or_create_overall_task(ev.datasource_total)
+                progress.advance(task_ids["overall"], 1)
+                _update_overall_description()
+                return
+
+    with _use_rich_console_logging(), progress:
+        yield on_event
