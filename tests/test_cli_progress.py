@@ -272,5 +272,7 @@ class TestApplyEventDatasourceFinished:
 
 
 def test_cli_progress_noop_when_not_terminal() -> None:
-    with patch("sys.stderr.isatty", return_value=False), cli_progress() as cb:
-        cb(_event(ProgressKind.OPERATION_STARTED, operation_total=1))
+    with patch("databao_cli.shared.log.cli_progress.rich_console") as mock_console:
+        mock_console.is_terminal = False
+        with cli_progress() as cb:
+            cb(_event(ProgressKind.OPERATION_STARTED, operation_total=1))

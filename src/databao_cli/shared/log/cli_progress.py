@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sys
 from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass, field
@@ -157,7 +156,9 @@ class _ProgressRenderer:
 
 @contextmanager
 def cli_progress() -> Iterator[ProgressCallback]:
-    if not sys.stderr.isatty():
+    # Rich's is_terminal already checks isatty(), NO_COLOR, TERM=dumb, etc.
+    # This prevents progress bar ANSI output from breaking pexpect-based e2e tests.
+    if not rich_console.is_terminal:
         yield _noop_progress_cb
         return
 
