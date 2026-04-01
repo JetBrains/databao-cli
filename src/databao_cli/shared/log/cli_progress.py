@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import logging
 import sys
 from collections.abc import Iterator
 from contextlib import contextmanager
@@ -12,6 +11,17 @@ from databao_context_engine.progress.progress import (
     ProgressKind,
     ProgressStep,
 )
+from rich.progress import (
+    BarColumn,
+    Progress,
+    SpinnerColumn,
+    TaskID,
+    TaskProgressColumn,
+    TextColumn,
+)
+from rich.table import Column
+
+from databao_cli.shared.log.console import rich_console
 
 
 def _noop_progress_cb(_: ProgressEvent) -> None:
@@ -31,61 +41,9 @@ class _UIState(TypedDict):
 
 @contextmanager
 def cli_progress() -> Iterator[ProgressCallback]:
-    try:
-        from rich.console import Console
-        from rich.logging import RichHandler
-        from rich.progress import (
-            BarColumn,
-            Progress,
-            SpinnerColumn,
-            TaskID,
-            TaskProgressColumn,
-            TextColumn,
-        )
-        from rich.table import Column
-    except ImportError:
-        yield _noop_progress_cb
-        return
-
     if not sys.stderr.isatty():
         yield _noop_progress_cb
         return
-
-    console = Console(stderr=True)
-
-    @contextmanager
-    def _use_rich_console_logging() -> Iterator[None]:
-        logger_names = ("databao_context_engine", "databao_cli")
-        previous_state: dict[str, tuple[list[logging.Handler], bool]] = {}
-
-        def _is_console_handler(h: logging.Handler) -> bool:
-            return isinstance(h, logging.StreamHandler) and getattr(h, "stream", None) in (sys.stderr, sys.stdout)
-
-        rich_handler = RichHandler(
-            console=console,
-            show_time=False,
-            show_level=True,
-            show_path=False,
-            rich_tracebacks=False,
-        )
-
-        try:
-            for logger_name in logger_names:
-                logger = logging.getLogger(logger_name)
-                prev_handlers = list(logger.handlers)
-                prev_propagate = logger.propagate
-                previous_state[logger_name] = (prev_handlers, prev_propagate)
-
-                kept_handlers = [h for h in prev_handlers if not _is_console_handler(h)]
-                logger.handlers = [*kept_handlers, rich_handler]
-                logger.propagate = False
-
-            yield
-        finally:
-            for logger_name, (prev_handlers, prev_propagate) in previous_state.items():
-                logger = logging.getLogger(logger_name)
-                logger.handlers = prev_handlers
-                logger.propagate = prev_propagate
 
     task_ids: dict[str, TaskID] = {}
     progress_state: _UIState = {
@@ -108,7 +66,7 @@ def cli_progress() -> Iterator[ProgressCallback]:
         BarColumn(),
         TaskProgressColumn(),
         transient=True,
-        console=console,
+        console=rich_console,
         redirect_stdout=True,
         redirect_stderr=True,
     )
@@ -224,5 +182,5 @@ def cli_progress() -> Iterator[ProgressCallback]:
                 _update_overall_description()
                 return
 
-    with _use_rich_console_logging(), progress:
+    with progress:
         yield on_event
