@@ -19,6 +19,7 @@ import os
 from pathlib import Path
 
 import databao.agent as bao
+import duckdb
 import snowflake
 import streamlit as st
 from databao_context_engine import SnowflakeConnectionProperties, SnowflakeOAuthAuth
@@ -247,6 +248,46 @@ def main() -> None:
                 st.success(f"Databao connection successful. {message}")
             except Exception as exc:
                 st.error(f"Databao connection failed: {exc}")
+
+    # --- DuckDB Chat ---
+    st.divider()
+    st.subheader("DuckDB Chat")
+
+    if "duckdb_conn" not in st.session_state:
+        st.session_state.duckdb_conn = duckdb.connect()
+
+    if "duckdb_messages" not in st.session_state:
+        st.session_state.duckdb_messages: list[dict[str, object]] = []
+
+    for msg in st.session_state.duckdb_messages:
+        with st.chat_message(msg["role"]):
+            if msg["role"] == "user":
+                st.code(msg["content"], language="sql")
+            else:
+                if isinstance(msg["content"], str):
+                    st.markdown(msg["content"])
+                else:
+                    st.dataframe(msg["content"])
+
+    if query := st.chat_input("Enter a SQL query for DuckDB"):
+        st.session_state.duckdb_messages.append({"role": "user", "content": query})
+        with st.chat_message("user"):
+            st.code(query, language="sql")
+
+        with st.chat_message("assistant"):
+            try:
+                result = st.session_state.duckdb_conn.sql(query)
+                df = result.fetchdf()
+                st.dataframe(df)
+                st.session_state.duckdb_messages.append(
+                    {"role": "assistant", "content": df}
+                )
+            except Exception as exc:
+                error_msg = f"Error: {exc}"
+                st.error(error_msg)
+                st.session_state.duckdb_messages.append(
+                    {"role": "assistant", "content": error_msg}
+                )
 
 
 main()

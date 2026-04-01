@@ -10,6 +10,7 @@ dependencies = [
     "adbc-driver-snowflake>=1.10.0",
     "adbc-driver-manager>=1.10.0",
     "snowflake-sqlalchemy>=1.6.0",
+    "duckdb>=0.10.0",
 ]
 
 [tool.uv]
