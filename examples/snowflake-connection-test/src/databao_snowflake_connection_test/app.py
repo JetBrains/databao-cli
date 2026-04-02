@@ -23,6 +23,7 @@ import duckdb
 import snowflake
 import streamlit as st
 from databao_context_engine import SnowflakeConnectionProperties, SnowflakeOAuthAuth
+from databao.agent.executors.separate.separate_executor import SeparateExecutor
 from snowflake.sqlalchemy import URL
 from sqlalchemy import create_engine, text
 
@@ -192,7 +193,12 @@ def _test_connection_databao(
         auth=SnowflakeOAuthAuth(token=_get_sis_token()),
     ))
 
-    agent = bao.agent(domain=domain, name="my_agent", llm_config=bao.LLMConfig(name="gpt-5.1", temperature=0))
+    agent = bao.agent(
+        domain=domain,
+        data_executor=SeparateExecutor(),
+        name="my_agent",
+        llm_config=bao.LLMConfig(name="gpt-5.1", temperature=0),
+    )
 
     agent.thread().ask("How many accidents occurred in total?")
 
