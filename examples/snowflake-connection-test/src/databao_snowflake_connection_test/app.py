@@ -217,8 +217,8 @@ def main() -> None:
 
     # account = os.environ.get("SNOWFLAKE_ACCOUNT", "")
     account = _get_account_identifier()
-    warehouse = os.environ.get("SNOWFLAKE_DS_WAREHOUSE", "")
-    database = os.environ.get("SNOWFLAKE_DS_DATABASE", "LS_SF_STREAMLIT_TEST")
+    warehouse = os.environ.get("SNOWFLAKE_DS_WAREHOUSE", "SNOWFLAKE_LEARNING_WH")
+    database = os.environ.get("SNOWFLAKE_DS_DATABASE", "DATAGRIP")
     auth_mode = "OAuth session token (SiS)" if _is_running_in_snowflake() else "externalbrowser"
     token = _get_sis_token() if _is_running_in_snowflake() else None
     host = _get_snowflake_host() if _is_running_in_snowflake() else None
