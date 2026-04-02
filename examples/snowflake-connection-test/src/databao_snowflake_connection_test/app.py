@@ -202,7 +202,7 @@ def _test_connection_databao(
         llm_config=bao.LLMConfig(name="gpt-5.1", temperature=0),
     )
 
-    agent.thread().ask("How many accidents occurred in total?")
+    agent.thread().ask("Where does Philip Wennblom live?")
 
 
 
