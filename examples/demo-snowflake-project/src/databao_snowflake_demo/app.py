@@ -22,9 +22,15 @@ SNOWFLAKE_SECRETS: dict[str, str] = {
 
 ADBC_LIB = "libadbc_driver_snowflake.so"
 
+SESSION_TOKEN_PATH = Path("/snowflake/session/token")
+
 
 def _is_running_in_snowflake() -> bool:
-    return Path("/snowflake/session/token").exists()
+    return SESSION_TOKEN_PATH.exists()
+
+
+def _get_sis_token() -> str:
+    return SESSION_TOKEN_PATH.read_text().strip()
 
 
 def _ensure_adbc_driver() -> None:
@@ -75,6 +81,7 @@ def _load_snowflake_secrets() -> None:
 _ensure_adbc_driver()
 if _is_running_in_snowflake():
     _load_snowflake_secrets()
+    os.environ["SNOWFLAKE_DS_TOKEN"] = _get_sis_token()
 
 if "--project-dir" not in sys.argv:
     sys.argv.extend(["--project-dir", "examples/demo-snowflake-project"])
