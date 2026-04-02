@@ -184,6 +184,7 @@ def _test_connection_databao(
     warehouse: str | None,
     database: str | None,
 ) -> str:
+    host = _get_snowflake_host()
 
     domain = bao.domain()
     domain.add_db(db = SnowflakeConnectionProperties(
@@ -191,6 +192,7 @@ def _test_connection_databao(
         warehouse = warehouse,
         database = database,
         auth=SnowflakeOAuthAuth(token=_get_sis_token()),
+        additional_properties={"host": host}
     ))
 
     agent = bao.agent(
