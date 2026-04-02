@@ -1,32 +1,30 @@
+import logging
 from datetime import datetime
 from logging.config import dictConfig
 from pathlib import Path
 from typing import Any
 
+from rich.logging import RichHandler
+
+from databao_cli.shared.log.console import rich_console
 from databao_cli.shared.project.layout import ProjectLayout
 
 
 def configure_logging(project_layout: ProjectLayout | None, verbose: bool = False, quiet: bool = False) -> None:
-    log_config = {
+    log_config: dict[str, Any] = {
         "version": 1,
         "formatters": {"file": {"format": "%(asctime)s %(levelname)s %(name)s: %(message)s"}},
-        "handlers": {
-            "stdout": {
-                "class": "logging.StreamHandler",
-                "stream": "ext://sys.stdout",
-                "level": "DEBUG" if verbose else "INFO",
-            },
-        },
+        "handlers": {},
         "loggers": {
             "databao_context_engine": {
                 "level": "DEBUG",
                 "propagate": False,
-                "handlers": ["stdout"],
+                "handlers": [],
             },
             "databao_cli": {
                 "level": "DEBUG",
                 "propagate": False,
-                "handlers": ["stdout"],
+                "handlers": [],
             },
         },
     }
@@ -36,14 +34,22 @@ def configure_logging(project_layout: ProjectLayout | None, verbose: bool = Fals
         logs_dir.mkdir(exist_ok=True)
 
         file_handler_name = "logFile"
-        log_config["handlers"][file_handler_name] = _get_logging_file_handler(logs_dir)  # type: ignore[index]
-        log_config["loggers"]["databao_context_engine"]["handlers"].append(file_handler_name)  # type: ignore[index]
+        log_config["handlers"][file_handler_name] = _get_logging_file_handler(logs_dir)
+        log_config["loggers"]["databao_context_engine"]["handlers"].append(file_handler_name)
 
-    if quiet:
-        for logger in log_config["loggers"].values():  # type: ignore
-            if "handlers" in logger:
-                logger["handlers"].remove("stdout")
     dictConfig(log_config)
+
+    if not quiet:
+        rich_handler = RichHandler(
+            console=rich_console,
+            show_time=False,
+            show_level=True,
+            show_path=False,
+            rich_tracebacks=False,
+            level=logging.DEBUG if verbose else logging.INFO,
+        )
+        for logger_name in ("databao_context_engine", "databao_cli"):
+            logging.getLogger(logger_name).addHandler(rich_handler)
 
 
 def _get_logging_file_handler(logs_dir: Path) -> dict[str, Any]:
