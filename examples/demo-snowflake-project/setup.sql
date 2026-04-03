@@ -11,11 +11,8 @@ SET suffix              = 'DEMO';
 -- Secrets
 SET openai_key          = '<YOUR_OPENAI_API_KEY>';
 SET anthropic_key       = '<YOUR_ANTHROPIC_API_KEY>';
-SET sf_ds_account       = '<SNOWFLAKE_DATASOURCE_ACCOUNT>';
 SET sf_ds_warehouse     = '<SNOWFLAKE_DATASOURCE_WAREHOUSE>';
 SET sf_ds_database      = '<SNOWFLAKE_DATASOURCE_DATABASE>';
-SET sf_ds_user          = '<SNOWFLAKE_DATASOURCE_USER>';
-SET sf_ds_password      = '<SNOWFLAKE_DATASOURCE_PASSWORD>';
 
 -- Git repository
 SET git_repo_origin     = 'https://github.com/JetBrains/databao-cli.git';
@@ -141,11 +138,6 @@ BEGIN
     || ' SECRET_STRING = ''' || :_anthropic_key || '''';
   EXECUTE IMMEDIATE :_sql;
 
-  _sql := 'CREATE OR REPLACE SECRET ' || :_db || '.PUBLIC.snowflake_ds_account'
-    || ' TYPE = GENERIC_STRING'
-    || ' SECRET_STRING = ''' || :_ds_account || '''';
-  EXECUTE IMMEDIATE :_sql;
-
   _sql := 'CREATE OR REPLACE SECRET ' || :_db || '.PUBLIC.snowflake_ds_warehouse'
     || ' TYPE = GENERIC_STRING'
     || ' SECRET_STRING = ''' || :_ds_warehouse || '''';
@@ -154,16 +146,6 @@ BEGIN
   _sql := 'CREATE OR REPLACE SECRET ' || :_db || '.PUBLIC.snowflake_ds_database'
     || ' TYPE = GENERIC_STRING'
     || ' SECRET_STRING = ''' || :_ds_database || '''';
-  EXECUTE IMMEDIATE :_sql;
-
-  _sql := 'CREATE OR REPLACE SECRET ' || :_db || '.PUBLIC.snowflake_ds_user'
-    || ' TYPE = GENERIC_STRING'
-    || ' SECRET_STRING = ''' || :_ds_user || '''';
-  EXECUTE IMMEDIATE :_sql;
-
-  _sql := 'CREATE OR REPLACE SECRET ' || :_db || '.PUBLIC.snowflake_ds_password'
-    || ' TYPE = GENERIC_STRING'
-    || ' SECRET_STRING = ''' || :_ds_password || '''';
   EXECUTE IMMEDIATE :_sql;
 
   -- ==========================================================
@@ -179,11 +161,8 @@ BEGIN
     || ' ALLOWED_AUTHENTICATION_SECRETS = ('
     || :_db || '.PUBLIC.openai_api_key, '
     || :_db || '.PUBLIC.anthropic_api_key, '
-    || :_db || '.PUBLIC.snowflake_ds_account, '
     || :_db || '.PUBLIC.snowflake_ds_warehouse, '
-    || :_db || '.PUBLIC.snowflake_ds_database, '
-    || :_db || '.PUBLIC.snowflake_ds_user, '
-    || :_db || '.PUBLIC.snowflake_ds_password'
+    || :_db || '.PUBLIC.snowflake_ds_database '
     || ') ENABLED = TRUE';
   EXECUTE IMMEDIATE :_sql;
 
@@ -211,11 +190,8 @@ BEGIN
     || ' SECRETS = ('
     || '  ''openai_api_key'' = ' || :_db || '.PUBLIC.openai_api_key,'
     || '  ''anthropic_api_key'' = ' || :_db || '.PUBLIC.anthropic_api_key,'
-    || '  ''snowflake_ds_account'' = ' || :_db || '.PUBLIC.snowflake_ds_account,'
     || '  ''snowflake_ds_warehouse'' = ' || :_db || '.PUBLIC.snowflake_ds_warehouse,'
-    || '  ''snowflake_ds_database'' = ' || :_db || '.PUBLIC.snowflake_ds_database,'
-    || '  ''snowflake_ds_user'' = ' || :_db || '.PUBLIC.snowflake_ds_user,'
-    || '  ''snowflake_ds_password'' = ' || :_db || '.PUBLIC.snowflake_ds_password'
+    || '  ''snowflake_ds_database'' = ' || :_db || '.PUBLIC.snowflake_ds_database'
     || ') AS '
     || '$$' || CHR(10)
     || 'import _snowflake' || CHR(10)
