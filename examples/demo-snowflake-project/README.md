@@ -65,6 +65,9 @@ uv sync
 # Set the required environment variables
 export OPENAI_API_KEY="..."
 export ANTHROPIC_API_KEY="..."
+export SNOWFLAKE_ACCOUNT="..."          # e.g. abc12345
+export SNOWFLAKE_HOST="..."             # e.g. abc12345.snowflakecomputing.com
+export SNOWFLAKE_DS_TOKEN="..."         # OAuth token for datasource access
 export SNOWFLAKE_DS_WAREHOUSE="..."
 export SNOWFLAKE_DS_DATABASE="..."
 
