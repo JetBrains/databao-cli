@@ -10,7 +10,7 @@ SET suffix                  = 'DEMO';
 
 -- Secrets
 SET openai_api_key          = '<YOUR_OPENAI_API_KEY>';
-SET anthropic_key           = '<YOUR_ANTHROPIC_API_KEY>';
+SET anthropic_api_key           = '<YOUR_ANTHROPIC_API_KEY>';
 SET snowflake_ds_warehouse  = '<SNOWFLAKE_DATASOURCE_WAREHOUSE>';
 SET snowflake_ds_database   = '<SNOWFLAKE_DATASOURCE_DATABASE>';
 
@@ -60,9 +60,9 @@ CREATE OR REPLACE SECRET openai_api_key
     TYPE = GENERIC_STRING
     SECRET_STRING = $openai_api_key;
 
-CREATE OR REPLACE SECRET anthropic_key
+CREATE OR REPLACE SECRET anthropic_api_key
     TYPE = GENERIC_STRING
-    SECRET_STRING = $anthropic_key;
+    SECRET_STRING = $anthropic_api_key;
 
 CREATE OR REPLACE SECRET snowflake_ds_warehouse
     TYPE = GENERIC_STRING
@@ -85,7 +85,7 @@ CREATE OR REPLACE EXTERNAL ACCESS INTEGRATION IDENTIFIER($secrets_access)
     ALLOWED_NETWORK_RULES = ($egress_rule)
     ALLOWED_AUTHENTICATION_SECRETS = (
         openai_api_key,
-        anthropic_key,
+        anthropic_api_key,
         snowflake_ds_warehouse,
         snowflake_ds_database
     ) ENABLED = TRUE;
@@ -130,7 +130,7 @@ BEGIN
         || ' EXTERNAL_ACCESS_INTEGRATIONS = (' || $secrets_access || ')'
         || ' SECRETS = ('
         || '  ''openai_api_key'' = openai_api_key,'
-        || '  ''anthropic_key'' = anthropic_key,'
+        || '  ''anthropic_api_key'' = anthropic_api_key,'
         || '  ''snowflake_ds_warehouse'' = snowflake_ds_warehouse,'
         || '  ''snowflake_ds_database'' = snowflake_ds_database'
         || ') AS '

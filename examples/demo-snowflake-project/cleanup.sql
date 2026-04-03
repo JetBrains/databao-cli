@@ -1,11 +1,11 @@
 -- ============================================================
--- CLEANUP: Drop all objects created by setup-oauth.sql for a given suffix.
--- Set the same suffix you used in setup-oauth.sql, then run this script.
+-- CLEANUP: Drop all objects created by setup.sql for a given suffix.
+-- Set the same suffix you used in setup.sql, then run this script.
 -- ============================================================
 
 SET suffix          = 'DEMO';
 
--- Derived object names (must match setup-oauth.sql)
+-- Derived object names (must match setup.sql)
 SET database_name   = 'STREAMLIT_DATABAO_DB_' || $suffix;
 SET app_warehouse   = 'STREAMLIT_DATABAO_WAREHOUSE_' || $suffix;
 SET git_integration = 'STREAMLIT_DATABAO_GIT_INTEGRATION_' || $suffix;
