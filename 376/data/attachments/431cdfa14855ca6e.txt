@@ -1,0 +1,9 @@
+INFO     Ollama server not running. Starting Ollama server...                   
+INFO     Started Ollama server                                                  
+INFO     Found datasource of type "postgres" with name my_postgres              
+INFO     Exported result to                                                     
+         /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmpbmvkdf
+         cxtest_databao_build_postgres_with_partitioned_table/databao/domains/ro
+         ot/output/my_postgres.yaml                                             
+
+Build complete. Processed 1 datasources.
