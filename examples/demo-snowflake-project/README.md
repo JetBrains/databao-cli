@@ -38,7 +38,7 @@ Open `setup.sql` and fill in the placeholder values at the top:
 |---|---|
 | `suffix` | Name suffix appended to all Snowflake objects. Set to e.g. `V2` to create a fully independent copy (objects will be named `STREAMLIT_DATABAO_DB_V2`, etc.). Changing the suffix lets you run multiple independent instances side by side. |
 | `openai_api_key` | OpenAI API key |
-| `anthropic_key` | Anthropic API key |
+| `anthropic_api_key` | Anthropic API key |
 | `snowflake_ds_warehouse` | Warehouse the Databao agent will use to run queries against the datasource |
 | `snowflake_ds_database` | Database containing the data the agent will explore |
 

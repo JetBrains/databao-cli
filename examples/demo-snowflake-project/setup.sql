@@ -10,7 +10,7 @@ SET suffix                  = 'DEMO';
 
 -- Secrets
 SET openai_api_key          = '<YOUR_OPENAI_API_KEY>';
-SET anthropic_api_key           = '<YOUR_ANTHROPIC_API_KEY>';
+SET anthropic_api_key       = '<YOUR_ANTHROPIC_API_KEY>';
 SET snowflake_ds_warehouse  = '<SNOWFLAKE_DATASOURCE_WAREHOUSE>';
 SET snowflake_ds_database   = '<SNOWFLAKE_DATASOURCE_DATABASE>';
 
