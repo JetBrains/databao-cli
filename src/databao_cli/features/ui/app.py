@@ -127,6 +127,10 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
             from databao.agent.executors import ClaudeCodeExecutor
 
             kwargs["data_executor"] = ClaudeCodeExecutor()
+        elif executor_type == "separate_executor":
+            from databao.agent.executors.separate.separate_executor import SeparateExecutor
+
+            kwargs["data_executor"] = SeparateExecutor()
         else:
             kwargs["executor_type"] = executor_type
 
