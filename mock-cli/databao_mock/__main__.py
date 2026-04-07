@@ -41,7 +41,7 @@ def _interactive_menu(project_dir: Path) -> None:
         deploy_impl(project_dir)
     elif action == "claude":
         from databao_mock.commands.claude import claude_impl
-        claude_impl(project_dir)
+        claude_impl(project_dir, on_exit=lambda: _interactive_menu(project_dir))
     elif action == "sync":
         from databao_mock.commands.sync import sync_impl
         sync_impl(project_dir)

@@ -292,24 +292,24 @@ Coverage is good. Offer two options:
   - "Ask another question"
   - "I'm ready — deploy the Slack Bot"
 
+If they choose to deploy, tell them:
+_"To deploy, exit Claude Code and select **Deploy Slack Bot** from the Databao menu."_
+
 **If coverage count ≥ 15:**
 
 Proactively suggest deploying:
 _"You have N questions covered across M metrics. Your team is ready for
-self-service analytics. Shall I deploy the Slack Bot?"_
-If yes, proceed to **Deploy**.
+self-service analytics. To deploy the Slack Bot, exit Claude Code — the
+Databao menu will reappear and you can select **Deploy Slack Bot** from there."_
 
 ---
 
 ### Deploy
 
-When the user is ready to deploy, run from the dbt project root:
+There is no deploy command to run from here. When the user asks about deploying,
+always direct them to exit Claude Code first:
 
-```
-databao deploy
-```
-
-Report whatever it outputs.
+_"Exit Claude Code to return to the Databao menu, then select **Deploy Slack Bot**."_
 
 ---
 
@@ -322,7 +322,7 @@ Report whatever it outputs.
 """
 
 
-def claude_impl(project_dir: Path) -> None:
+def claude_impl(project_dir: Path, on_exit=None) -> None:
     databao_yml = project_dir / ".databao" / "databao.yml"
     if not databao_yml.exists():
         click.echo(click.style("Error: ", fg="red") + "No Databao project found. Run `databao init` first.")
@@ -343,6 +343,9 @@ def claude_impl(project_dir: Path) -> None:
     if result.returncode != 0:
         click.echo(click.style("Error: ", fg="red") + "`claude` exited with an error.", err=True)
         sys.exit(result.returncode)
+
+    if on_exit is not None:
+        on_exit()
 
 
 def _load_yaml(path: Path) -> dict:
