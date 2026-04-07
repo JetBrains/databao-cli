@@ -28,9 +28,8 @@ def _interactive_menu(project_dir: Path) -> None:
         "What would you like to do?",
         choices=[
             questionary.Choice("Open Claude Code with Databao", value="claude"),
-            questionary.Choice("Start web interface", value="app"),
-            questionary.Choice("Sync introspections", value="sync"),
-            questionary.Choice("Re-initialize project", value="init"),
+            questionary.Choice("Deploy Slack Bot", value="app"),
+            questionary.Choice("Refresh metadata", value="sync"),
         ],
     ).ask()
 
@@ -46,12 +45,7 @@ def _interactive_menu(project_dir: Path) -> None:
     elif action == "sync":
         from databao_mock.commands.sync import sync_impl
         sync_impl(project_dir)
-    elif action == "init":
-        from databao_mock.commands.init import init_impl
-        # Remove databao.yml so init_impl doesn't block re-init
-        _databao_yml(project_dir).unlink(missing_ok=True)
-        init_impl(project_dir)
-        _interactive_menu(project_dir)
+
 
 
 @click.group(invoke_without_command=True)

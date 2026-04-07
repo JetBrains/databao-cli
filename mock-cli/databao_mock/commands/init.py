@@ -436,7 +436,11 @@ def init_impl(project_dir: Path, pending_user: dict | None = None) -> None:
             "  descriptions — stored directly in your source YAML files. This gives\n"
             "  the AI agent the context it needs to answer data questions accurately.\n"
         )
-        if not click.confirm("  Ready to set up Databao for this project?", default=True):
+        answer = questionary.select(
+            "Ready to set up Databao for this project?",
+            choices=["Yes", "No"],
+        ).ask()
+        if answer != "Yes":
             raise click.Abort()
         click.echo()
         _import_dbt_project(dbt_project_yml, pending_user=pending_user)
