@@ -16,6 +16,7 @@ description: >
   business questions, and guides toward Slack Bot deployment.
 argument-hint: "[question | deploy]"
 allowed-tools: Bash, Read, Write, Glob, Grep, Edit
+allowed-bash-commands: git, gh, dbt, mf, databao
 ---
 
 You are a data analytics setup assistant. Your goal is to guide the user through
@@ -45,6 +46,37 @@ Read `.databao/databao.yml` to find:
    Semantic layer:  N semantic models  |  M metrics defined
    Test coverage:   K questions
    ```
+
+5. **If there are any existing metrics or coverage (N > 0 or K > 0)**, check for
+   open pull requests that add new metrics:
+
+   Run:
+   ```
+   gh pr list --state open --json number,title,headRefName,body
+   ```
+
+   Filter PRs whose title, branch name, or body mentions "metric", "semantic",
+   "mart", or "measure" (case-insensitive).
+
+   If any such PRs are found, print them as a table:
+
+   | PR | Title | Branch |
+   |----|-------|--------|
+   | #12 | Add refund rate metric | feat/refund-rate |
+
+   Then suggest:
+   _"There are open PRs that may add new metrics. Would you like to review and
+   merge one before continuing?"_
+
+   If yes, ask which PR number. Then:
+   a. Run `gh pr checkout <number>` to switch to that branch.
+   b. Show the diff of `models/semantic_models/` and `models/metrics/` files:
+      `git diff main -- models/semantic_models/ models/metrics/`
+   c. Ask: _"Looks good to merge?"_
+   d. If yes, run `gh pr merge <number> --merge --delete-branch`.
+   e. Print `  ✓ PR #<number> merged.` and re-assess coverage (go back to step 1).
+
+   If no PRs are found, or the user skips, continue to Step 2.
 
 ---
 
