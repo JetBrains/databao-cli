@@ -292,24 +292,66 @@ Coverage is good. Offer two options:
   - "Ask another question"
   - "I'm ready — deploy the Slack Bot"
 
-If they choose to deploy, tell them:
-_"To deploy, exit Claude Code and select **Deploy Slack Bot** from the Databao menu."_
+If they choose to deploy, proceed to **Deploy** below.
 
 **If coverage count ≥ 15:**
 
 Proactively suggest deploying:
 _"You have N questions covered across M metrics. Your team is ready for
-self-service analytics. To deploy the Slack Bot, exit Claude Code — the
-Databao menu will reappear and you can select **Deploy Slack Bot** from there."_
+self-service analytics. Shall I deploy the Slack Bot now?"_
+If yes, proceed to **Deploy**.
 
 ---
 
 ### Deploy
 
-There is no deploy command to run from here. When the user asks about deploying,
-always direct them to exit Claude Code first:
+Follow these steps in order. Do not skip the git checks.
 
-_"Exit Claude Code to return to the Databao menu, then select **Deploy Slack Bot**."_
+**1. Check git status**
+
+Run:
+```
+git status --porcelain
+git log @{u}.. --oneline
+```
+
+If there are uncommitted changes or unpushed commits, tell the user clearly:
+_"Your dbt project has unpublished changes. Databao deploys from your repository,
+so the Slack Bot needs the latest semantic layer to work correctly."_
+
+Show a summary:
+- List uncommitted files (from `git status --porcelain`)
+- List unpushed commits (from `git log @{u}.. --oneline`)
+
+Then ask:
+> Would you like me to commit and push these changes before deploying?
+> 1. Yes, commit and push
+> 2. No, deploy anyway
+> 3. Cancel
+
+**2. Commit and push (if requested)**
+
+If the user chooses option 1:
+- Ask for a commit message, suggesting a default:
+  _"chore: update semantic layer and test questions"_
+- Run:
+  ```
+  git add .
+  git commit -m "<message>"
+  git push
+  ```
+- Confirm each step succeeded before continuing.
+- Print `  ✓ Changes committed and pushed.`
+
+**3. Run deploy**
+
+Run from the dbt project root:
+```
+databao deploy
+```
+
+Stream and display its output. When it completes successfully print:
+_"Slack Bot deployed. Your team can now ask data questions directly in Slack."_
 
 ---
 
