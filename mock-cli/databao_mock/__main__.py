@@ -28,7 +28,7 @@ def _interactive_menu(project_dir: Path) -> None:
         "What would you like to do?",
         choices=[
             questionary.Choice("Open Claude Code with Databao", value="claude"),
-            questionary.Choice("Deploy Slack Bot", value="app"),
+            questionary.Choice("Deploy Slack Bot", value="deploy"),
             questionary.Choice("Refresh metadata", value="sync"),
         ],
     ).ask()
@@ -36,9 +36,9 @@ def _interactive_menu(project_dir: Path) -> None:
     if action is None:
         return
 
-    if action == "app":
-        from databao_mock.commands.app import app_impl
-        app_impl(project_dir)
+    if action == "deploy":
+        from databao_mock.commands.deploy import deploy_impl
+        deploy_impl(project_dir)
     elif action == "claude":
         from databao_mock.commands.claude import claude_impl
         claude_impl(project_dir)
@@ -116,6 +116,14 @@ def login(ctx: Context) -> None:
     """Log in to Databao."""
     from databao_mock.commands.login import login_impl
     login_impl(ctx.obj["project_dir"])
+
+
+@cli.command()
+@click.pass_context
+def deploy(ctx: Context) -> None:
+    """Deploy the Databao Slack Bot."""
+    from databao_mock.commands.deploy import deploy_impl
+    deploy_impl(ctx.obj["project_dir"])
 
 
 if __name__ == "__main__":
