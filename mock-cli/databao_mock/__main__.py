@@ -5,8 +5,12 @@ import questionary
 from click import Context
 
 
+def _databao_yml(project_dir: Path) -> Path:
+    return project_dir / "databao" / "databao.yml"
+
+
 def _is_initialized(project_dir: Path) -> bool:
-    databao_yml = project_dir / "databao.yml"
+    databao_yml = _databao_yml(project_dir)
     if not databao_yml.exists():
         return False
     import yaml
@@ -45,7 +49,7 @@ def _interactive_menu(project_dir: Path) -> None:
     elif action == "init":
         from databao_mock.commands.init import init_impl
         # Remove databao.yml so init_impl doesn't block re-init
-        (project_dir / "databao.yml").unlink(missing_ok=True)
+        _databao_yml(project_dir).unlink(missing_ok=True)
         init_impl(project_dir)
         _interactive_menu(project_dir)
 
@@ -63,19 +67,20 @@ def cli(ctx: Context, project_dir: Path | None) -> None:
     ctx.ensure_object(dict)
     ctx.obj["project_dir"] = Path.cwd() if project_dir is None else project_dir.expanduser().resolve()
 
+    project_dir = ctx.obj["project_dir"]
+    from databao_mock.commands.login import is_logged_in, login_impl
+    if not is_logged_in(project_dir):
+        ctx.obj["pending_user"] = login_impl(project_dir)
+
     from databao_mock.header import print_header
-    print_header(ctx.obj["project_dir"])
+    print_header(project_dir)
 
     if ctx.invoked_subcommand is None:
-        project_dir = ctx.obj["project_dir"]
-        from databao_mock.commands.login import is_logged_in, login_impl
-        if not is_logged_in(project_dir):
-            login_impl(project_dir)
         if _is_initialized(project_dir):
             _interactive_menu(project_dir)
         else:
             from databao_mock.commands.init import init_impl
-            init_impl(project_dir)
+            init_impl(project_dir, pending_user=ctx.obj.get("pending_user"))
             _interactive_menu(project_dir)
 
 

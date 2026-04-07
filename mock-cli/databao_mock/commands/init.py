@@ -95,7 +95,7 @@ def _discover_dbt_tables(dbt_dir: Path) -> list[str]:
 
     return tables
 
-def _import_dbt_project(dbt_project_yml: Path) -> None:
+def _import_dbt_project(dbt_project_yml: Path, pending_user: dict | None = None) -> None:
     """Mock: show what would be imported from a dbt project."""
     dbt_dir = dbt_project_yml.parent
     project_data = _load_yaml(dbt_project_yml)
@@ -125,7 +125,7 @@ def _import_dbt_project(dbt_project_yml: Path) -> None:
         click.echo(f"  profile     : {profile_name} (connection details not found)")
 
     # Create databao/ folder and test_questions.csv
-    databao_folder = dbt_dir.parent / "databao"
+    databao_folder = dbt_dir / "databao"
     databao_folder.mkdir(exist_ok=True)
     test_questions = databao_folder / "test_questions.csv"
     if not test_questions.exists():
@@ -138,10 +138,11 @@ def _import_dbt_project(dbt_project_yml: Path) -> None:
     if conn_info:
         config["connection"] = {k: v for k, v in conn_info.items() if not str(v).startswith("{{")}
 
-    databao_yml = dbt_dir.parent / "databao.yml"
+    databao_yml = databao_folder / "databao.yml"
     existing = _load_yaml(databao_yml)
-    if "user" in existing:
-        config["user"] = existing["user"]
+    user = pending_user or existing.get("user")
+    if user:
+        config["user"] = user
     with open(databao_yml, "w") as f:
         yaml.dump(config, f, default_flow_style=False, sort_keys=False)
 
@@ -363,7 +364,7 @@ def _introspect_existing_project(dbt_project_yml: Path) -> None:
     _generate_sources(dbt_dir, project_name, tables)
 
 
-def _create_fresh_project(project_dir: Path) -> None:
+def _create_fresh_project(project_dir: Path, pending_user: dict | None = None) -> None:
     """No dbt project found — run `dbt init` to create one."""
     click.echo("No dbt project detected.")
 
@@ -382,7 +383,7 @@ def _create_fresh_project(project_dir: Path) -> None:
     if not dbt_projects:
         return
     dbt_project_yml = dbt_projects[0]
-    _import_dbt_project(dbt_project_yml)
+    _import_dbt_project(dbt_project_yml, pending_user=pending_user)
 
     # Fetch tables and let user pick
     project_data = _load_yaml(dbt_project_yml)
@@ -418,47 +419,21 @@ def _create_fresh_project(project_dir: Path) -> None:
 # Main entry point
 # ---------------------------------------------------------------------------
 
-def init_impl(project_dir: Path) -> None:
-    databao_yml = project_dir / "databao.yml"
+def init_impl(project_dir: Path, pending_user: dict | None = None) -> None:
+    databao_yml = project_dir / "databao" / "databao.yml"
     if databao_yml.exists() and bool((_load_yaml(databao_yml)).get("dbt")):
         click.echo(click.style("Error: ", fg="red") + f"Databao is already initialized in {project_dir.resolve()}")
         raise SystemExit(1)
 
-    click.echo(f"\nInitializing Databao in {click.style(str(project_dir.resolve()), bold=True)}")
-    click.echo("Scanning for dbt projects...\n")
+    dbt_project_yml = project_dir / "dbt_project.yml"
 
-    dbt_projects = find_dbt_projects(project_dir)
-
-    if len(dbt_projects) == 0:
-        _create_fresh_project(project_dir)
-
-    elif len(dbt_projects) == 1:
-        click.echo(click.style("  Found 1 dbt project:", fg="cyan"))
-        proj_name = _load_yaml(dbt_projects[0]).get("name", dbt_projects[0].parent.name)
-        click.echo(f"    {proj_name}  ({dbt_projects[0].parent})\n")
-        if not click.confirm(f"Use '{proj_name}' as a base dbt project?", default=True):
-            _create_fresh_project(project_dir)
-            return
-        _import_dbt_project(dbt_projects[0])
-        _introspect_existing_project(dbt_projects[0])
-
+    if dbt_project_yml.exists():
+        proj_name = _load_yaml(dbt_project_yml).get("name", project_dir.name)
+        click.echo(f"\n  Found dbt project: {click.style(proj_name, bold=True)}")
+        click.echo(f"  location: {project_dir.resolve()}\n")
+        _import_dbt_project(dbt_project_yml, pending_user=pending_user)
+        _introspect_existing_project(dbt_project_yml)
     else:
-        click.echo(click.style(f"  Found {len(dbt_projects)} dbt projects:", fg="cyan"))
-
-        choices = {
-            _load_yaml(p).get("name", p.parent.name): p
-            for p in dbt_projects
-        }
-        selected_name = questionary.select(
-            "Which dbt project do you want to import?",
-            choices=list(choices.keys()),
-        ).ask()
-
-        if selected_name is None:
-            _create_fresh_project(project_dir)
-            return
-
-        _import_dbt_project(choices[selected_name])
-        _introspect_existing_project(choices[selected_name])
+        _create_fresh_project(project_dir, pending_user=pending_user)
 
     click.echo("\n" + click.style("Project initialized successfully.", fg="green", bold=True))

@@ -29,7 +29,7 @@ def _load_yaml(path: Path) -> dict:
 
 
 def _project_subtitle(project_dir: Path) -> str:
-    databao_yml = project_dir / "databao.yml"
+    databao_yml = project_dir / "databao" / "databao.yml"
     if not databao_yml.exists():
         return str(project_dir)
     config = _load_yaml(databao_yml)

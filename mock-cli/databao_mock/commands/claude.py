@@ -106,7 +106,7 @@ When `$ARGUMENTS` is a plain data question (not `test`, `sync`, or `generate`):
 
 
 def claude_impl(project_dir: Path) -> None:
-    databao_yml = project_dir / "databao.yml"
+    databao_yml = project_dir / "databao" / "databao.yml"
     if not databao_yml.exists():
         click.echo(click.style("Error: ", fg="red") + "No Databao project found. Run `databao init` first.")
         raise SystemExit(1)
