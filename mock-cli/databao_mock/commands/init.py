@@ -139,6 +139,9 @@ def _import_dbt_project(dbt_project_yml: Path) -> None:
         config["connection"] = {k: v for k, v in conn_info.items() if not str(v).startswith("{{")}
 
     databao_yml = dbt_dir.parent / "databao.yml"
+    existing = _load_yaml(databao_yml)
+    if "user" in existing:
+        config["user"] = existing["user"]
     with open(databao_yml, "w") as f:
         yaml.dump(config, f, default_flow_style=False, sort_keys=False)
 
@@ -416,7 +419,8 @@ def _create_fresh_project(project_dir: Path) -> None:
 # ---------------------------------------------------------------------------
 
 def init_impl(project_dir: Path) -> None:
-    if (project_dir / "databao.yml").exists():
+    databao_yml = project_dir / "databao.yml"
+    if databao_yml.exists() and bool((_load_yaml(databao_yml)).get("dbt")):
         click.echo(click.style("Error: ", fg="red") + f"Databao is already initialized in {project_dir.resolve()}")
         raise SystemExit(1)
 

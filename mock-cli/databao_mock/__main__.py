@@ -6,7 +6,16 @@ from click import Context
 
 
 def _is_initialized(project_dir: Path) -> bool:
-    return (project_dir / "databao.yml").exists()
+    databao_yml = project_dir / "databao.yml"
+    if not databao_yml.exists():
+        return False
+    import yaml
+    try:
+        with open(databao_yml) as f:
+            config = yaml.safe_load(f) or {}
+    except Exception:
+        return False
+    return bool(config.get("dbt"))
 
 
 def _interactive_menu(project_dir: Path) -> None:
@@ -59,6 +68,9 @@ def cli(ctx: Context, project_dir: Path | None) -> None:
 
     if ctx.invoked_subcommand is None:
         project_dir = ctx.obj["project_dir"]
+        from databao_mock.commands.login import is_logged_in, login_impl
+        if not is_logged_in(project_dir):
+            login_impl(project_dir)
         if _is_initialized(project_dir):
             _interactive_menu(project_dir)
         else:
@@ -97,6 +109,14 @@ def sync(ctx: Context) -> None:
     """Sync source schemas and introspections."""
     from databao_mock.commands.sync import sync_impl
     sync_impl(ctx.obj["project_dir"])
+
+
+@cli.command()
+@click.pass_context
+def login(ctx: Context) -> None:
+    """Log in to Databao."""
+    from databao_mock.commands.login import login_impl
+    login_impl(ctx.obj["project_dir"])
 
 
 if __name__ == "__main__":

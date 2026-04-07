@@ -35,12 +35,15 @@ def _project_subtitle(project_dir: Path) -> str:
     config = _load_yaml(databao_yml)
     dbt_name = config.get("dbt", {}).get("project")
     conn_type = config.get("connection", {}).get("type")
-    parts = [f"~/{project_dir.name}"]
+    email = config.get("user", {}).get("email")
+    parts = []
     if dbt_name:
         parts.append(f"dbt:{dbt_name}")
     if conn_type:
         parts.append(conn_type)
-    return "  ·  ".join(parts)
+    if email:
+        parts.append(email)
+    return "  ·  ".join(parts) if parts else str(project_dir)
 
 
 def _render_art_line(segments: list[tuple[str, str | None, bool]]) -> str:
