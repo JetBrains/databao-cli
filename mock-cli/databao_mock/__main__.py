@@ -23,28 +23,30 @@ def _is_initialized(project_dir: Path) -> bool:
 
 
 def _interactive_menu(project_dir: Path) -> None:
-    """Show interactive command menu after initialization or when already initialized."""
-    action = questionary.select(
-        "What would you like to do?",
-        choices=[
-            questionary.Choice("Open Claude Code with Databao", value="claude"),
-            questionary.Choice("Deploy Slack Bot", value="deploy"),
-            questionary.Choice("Refresh metadata", value="sync"),
-        ],
-    ).ask()
+    """Show interactive command menu, looping until the user quits."""
+    while True:
+        action = questionary.select(
+            "What would you like to do?",
+            choices=[
+                questionary.Choice("Open Claude Code with Databao", value="claude"),
+                questionary.Choice("Deploy Slack Bot", value="deploy"),
+                questionary.Choice("Refresh metadata", value="sync"),
+                questionary.Choice("Quit", value="quit"),
+            ],
+        ).ask()
 
-    if action is None:
-        return
+        if action is None or action == "quit":
+            return
 
-    if action == "deploy":
-        from databao_mock.commands.deploy import deploy_impl
-        deploy_impl(project_dir)
-    elif action == "claude":
-        from databao_mock.commands.claude import claude_impl
-        claude_impl(project_dir, on_exit=lambda: _interactive_menu(project_dir))
-    elif action == "sync":
-        from databao_mock.commands.sync import sync_impl
-        sync_impl(project_dir)
+        if action == "deploy":
+            from databao_mock.commands.deploy import deploy_impl
+            deploy_impl(project_dir)
+        elif action == "claude":
+            from databao_mock.commands.claude import claude_impl
+            claude_impl(project_dir, on_exit=lambda: None)
+        elif action == "sync":
+            from databao_mock.commands.sync import sync_impl
+            sync_impl(project_dir)
 
 
 
