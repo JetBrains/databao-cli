@@ -1,7 +1,8 @@
 version: 2
 sources:
 - name: shopify_analytics
-  schema: main
+  database: '{{ env_var(''DBT_DATABASE'', ''shopify'') }}'
+  schema: '{{ env_var(''DBT_SCHEMA'', ''main'') }}'
   tables:
   - name: orders
     columns:
