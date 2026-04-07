@@ -429,11 +429,19 @@ def init_impl(project_dir: Path, pending_user: dict | None = None) -> None:
 
     if dbt_project_yml.exists():
         proj_name = _load_yaml(dbt_project_yml).get("name", project_dir.name)
-        click.echo(f"\n  Found dbt project: {click.style(proj_name, bold=True)}")
-        click.echo(f"  location: {project_dir.resolve()}\n")
+        click.echo(f"\n  Detected dbt project {click.style(proj_name, bold=True)} in the current directory.\n")
+        click.echo(
+            "  Databao will connect to your database and enrich your dbt project with\n"
+            "  column-level metadata — value distributions, null rates, and semantic\n"
+            "  descriptions — stored directly in your source YAML files. This gives\n"
+            "  the AI agent the context it needs to answer data questions accurately.\n"
+        )
+        if not click.confirm("  Ready to set up Databao for this project?", default=True):
+            raise click.Abort()
+        click.echo()
         _import_dbt_project(dbt_project_yml, pending_user=pending_user)
         _introspect_existing_project(dbt_project_yml)
     else:
         _create_fresh_project(project_dir, pending_user=pending_user)
 
-    click.echo("\n" + click.style("Project initialized successfully.", fg="green", bold=True))
+    click.echo("\n" + click.style("  All done. Run `databao` to open the menu.", fg="green", bold=True))
