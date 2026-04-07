@@ -125,7 +125,7 @@ def _import_dbt_project(dbt_project_yml: Path, pending_user: dict | None = None)
         click.echo(f"  profile     : {profile_name} (connection details not found)")
 
     # Create databao/ folder and test_questions.csv
-    databao_folder = dbt_dir / "databao"
+    databao_folder = dbt_dir / ".databao"
     databao_folder.mkdir(exist_ok=True)
     test_questions = databao_folder / "test_questions.csv"
     if not test_questions.exists():
@@ -420,7 +420,7 @@ def _create_fresh_project(project_dir: Path, pending_user: dict | None = None) -
 # ---------------------------------------------------------------------------
 
 def init_impl(project_dir: Path, pending_user: dict | None = None) -> None:
-    databao_yml = project_dir / "databao" / "databao.yml"
+    databao_yml = project_dir / ".databao" / "databao.yml"
     if databao_yml.exists() and bool((_load_yaml(databao_yml)).get("dbt")):
         click.echo(click.style("Error: ", fg="red") + f"Databao is already initialized in {project_dir.resolve()}")
         raise SystemExit(1)

@@ -6,7 +6,7 @@ from click import Context
 
 
 def _databao_yml(project_dir: Path) -> Path:
-    return project_dir / "databao" / "databao.yml"
+    return project_dir / ".databao" / "databao.yml"
 
 
 def _is_initialized(project_dir: Path) -> bool:

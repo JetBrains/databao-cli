@@ -17,7 +17,7 @@ def _load_yaml(path: Path) -> dict:
 
 
 def sync_impl(project_dir: Path) -> None:
-    databao_yml = project_dir / "databao" / "databao.yml"
+    databao_yml = project_dir / ".databao" / "databao.yml"
     if not databao_yml.exists():
         click.echo(click.style("Error: ", fg="red") + "No Databao project found. Run `databao init` first.")
         raise SystemExit(1)

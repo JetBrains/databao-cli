@@ -24,7 +24,7 @@ def _save_yaml(path: Path, data: dict) -> None:
 
 
 def _databao_yml(project_dir: Path) -> Path:
-    return project_dir / "databao" / "databao.yml"
+    return project_dir / ".databao" / "databao.yml"
 
 
 def is_logged_in(project_dir: Path) -> bool:
