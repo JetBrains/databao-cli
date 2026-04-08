@@ -7,6 +7,7 @@ from databao.agent.configs.llm import LLMConfig, LLMConfigDirectory
 from databao.agent.core import Cache
 
 from databao_cli.features.ui.project_utils import DatabaoProjectStatus, databao_project_status, has_build_output
+from databao_cli.shared.executor_utils import DEFAULT_EXECUTOR
 from databao_cli.shared.project.layout import ProjectLayout
 
 
@@ -14,7 +15,7 @@ def create_agent_for_tool(
     project: ProjectLayout,
     model: str | None = None,
     temperature: float = 0.0,
-    executor: str = "claude_code",
+    executor: str = DEFAULT_EXECUTOR,
     cache: Cache | None = None,
 ) -> Agent:
     """Create a Databao agent from a DCE project, configured for MCP tool use.
