@@ -118,12 +118,23 @@ Print a table:
 | total_revenue | Total Revenue | SUM(total_price) | — |
 | refunded_order_count | Refunded Orders | COUNT(id) | financial_status = 'refunded' |
 
-Then map each metric to questions in `.databao/test_questions.csv` that reference it.
-If matches exist, show them:
+Then cross-reference metrics against `.databao/test_questions.csv` in two ways:
 
-_"This PR answers these existing test questions:"_
+**Already in test set** — rows where `metric` matches a new metric name.
+Show them under: _"This PR covers these existing test questions:"_
 - "What is total revenue this month?"
-- "How much revenue came from refunded orders?"
+
+**Unanswered questions** — rows where `metric` is empty or blank (questions that
+were asked but never had a metric assigned). For each, check if the new metrics
+in this PR could answer it based on semantic similarity between the question text
+and the metric label/description.
+Show them under: _"This PR may now answer these previously unanswered questions:"_
+- "How much did we make last quarter?" → could be answered by `total_revenue`
+
+**New questions implied by the metrics** — based on the metric definitions alone,
+suggest 1–2 questions that aren't in the test set at all but would naturally be
+asked by a business user. Show under: _"New questions this PR unlocks:"_
+- "What is the refund rate by product category?"
 
 **R3. Diff**
 
