@@ -1,0 +1,11 @@
+Project initialized successfully at /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmp50prx89ztest_databao_build_postgres_with_partitioned_table
+
+Do you want to configure a domain now? [y/N]: Y
+Y
+We will guide you to add a new datasource into root domain, at /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmp50prx89ztest_databao_build_postgres_with_partitioned_table/databao/domains/root
+What type of datasource do you want to add? (bigquery, dbt, duckdb, mysql, parquet, postgres, snowflake, sqlite):postgres
+ postgres
+Selected type: postgres
+Datasource name?: my_postgres
+my_postgres
+profiling.enabled? (Optional) [False]: 
