@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import subprocess
-import time
 from pathlib import Path
 
 import click
@@ -77,23 +76,9 @@ def deploy_impl(project_dir: Path, skip_git_check: bool = False) -> None:
     if not skip_git_check and not _check_git(project_dir):
         return
 
-    click.echo(f"\n  Deploying Slack Bot for '{click.style(dbt_project, bold=True)}'...\n")
-
-    steps = [
-        ("Packaging semantic models",   1.0),
-        ("Uploading to Databao cloud",  1.4),
-        ("Registering Slack app",       1.0),
-        ("Configuring OAuth scopes",    0.8),
-        ("Running smoke test",          1.2),
-    ]
-
-    for label, duration in steps:
-        click.echo(f"  {label}...", nl=False)
-        time.sleep(duration)
-        click.echo(click.style(" done", fg="green"))
-
+    click.echo(f"\n  Deploying Slack Bot for '{click.style(dbt_project, bold=True)}'...")
+    click.echo(click.style("  > https://app.databao.app/deploy/slack", fg="bright_black"))
     click.echo()
-    click.echo(click.style("  ✓ ", fg="green") + "Slack Bot deployed successfully.")
-    click.echo(click.style("  ✓ ", fg="green") + "Invite it to a channel:  " + click.style("/invite @databao", bold=True))
-    click.echo(click.style("  ✓ ", fg="green") + "Users can now ask questions directly in Slack.")
+    click.echo("  Opening browser to complete Slack Bot setup...")
+    click.echo(click.style("  (not yet implemented)", fg="yellow"))
     click.echo()
