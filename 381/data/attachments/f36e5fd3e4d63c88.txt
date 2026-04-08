@@ -1,0 +1,9 @@
+INFO     Ollama server not running. Starting Ollama server...                   
+INFO     Started Ollama server                                                  
+INFO     Found datasource of type "sqlite" with name test_sqlite_conn           
+INFO     Exported result to                                                     
+         /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmp8_z52f
+         batest_databao_build_sqlite/databao/domains/root/output/test_sqlite_con
+         n.yaml                                                                 
+
+Build complete. Processed 1 datasources.
