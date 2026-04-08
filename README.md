@@ -88,6 +88,22 @@ pip install databao
 For more details about commands, supported data sources, and configuration options,
 visit the [docs](https://docs.databao.app).
 
+## Releasing
+
+```bash
+# Tag and push a specific version (CI publishes to PyPI)
+make release VERSION=0.3.0
+
+# Bump the patch version automatically (e.g. 0.3.0 -> 0.3.1)
+make minor-release
+
+# Bump the minor version automatically (e.g. 0.3.1 -> 0.4.0)
+make major-release
+
+# Trigger a dev release via GitHub Actions
+make dev-release
+```
+
 ## Contributing
 
 We love contributions! Here’s how you can help:
