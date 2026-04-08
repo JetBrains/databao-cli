@@ -7,7 +7,7 @@ from databao_cli.features.ui.components.icons import get_db_type_and_icon
 from databao_cli.features.ui.components.status import AppStatus, render_status_fragment, set_status
 from databao_cli.features.ui.project_utils import DatabaoProjectStatus, databao_project_status
 from databao_cli.features.ui.suggestions import reset_suggestions_state
-from databao_cli.shared.executor_utils import EXECUTOR_TYPES
+from databao_cli.shared.executor_utils import DEFAULT_EXECUTOR, EXECUTOR_TYPES
 from databao_cli.shared.project.layout import ProjectLayout
 
 
@@ -105,7 +105,7 @@ def render_executor_selector() -> None:
     """Render executor type selector."""
     st.markdown("### ⚙️ Executor")
 
-    current = st.session_state.get("executor_type", "claude_code")
+    current = st.session_state.get("executor_type", DEFAULT_EXECUTOR)
 
     selected = st.selectbox(
         "Executor type",

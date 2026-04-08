@@ -2,9 +2,11 @@
 
 from databao.agent.configs.llm import LLMConfig
 
+DEFAULT_EXECUTOR = "separate_executor"
+
 EXECUTOR_TYPES = {
-    "separate_executor": "SeparateExecutor",
-    "claude_code": "ClaudeCodeExecutor (recommended)",
+    "separate_executor": "SeparateExecutor (recommended)",
+    "claude_code": "ClaudeCodeExecutor",
     "lighthouse": "LighthouseExecutor",
     "react_duckdb": "ReactDuckDBExecutor (experimental)",
     "dbt": "DbtProjectExecutor (experimental)",

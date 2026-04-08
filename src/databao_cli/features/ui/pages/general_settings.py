@@ -8,6 +8,7 @@ from databao_cli.features.ui.app import _clear_all_chat_threads
 from databao_cli.features.ui.services.chat_persistence import delete_all_chats
 from databao_cli.features.ui.services.settings_persistence import delete_settings
 from databao_cli.features.ui.services.storage import get_cache_dir, get_chats_dir, get_storage_base_path
+from databao_cli.shared.executor_utils import DEFAULT_EXECUTOR
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +48,7 @@ def _confirm_reset_settings() -> None:
     with col2:
         if st.button("🔄 Reset", type="primary", use_container_width=True):
             delete_settings()
-            st.session_state.executor_type = "claude_code"
+            st.session_state.executor_type = DEFAULT_EXECUTOR
             st.session_state.databao_project = None
             st.session_state.agent = None
             _clear_all_chat_threads()

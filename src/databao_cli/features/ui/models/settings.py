@@ -6,6 +6,8 @@ from typing import Any
 
 import yaml
 
+from databao_cli.shared.executor_utils import DEFAULT_EXECUTOR
+
 _ENV_VAR_MAP: dict[str, str] = {
     "openai": "OPENAI_API_KEY",
     "anthropic": "ANTHROPIC_API_KEY",
@@ -53,7 +55,7 @@ class LLMSettings:
 class AgentSettings:
     """Agent-related settings."""
 
-    executor_type: str = "claude_code"
+    executor_type: str = DEFAULT_EXECUTOR
     llm: LLMSettings = field(default_factory=LLMSettings)
 
 
@@ -105,7 +107,7 @@ class Settings:
 
         return cls(
             agent=AgentSettings(
-                executor_type=agent_data.get("executor_type", "claude_code"),
+                executor_type=agent_data.get("executor_type", DEFAULT_EXECUTOR),
                 llm=LLMSettings(
                     active_provider=llm_data.get("active_provider", "openai"),
                     providers=providers,

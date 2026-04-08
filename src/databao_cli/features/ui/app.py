@@ -24,6 +24,7 @@ from databao_cli.features.ui.project_utils import (
     has_build_output,
 )
 from databao_cli.features.ui.services.storage import get_cache_dir
+from databao_cli.shared.executor_utils import DEFAULT_EXECUTOR
 from databao_cli.shared.project.layout import ProjectLayout, find_project
 
 logger = logging.getLogger(__name__)
@@ -60,7 +61,7 @@ def _save_settings_if_changed() -> None:
 
     changed = False
 
-    current_executor = st.session_state.get("executor_type", "claude_code")
+    current_executor = st.session_state.get("executor_type", DEFAULT_EXECUTOR)
     if settings.agent.executor_type != current_executor:
         settings.agent.executor_type = current_executor
         changed = True
@@ -105,7 +106,7 @@ def _initialize_agent(project: ProjectLayout) -> Agent | None:
         return None
 
     try:
-        executor_type = st.session_state.get("executor_type", "claude_code")
+        executor_type = st.session_state.get("executor_type", DEFAULT_EXECUTOR)
 
         cache = _get_or_create_disk_cache()
 
@@ -254,7 +255,7 @@ def mark_welcome_completed() -> None:
 
     settings = get_or_create_settings()
     settings.welcome_completed = True
-    settings.agent.executor_type = st.session_state.get("executor_type", "claude_code")
+    settings.agent.executor_type = st.session_state.get("executor_type", DEFAULT_EXECUTOR)
     llm: LLMSettings = st.session_state.get("llm_settings", LLMSettings())
     settings.agent.llm = llm
     save_settings(settings)
@@ -304,7 +305,7 @@ def init_session_state() -> None:
     if "status_message" not in st.session_state:
         st.session_state.status_message = None
     if "executor_type" not in st.session_state:
-        st.session_state.executor_type = "claude_code"
+        st.session_state.executor_type = DEFAULT_EXECUTOR
     if "llm_provider" not in st.session_state:
         st.session_state.llm_provider = LLMSettings()
 

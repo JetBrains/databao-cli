@@ -9,7 +9,7 @@ import streamlit as st
 from databao_cli.features.ui.app import _clear_all_chat_threads
 from databao_cli.features.ui.components.status import AppStatus, set_status
 from databao_cli.features.ui.models.settings import _ENV_VAR_MAP, LLMProviderConfig, LLMSettings
-from databao_cli.shared.executor_utils import EXECUTOR_TYPES, LLM_PROVIDER_MODELS, LLM_PROVIDERS
+from databao_cli.shared.executor_utils import DEFAULT_EXECUTOR, EXECUTOR_TYPES, LLM_PROVIDER_MODELS, LLM_PROVIDERS
 
 
 def render_agent_settings_page(*, auto_apply: bool = False) -> None:
@@ -27,7 +27,7 @@ def render_agent_settings_page(*, auto_apply: bool = False) -> None:
         """
     )
 
-    current = st.session_state.get("executor_type", "claude_code")
+    current = st.session_state.get("executor_type", DEFAULT_EXECUTOR)
 
     selected = st.selectbox(
         "Executor type",
@@ -66,8 +66,7 @@ def render_agent_settings_page(*, auto_apply: bool = False) -> None:
     elif selected == "claude_code":
         st.info(
             """
-            **ClaudeCodeExecutor** is the default and recommended executor.
-            It uses Claude Code as the execution backend for queries.
+            **ClaudeCodeExecutor** uses Claude Code as the execution backend for queries.
             Requires a valid Anthropic API key configured in the LLM settings.
             """,
             icon="💡",
@@ -96,7 +95,7 @@ def render_agent_settings_page(*, auto_apply: bool = False) -> None:
     provider_keys = list(LLM_PROVIDERS.keys())
     current_provider = llm.active_provider if llm.active_provider in provider_keys else "openai"
 
-    is_claude_code = st.session_state.get("executor_type", "claude_code") == "claude_code"
+    is_claude_code = st.session_state.get("executor_type", DEFAULT_EXECUTOR) == "claude_code"
 
     if is_claude_code:
         chosen_provider = "anthropic"
@@ -194,7 +193,7 @@ def _persist_current_settings() -> None:
     from databao_cli.features.ui.services.settings_persistence import get_or_create_settings, save_settings
 
     settings = get_or_create_settings()
-    settings.agent.executor_type = st.session_state.get("executor_type", "claude_code")
+    settings.agent.executor_type = st.session_state.get("executor_type", DEFAULT_EXECUTOR)
     llm: LLMSettings = st.session_state.get("llm_settings", LLMSettings())
     settings.agent.llm = llm
     save_settings(settings)
