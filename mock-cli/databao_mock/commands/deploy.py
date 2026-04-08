@@ -65,7 +65,7 @@ def _check_git(project_dir: Path) -> bool:
     return True
 
 
-def deploy_impl(project_dir: Path) -> None:
+def deploy_impl(project_dir: Path, skip_git_check: bool = False) -> None:
     databao_yml = project_dir / ".databao" / "databao.yml"
     if not databao_yml.exists():
         click.echo(click.style("Error: ", fg="red") + "No Databao project found. Run `databao init` first.")
@@ -74,7 +74,7 @@ def deploy_impl(project_dir: Path) -> None:
     config = _load_yaml(databao_yml)
     dbt_project = config.get("dbt", {}).get("project", "databao")
 
-    if not _check_git(project_dir):
+    if not skip_git_check and not _check_git(project_dir):
         return
 
     click.echo(f"\n  Deploying Slack Bot for '{click.style(dbt_project, bold=True)}'...\n")

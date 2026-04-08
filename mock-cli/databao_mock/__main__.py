@@ -64,12 +64,14 @@ def cli(ctx: Context, project_dir: Path | None) -> None:
     ctx.obj["project_dir"] = Path.cwd() if project_dir is None else project_dir.expanduser().resolve()
 
     project_dir = ctx.obj["project_dir"]
-    from databao_mock.commands.login import is_logged_in, login_impl
-    if not is_logged_in(project_dir):
-        ctx.obj["pending_user"] = login_impl(project_dir)
 
-    from databao_mock.header import print_header
-    print_header(project_dir)
+    if ctx.invoked_subcommand is None:
+        from databao_mock.commands.login import is_logged_in, login_impl
+        if not is_logged_in(project_dir):
+            ctx.obj["pending_user"] = login_impl(project_dir)
+
+        from databao_mock.header import print_header
+        print_header(project_dir)
 
     if ctx.invoked_subcommand is None:
         if _is_initialized(project_dir):
@@ -121,11 +123,12 @@ def login(ctx: Context) -> None:
 
 
 @cli.command()
+@click.option("--skip-git-check", is_flag=True, default=False, hidden=True)
 @click.pass_context
-def deploy(ctx: Context) -> None:
+def deploy(ctx: Context, skip_git_check: bool) -> None:
     """Deploy the Databao Slack Bot."""
     from databao_mock.commands.deploy import deploy_impl
-    deploy_impl(ctx.obj["project_dir"])
+    deploy_impl(ctx.obj["project_dir"], skip_git_check=skip_git_check)
 
 
 if __name__ == "__main__":

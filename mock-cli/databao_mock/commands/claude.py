@@ -379,8 +379,11 @@ If the user chooses option 1:
 
 Run from the dbt project root:
 ```
-databao deploy
+databao deploy --skip-git-check
 ```
+
+The `--skip-git-check` flag bypasses the git check in the CLI since you have
+already handled it in step 1. Always use this flag when calling deploy from here.
 
 Stream and display its output. When it completes successfully print:
 _"Slack Bot deployed. Your team can now ask data questions directly in Slack."_
