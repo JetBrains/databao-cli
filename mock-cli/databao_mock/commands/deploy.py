@@ -82,3 +82,9 @@ def deploy_impl(project_dir: Path, skip_git_check: bool = False) -> None:
     click.echo("  Opening browser to complete Slack Bot setup...")
     click.echo(click.style("  (not yet implemented)", fg="yellow"))
     click.echo()
+
+    # Save deployed state
+    config["slack"] = {"deployed": True}
+    with open(databao_yml, "w") as f:
+        import yaml
+        yaml.dump(config, f, default_flow_style=False, sort_keys=False)

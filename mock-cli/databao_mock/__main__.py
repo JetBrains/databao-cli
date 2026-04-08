@@ -9,6 +9,19 @@ def _databao_yml(project_dir: Path) -> Path:
     return project_dir / ".databao" / "databao.yml"
 
 
+def _is_slack_deployed(project_dir: Path) -> bool:
+    import yaml
+    yml = _databao_yml(project_dir)
+    if not yml.exists():
+        return False
+    try:
+        with open(yml) as f:
+            config = yaml.safe_load(f) or {}
+    except Exception:
+        return False
+    return bool(config.get("slack", {}).get("deployed"))
+
+
 def _is_initialized(project_dir: Path) -> bool:
     databao_yml = _databao_yml(project_dir)
     if not databao_yml.exists():
@@ -25,11 +38,15 @@ def _is_initialized(project_dir: Path) -> bool:
 def _interactive_menu(project_dir: Path) -> None:
     """Show interactive command menu, looping until the user quits."""
     while True:
+        slack_deployed = _is_slack_deployed(project_dir)
         action = questionary.select(
             "What would you like to do?",
             choices=[
                 questionary.Choice("Open Claude Code with Databao", value="claude"),
-                questionary.Choice("Deploy Slack Bot", value="deploy"),
+                questionary.Choice(
+                    "Open web console" if slack_deployed else "Deploy Slack Bot",
+                    value="deploy"
+                ),
                 questionary.Choice("Refresh metadata", value="sync"),
                 questionary.Choice("Quit", value="quit"),
             ],
@@ -39,8 +56,12 @@ def _interactive_menu(project_dir: Path) -> None:
             return
 
         if action == "deploy":
-            from databao_mock.commands.deploy import deploy_impl
-            deploy_impl(project_dir)
+            if slack_deployed:
+                click.echo(click.style("  > https://app.databao.app/console", fg="bright_black"))
+                click.echo()
+            else:
+                from databao_mock.commands.deploy import deploy_impl
+                deploy_impl(project_dir)
         elif action == "claude":
             from databao_mock.commands.claude import claude_impl
             claude_impl(project_dir, on_exit=lambda: None)
