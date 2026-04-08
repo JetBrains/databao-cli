@@ -71,15 +71,133 @@ Read `.databao/databao.yml` to find:
    _"There are open PRs that may add new metrics. Would you like to review and
    merge one before continuing?"_
 
-   If yes, ask which PR number. Then:
-   a. Run `gh pr checkout <number>` to switch to that branch.
-   b. Show the diff of `models/semantic_models/` and `models/metrics/` files:
-      `git diff main -- models/semantic_models/ models/metrics/`
-   c. Ask: _"Looks good to merge?"_
-   d. If yes, run `gh pr merge <number> --merge --delete-branch`.
-   e. Print `  ✓ PR #<number> merged.` and re-assess coverage (go back to step 1).
+   If yes, ask which PR number. Then run the full review flow below.
 
    If no PRs are found, or the user skips, continue to Step 2.
+
+---
+
+### PR Review flow
+
+**R1. Checkout**
+
+```
+gh pr checkout <number>
+```
+
+**R2. Questions & formulas**
+
+Parse all `models/metrics/*.yml` files that were added or modified in this branch
+(use `git diff main -- models/metrics/` to find them).
+
+For each new or changed metric, extract:
+- `name`, `description`, `label`
+- The measure it uses and its aggregation (`agg` + `expr` from the semantic model)
+- Any `filter:` applied
+
+Print a table:
+
+| Metric | Label | Formula | Filter |
+|--------|-------|---------|--------|
+| total_revenue | Total Revenue | SUM(total_price) | — |
+| refunded_order_count | Refunded Orders | COUNT(id) | financial_status = 'refunded' |
+
+Then map each metric to questions in `.databao/test_questions.csv` that reference it.
+If matches exist, show them:
+
+_"This PR answers these existing test questions:"_
+- "What is total revenue this month?"
+- "How much revenue came from refunded orders?"
+
+**R3. Diff**
+
+Show the full diff of semantic layer files only:
+```
+git diff main -- models/semantic_models/ models/metrics/
+```
+
+Render it clearly — highlight added lines in green, removed in red if possible via
+markdown code blocks. Summarise: "N files changed, M metrics added, K measures added."
+
+**R4. Run new metrics**
+
+For each new metric, construct and run an `mf query` to validate it returns data:
+```
+mf query --metrics <metric_name> --group-by metric_time__month --limit 3
+```
+
+Show results as a markdown table. If a query fails, show the error and flag it.
+
+**R5. Conflict check**
+
+Compare measure and dimension names in this branch against `main`:
+```
+git diff main -- models/semantic_models/
+```
+
+Flag any measure or dimension name that already exists in main under a different
+definition. Print `  ✓ No conflicts` or list the conflicts explicitly.
+
+**R6. Coverage delta**
+
+Count how many questions in `.databao/test_questions.csv` reference the new metrics
+(already shown in R2). Also count net-new metrics vs metrics modified.
+
+Print:
+```
+Coverage delta
+──────────────────────────────────────
+  New metrics      : N
+  Modified metrics : M
+  Questions covered: K (already in test set)
+──────────────────────────────────────
+```
+
+**R7. Regression test**
+
+Run all existing `mf query` commands from `.databao/test_questions.csv` against
+the PR branch. For each:
+- Run the query
+- Compare row count to a baseline (if available) or just confirm it returns results
+- Mark as `pass` or `fail`
+
+Print a summary table:
+
+| Question | Metric | Status |
+|----------|--------|--------|
+| What is total revenue? | total_revenue | ✓ pass |
+| Top 5 products? | product_revenue | ✓ pass |
+
+If any fail, show the error and ask whether to proceed.
+
+**R8. Suggested test questions**
+
+Based on the new metrics, suggest 1–2 natural-language questions that aren't in
+the test set yet and would be good additions. Ask:
+_"Want me to add these to the test set?"_ If yes, append them to
+`.databao/test_questions.csv` with the appropriate `mf_query` and `formula`.
+
+**R9. Merge decision**
+
+Print a final summary:
+```
+Review summary  PR #<number>
+──────────────────────────────────────
+  Metrics added    : N
+  Sample queries   : all passed / K failed
+  Conflicts        : none / list
+  Regression       : all passed / K failed
+──────────────────────────────────────
+```
+
+Ask:
+> Ready to merge?
+> 1. Yes, merge and delete branch
+> 2. No, I want to make changes first
+> 3. Cancel
+
+If yes: `gh pr merge <number> --merge --delete-branch`
+Print `  ✓ PR #<number> merged.` then go back to Step 1 to re-assess coverage.
 
 ---
 
