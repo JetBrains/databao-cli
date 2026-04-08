@@ -5,7 +5,7 @@ description = "Databao demo project for Snowflake"
 readme = "README.md"
 requires-python = ">=3.11,<3.12"
 dependencies = [
-    "databao~=0.3.4",
+    "databao~=0.3.5",
     "databao-agent~=0.2.1",
     "databao-context-engine[snowflake]~=0.7.2",
     "streamlit[snowflake]>=1.53.0",

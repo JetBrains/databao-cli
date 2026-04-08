@@ -570,7 +570,7 @@ wheels = [
 
 [[package]]
 name = "databao"
-version = "0.3.4"
+version = "0.3.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "adbc-driver-manager" },
@@ -586,9 +586,9 @@ dependencies = [
     { name = "streamlit", extra = ["snowflake"] },
     { name = "uuid6" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/0c/a9/ec581400c32209086d4aa7983ae3583668010a1c22a2dd5f916079935346/databao-0.3.4.tar.gz", hash = "sha256:a0cf1b56b08691d55f64345e7f16467cd193f73d1e64930ccc53f418f014c2f6", size = 656467 }
+sdist = { url = "https://files.pythonhosted.org/packages/37/24/85fe2ad9a5337e5189827a9df054089d250bcf97c14b3208c3725c43517a/databao-0.3.5.tar.gz", hash = "sha256:de751833dbe6663dcbcbbf12fd34fc67ced45a6923b47261cfefbb147e6f4890", size = 649384 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/4c/ae/9ce9db2db742fbd938b42a48a0f1442a9c60af8e18c5c057ba0ba14915e6/databao-0.3.4-py3-none-any.whl", hash = "sha256:f02ce96d62f206fc331161a1b39a58db973fb6ac9b5bbe00a1a6080dd3e19276", size = 160984 },
+    { url = "https://files.pythonhosted.org/packages/38/09/5a557f706baed393ebf225a707c3f8918be310801cf139afda405026b914/databao-0.3.5-py3-none-any.whl", hash = "sha256:cd7f520fe5b8d2257280f2d3c1723ba4593ff25ed8db655a1316c4a0a274b4b5", size = 161105 },
 ]
 
 [[package]]
@@ -677,7 +677,7 @@ dependencies = [
 requires-dist = [
     { name = "adbc-driver-manager", specifier = ">=1.10.0" },
     { name = "adbc-driver-snowflake", specifier = ">=1.10.0" },
-    { name = "databao", specifier = "~=0.3.4" },
+    { name = "databao", specifier = "~=0.3.5" },
     { name = "databao-agent", specifier = "~=0.2.1" },
     { name = "databao-context-engine", extras = ["snowflake"], specifier = "~=0.7.2" },
     { name = "duckdb", specifier = ">=0.10.0" },
