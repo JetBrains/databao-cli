@@ -81,6 +81,30 @@ Read `.databao/databao.yml` to find:
 
 No checkout needed — all review steps read from the PR remotely via `gh`.
 
+Before starting the review, print this plan so the user knows what to expect:
+
+```
+Review plan  PR #<number>: <title>
+──────────────────────────────────────────────────────
+  R1  Fetch PR metadata and changed files
+  R2  Extract metrics & formulas, map to questions
+  R3  Show semantic layer diff
+  R4  Preview mf query commands (post-merge)
+  R5  Conflict check against local semantic layer
+  R6  Coverage delta
+  R7  Regression test (current layer)
+  R8  Suggest new test questions
+  R9  Merge decision
+──────────────────────────────────────────────────────
+```
+
+Then ask:
+> Ready to start the review?
+> 1. Yes
+> 2. Cancel
+
+If cancelled, return to Step 1.
+
 **R1. Fetch PR metadata**
 
 ```
