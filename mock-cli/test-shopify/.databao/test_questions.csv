@@ -1,0 +1,2 @@
+question,gold_sql,mf_query,metric,formula
+What is the refund rate by month?,,"mf query --metrics refund_rate --group-by metric_time__month",refund_rate,COUNT(*) WHERE financial_status='refunded' / COUNT(*)

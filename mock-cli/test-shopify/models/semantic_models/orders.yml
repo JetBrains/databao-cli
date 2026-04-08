@@ -1,0 +1,31 @@
+semantic_models:
+  - name: orders
+    description: "Shopify orders with payment and fulfillment status"
+    model: ref('stg_orders')
+    defaults:
+      agg_time_dimension: created_at
+    entities:
+      - name: order
+        type: primary
+        expr: id
+      - name: customer
+        type: foreign
+        expr: customer_id
+    dimensions:
+      - name: created_at
+        type: time
+        type_params:
+          time_granularity: day
+      - name: financial_status
+        type: categorical
+      - name: fulfillment_status
+        type: categorical
+    measures:
+      - name: order_count
+        description: "Total number of orders"
+        agg: count
+        expr: id
+      - name: refunded_order_count
+        description: "Number of orders with financial_status = 'refunded'"
+        agg: count
+        expr: id
