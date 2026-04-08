@@ -79,20 +79,36 @@ Read `.databao/databao.yml` to find:
 
 ### PR Review flow
 
-**R1. Checkout**
+No checkout needed — all review steps read from the PR remotely via `gh`.
+
+**R1. Fetch PR metadata**
 
 ```
-gh pr checkout <number>
+gh pr view <number> --json number,title,headRefName,baseRefName,body
+gh pr diff <number>
+gh api repos/{owner}/{repo}/pulls/<number>/files --jq '.[].filename'
+```
+
+Get the repo slug from:
+```
+gh repo view --json nameWithOwner --jq '.nameWithOwner'
 ```
 
 **R2. Questions & formulas**
 
-Parse all `models/metrics/*.yml` files that were added or modified in this branch
-(use `git diff main -- models/metrics/` to find them).
+From the diff, identify added/modified files under `models/metrics/` and
+`models/semantic_models/`. For each changed metrics file, fetch its full
+content from the PR branch:
 
-For each new or changed metric, extract:
+```
+gh api repos/{owner}/{repo}/contents/<path>?ref=<headRefName> --jq '.content' \
+  | base64 -d
+```
+
+Parse the YAML and for each new or changed metric extract:
 - `name`, `description`, `label`
-- The measure it uses and its aggregation (`agg` + `expr` from the semantic model)
+- The measure it references → look up `agg` + `expr` in the semantic model file
+  (fetch from PR branch the same way)
 - Any `filter:` applied
 
 Print a table:
@@ -111,37 +127,33 @@ _"This PR answers these existing test questions:"_
 
 **R3. Diff**
 
-Show the full diff of semantic layer files only:
-```
-git diff main -- models/semantic_models/ models/metrics/
-```
-
-Render it clearly — highlight added lines in green, removed in red if possible via
-markdown code blocks. Summarise: "N files changed, M metrics added, K measures added."
+Print the semantic layer portion of the diff (already fetched in R1).
+Filter to only `models/semantic_models/` and `models/metrics/` paths.
+Summarise: "N files changed, M metrics added, K measures added."
 
 **R4. Run new metrics**
 
-For each new metric, construct and run an `mf query` to validate it returns data:
+The new metrics aren't materialized locally yet — skip `mf query` here.
+Instead, note which metrics will be available after merge and show the
+`mf query` commands that will work post-merge:
+
 ```
+# After merging, you'll be able to run:
 mf query --metrics <metric_name> --group-by metric_time__month --limit 3
 ```
 
-Show results as a markdown table. If a query fails, show the error and flag it.
-
 **R5. Conflict check**
 
-Compare measure and dimension names in this branch against `main`:
-```
-git diff main -- models/semantic_models/
-```
+Fetch the PR branch's semantic model files (as in R2) and compare measure
+and dimension names against the local `models/semantic_models/` files.
 
-Flag any measure or dimension name that already exists in main under a different
-definition. Print `  ✓ No conflicts` or list the conflicts explicitly.
+Flag any name that already exists locally under a different definition.
+Print `  ✓ No conflicts` or list conflicts explicitly.
 
 **R6. Coverage delta**
 
-Count how many questions in `.databao/test_questions.csv` reference the new metrics
-(already shown in R2). Also count net-new metrics vs metrics modified.
+Count new metrics vs modified metrics from the diff.
+Count how many questions in `.databao/test_questions.csv` reference the new metrics.
 
 Print:
 ```
@@ -156,10 +168,8 @@ Coverage delta
 **R7. Regression test**
 
 Run all existing `mf query` commands from `.databao/test_questions.csv` against
-the PR branch. For each:
-- Run the query
-- Compare row count to a baseline (if available) or just confirm it returns results
-- Mark as `pass` or `fail`
+the current local semantic layer (not the PR branch — we haven't merged yet).
+This confirms nothing is broken on main before merging.
 
 Print a summary table:
 
@@ -172,10 +182,10 @@ If any fail, show the error and ask whether to proceed.
 
 **R8. Suggested test questions**
 
-Based on the new metrics, suggest 1–2 natural-language questions that aren't in
-the test set yet and would be good additions. Ask:
-_"Want me to add these to the test set?"_ If yes, append them to
-`.databao/test_questions.csv` with the appropriate `mf_query` and `formula`.
+Based on the new metrics in the PR, suggest 1–2 natural-language questions
+that aren't in the test set yet. Ask:
+_"Want me to add these to the test set after merging?"_
+Store them temporarily — add to `.databao/test_questions.csv` after merge completes.
 
 **R9. Merge decision**
 
@@ -184,7 +194,7 @@ Print a final summary:
 Review summary  PR #<number>
 ──────────────────────────────────────
   Metrics added    : N
-  Sample queries   : all passed / K failed
+  Modified metrics : M
   Conflicts        : none / list
   Regression       : all passed / K failed
 ──────────────────────────────────────
@@ -196,8 +206,15 @@ Ask:
 > 2. No, I want to make changes first
 > 3. Cancel
 
-If yes: `gh pr merge <number> --merge --delete-branch`
-Print `  ✓ PR #<number> merged.` then go back to Step 1 to re-assess coverage.
+If yes:
+```
+gh pr merge <number> --merge --delete-branch
+```
+Then:
+- Run `dbt parse && mf validate-configs` to confirm the merged layer is valid
+- Add any suggested test questions from R8 to `.databao/test_questions.csv`
+- Print `  ✓ PR #<number> merged.`
+- Go back to Step 1 to re-assess coverage.
 
 ---
 
