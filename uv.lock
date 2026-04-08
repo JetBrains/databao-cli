@@ -1160,13 +1160,13 @@ requires-dist = [
     { name = "adbc-driver-manager", specifier = ">=1.10.0" },
     { name = "adbc-driver-snowflake", specifier = ">=1.10.0" },
     { name = "click", specifier = ">=8.2.1,<9.0.0" },
-    { name = "databao-agent", specifier = "==0.2.1.dev12" },
+    { name = "databao-agent", specifier = "~=0.2.1" },
     { name = "databao-context-engine", extras = ["athena"], marker = "extra == 'athena'" },
     { name = "databao-context-engine", extras = ["bigquery"], marker = "extra == 'bigquery'" },
     { name = "databao-context-engine", extras = ["clickhouse"], marker = "extra == 'clickhouse'" },
     { name = "databao-context-engine", extras = ["mssql"], marker = "extra == 'mssql'" },
     { name = "databao-context-engine", extras = ["pdf"], marker = "extra == 'pdf'" },
-    { name = "databao-context-engine", extras = ["snowflake"], specifier = "==0.7.1.dev2" },
+    { name = "databao-context-engine", extras = ["snowflake"], specifier = "~=0.7.2" },
     { name = "fastmcp", specifier = ">=2.0.0" },
     { name = "nh3", specifier = ">=0.2.15" },
     { name = "prettytable", specifier = ">=3.10.0" },
@@ -1199,7 +1199,7 @@ e2e-tests = [
 
 [[package]]
 name = "databao-agent"
-version = "0.2.1.dev12"
+version = "0.2.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -1228,14 +1228,14 @@ dependencies = [
     { name = "tabulate" },
     { name = "watchdog" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a1/5b/bf7893c86de9241d46b7f6ddddcde40790a8ba963ef9d5123c5e2e2beb34/databao_agent-0.2.1.dev12.tar.gz", hash = "sha256:85295e25a7edc30637549c7188463223c68fbf73b63a5559dafcc6514bedc012", size = 1644446 }
+sdist = { url = "https://files.pythonhosted.org/packages/be/23/d62c0808258344aad056421996f51f433e1df093dbac0d8631514bc989ad/databao_agent-0.2.1.tar.gz", hash = "sha256:8031c744a80f0ed2db198eab2b44c01aba06725ac1a593f974ba0f9a33c956cd", size = 1646460 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/2e/f3/3b417bbf663c1030a417d017cf2fc19a1f4821990df9cf711458063d4d16/databao_agent-0.2.1.dev12-py3-none-any.whl", hash = "sha256:29b7a1830a1a20a90d56f8ecfb4caa12352ae3e862d15bfd0674e1e42a7f858c", size = 1700992 },
+    { url = "https://files.pythonhosted.org/packages/e9/4e/832cfc0f53a7f9042ce7961cbac89ffc3ccd32fbf8f0170580b7edfbe68d/databao_agent-0.2.1-py3-none-any.whl", hash = "sha256:0ff54af2416519934bdfe07890b7c5f68b037cce45d3b003f02dac9577b7dd0e", size = 1701282 },
 ]
 
 [[package]]
 name = "databao-context-engine"
-version = "0.7.1.dev2"
+version = "0.7.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "duckdb" },
@@ -1248,9 +1248,9 @@ dependencies = [
     { name = "sqlparse" },
     { name = "xxhash" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ca/c9/3770c53321613b76f536c1a354f37c751d5468b659e00d8f371fda2e1177/databao_context_engine-0.7.1.dev2.tar.gz", hash = "sha256:039c6c3a1dfeb23cf92db626e5038e580528c5e0fdb77d24a0a844c95e55e66c", size = 133266 }
+sdist = { url = "https://files.pythonhosted.org/packages/0c/1f/6822b625bbd0737d2fbad5951613dd6a44dc1cf2820aba185c947173349f/databao_context_engine-0.7.2.tar.gz", hash = "sha256:363a422c2b479fe1b63cc5e5e01b324bba0e19dff3e2ca99dfec2e4834199e5e", size = 132008 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a3/f9/70a8c87682fc9c32dd099ab6e5e2bca8187003375f2273a06b7f86cdc364/databao_context_engine-0.7.1.dev2-py3-none-any.whl", hash = "sha256:64f272f63e2e3de06455007bc17b24878597585181bad6f41e41d53a2940f87e", size = 210998 },
+    { url = "https://files.pythonhosted.org/packages/fe/a8/d9916ebbdadcb53c70cbf69f80af209e0f6ca086f4ce3a0c26c7d6056043/databao_context_engine-0.7.2-py3-none-any.whl", hash = "sha256:6554bf8d02e29da29699daf1358f53292c9c3c6c3e1cdbeb8c284a672b4c6e39", size = 210941 },
 ]
 
 [package.optional-dependencies]
