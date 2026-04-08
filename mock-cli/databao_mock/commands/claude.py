@@ -40,11 +40,14 @@ Read `.databao/databao.yml` to find:
 2. Glob `models/metrics/*.yml` — count metric definition files.
 3. Read `.databao/test_questions.csv` (columns: `question`, `mf_query`, `metric`, `formula`).
    Count rows where `metric` is non-empty — that is the **coverage count**.
-4. Print a status block:
+4. Read `.databao/databao.yml` and check `slack.deployed` — if `true`, the Slack
+   Bot is already live. Store this as **slack_deployed**.
+5. Print a status block:
 
    ```
    Semantic layer:  N semantic models  |  M metrics defined
    Test coverage:   K questions
+   Slack Bot:       live ✓           (only if slack_deployed, otherwise omit)
    ```
 
 5. **If there are any existing metrics or coverage (N > 0 or K > 0)**, check for
@@ -318,7 +321,7 @@ For each question:
   d. Append the question + `mf_query` + `metric` + `formula` to `.databao/test_questions.csv`.
   d. Print updated coverage count after each question.
 
-**If coverage count is 10–14:**
+**If coverage count is 10–14 and slack_deployed is false:**
 
 Coverage is good. Offer two options:
   - "Ask another question"
@@ -326,12 +329,22 @@ Coverage is good. Offer two options:
 
 If they choose to deploy, proceed to **Deploy** below.
 
-**If coverage count ≥ 15:**
+**If coverage count is 10–14 and slack_deployed is true:**
+
+Just offer: "Ask another question to improve coverage."
+
+**If coverage count ≥ 15 and slack_deployed is false:**
 
 Proactively suggest deploying:
 _"You have N questions covered across M metrics. Your team is ready for
 self-service analytics. Shall I deploy the Slack Bot now?"_
 If yes, proceed to **Deploy**.
+
+**If coverage count ≥ 15 and slack_deployed is true:**
+
+_"Coverage is strong at N questions. The Slack Bot is already live — your
+team can ask these questions directly in Slack."_
+Offer only: "Ask another question."
 
 ---
 
