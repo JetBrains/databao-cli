@@ -1,4 +1,4 @@
-LATEST_STABLE := $(shell tag="$$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$$' | head -1)"; if [ -n "$$tag" ]; then echo "$$tag"; else echo "v0.0.0"; fi)
+LATEST_STABLE := $(or $(shell git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$$' | head -1),v0.0.0)
 CURRENT_MAJOR := $(shell echo $(LATEST_STABLE) | sed 's/^v//' | cut -d. -f1)
 CURRENT_MINOR := $(shell echo $(LATEST_STABLE) | sed 's/^v//' | cut -d. -f2)
 CURRENT_BUILD := $(shell echo $(LATEST_STABLE) | sed 's/^v//' | cut -d. -f3)
