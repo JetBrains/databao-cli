@@ -95,9 +95,12 @@ visit the [docs](https://docs.databao.app).
 make release VERSION=0.3.0
 
 # Bump the patch version automatically (e.g. 0.3.0 -> 0.3.1)
-make minor-release
+make patch-release
 
 # Bump the minor version automatically (e.g. 0.3.1 -> 0.4.0)
+make minor-release
+
+# Bump the major version automatically (e.g. 0.4.0 -> 1.0.0)
 make major-release
 
 # Trigger a dev release via GitHub Actions
