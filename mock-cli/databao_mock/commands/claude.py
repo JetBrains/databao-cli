@@ -98,12 +98,7 @@ Review plan  PR #<number>: <title>
 ──────────────────────────────────────────────────────
 ```
 
-Then ask:
-> Ready to start the review?
-> 1. Yes
-> 2. Cancel
-
-If cancelled, return to Step 1.
+Then proceed immediately to R1.
 
 **R1. Fetch PR metadata**
 
