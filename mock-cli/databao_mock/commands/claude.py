@@ -250,19 +250,8 @@ Then:
 
 ### Step 2 — Bootstrap (run only if no semantic models exist yet)
 
-If `models/semantic_models/` is empty, pause before doing anything and tell
-the user what is about to happen:
-
-> "No semantic layer found yet. I'll analyze your schema and generate:
->   - Staging views for each entity
->   - MetricFlow semantic model definitions
->   - A set of business metrics
->   - ~10 seed test questions
->
-> This will add files to your dbt project. Ready to proceed?"
-
-Wait for confirmation. If the user says no, stop. If yes, proceed with the
-steps below, narrating each step as you go.
+If `models/semantic_models/` is empty, run the bootstrap. The order is:
+analyze schema → propose questions → user confirms → generate everything.
 
 **2a. Analyze the schema**
 
@@ -271,187 +260,105 @@ Read `models/staging/_sources.yml`. For each table extract:
 - `meta.type`, `meta.unique_values`, `meta.null_pct` for each column
 - Relationships implied by `_id` suffix columns (foreign keys)
 
-**2b. Check dbt_project.yml**
+Do this silently — do not print intermediate analysis output.
 
-Read `dbt_project.yml`. If it contains `semantic-model-paths` or `metric-paths`
-keys, remove them — these are not valid in dbt 1.x. The semantic models and
-metrics live inside `model-paths` (i.e. under `models/`) and dbt picks them up
-automatically. Do NOT add these keys if they are missing.
+**2b. Propose questions**
 
-**2c. Check for staging SQL models**
+Based solely on the schema analysis, propose ~10 natural-language business
+questions that could be answered from this data. Think like a business user:
+revenue, retention, top products, refunds, cohorts, growth trends, etc.
 
-Glob `models/staging/*.sql`. If no staging `.sql` files exist, create minimal
-passthrough views for each entity that will have a semantic model, e.g.:
+For each question also derive:
+- Which metric it would map to (name it, e.g. `total_revenue`)
+- The formula (e.g. `SUM(total_price)`)
+- Which source table(s) are needed
 
-```sql
--- models/staging/stg_orders.sql
-select * from {{ source('shopify_analytics', 'orders') }}
+Print a numbered table:
+
+```
+Here are 10 questions I can build a semantic layer for:
+
+ #  Question                                      Metric                Formula
+─────────────────────────────────────────────────────────────────────────────────
+ 1  What is total revenue by month?               total_revenue         SUM(total_price)
+ 2  How many orders were placed last week?        order_count           COUNT(id)
+ 3  What is the refund rate?                      refund_rate           COUNT(refund_id) / COUNT(order_id)
+ …
 ```
 
-Create one file per entity (stg_orders, stg_customers, stg_products, etc.).
-Semantic models must use `ref('stg_<entity>')` — `source()` is not supported
-inside the `model:` field of a semantic model definition.
+Then ask:
+> These questions will define your semantic layer. You can:
+> - Type **ok** to proceed with all of them
+> - Type numbers to remove some (e.g. "remove 3, 7")
+> - Type a new question to add it to the list
 
-**2d. Create a MetricFlow time spine**
+Wait for the user's response. Apply their changes and confirm the final list.
+Do not proceed until the user has approved the question set.
 
-Check if `models/staging/metricflow_time_spine.sql` (or equivalent) exists.
-If not, create it. Use a DuckDB-native approach (no dbt_utils required):
+**2c. Generate the semantic layer**
 
-```sql
--- models/staging/metricflow_time_spine.sql
-{{ config(materialized='table') }}
+Now generate everything needed to answer the confirmed questions. Narrate each
+step as you go.
 
-select
-    cast(range as date) as date_day
-from generate_series(
-    cast('2020-01-01' as date),
-    cast('2030-01-01' as date),
-    interval '1 day'
-) as t(range)
+First, fix the project setup:
+
+- Read `dbt_project.yml`. Remove `semantic-model-paths` or `metric-paths` keys
+  if present — these are not valid in dbt 1.x.
+- Glob `models/staging/*.sql`. For each entity needed, create a minimal
+  passthrough staging view if one doesn't exist:
+  ```sql
+  -- models/staging/stg_orders.sql
+  select * from {{ source('shopify_analytics', 'orders') }}
+  ```
+  Semantic models must use `ref('stg_<entity>')`.
+- Check for `models/staging/metricflow_time_spine.sql`. If missing, create it:
+  ```sql
+  {{ config(materialized='table') }}
+  select cast(range as date) as date_day
+  from generate_series(
+      cast('2020-01-01' as date),
+      cast('2030-01-01' as date),
+      interval '1 day'
+  ) as t(range)
+  ```
+
+Then generate semantic models in `models/semantic_models/<entity>.yml` — one
+per entity, covering only entities with a time dimension. Follow the MetricFlow
+spec; use `defaults.agg_time_dimension` at the model level; use only `simple`
+metrics. Print `  ✓ semantic model: <name>` for each file written.
+
+Then generate metrics in `models/metrics/<entity>_metrics.yml` — only define
+metrics that correspond to the confirmed questions. Print `  ✓ metrics: <name>, …`
+for each file written.
+
+**2d. Materialize and validate**
+
+Run `dbt parse`. Fix any errors before proceeding:
+- "depends on stg_X" → create the missing staging view
+- "requires a time spine" → create `metricflow_time_spine.sql`
+- "Aggregation time dimension not set" → add `defaults.agg_time_dimension`
+- "metric-paths / semantic-model-paths unexpected" → remove from `dbt_project.yml`
+
+After parse succeeds:
 ```
-
-MetricFlow requires a time spine with at least DAY granularity or `dbt parse`
-will fail with "The semantic layer requires a time spine model".
-
-**2e. Generate semantic models**
-
-Create `models/semantic_models/` if it does not exist.
-
-Rules:
-- Only create a semantic model for an entity if its source table has a **time
-  dimension** (a timestamp/date column). Entities without a time column (e.g.
-  a pure join table) cannot have measures — omit them or model them as
-  dimension-only.
-- Every measure in a semantic model requires an aggregation time dimension.
-  Use `defaults.agg_time_dimension: <time_col>` at the model level when the
-  entity has a clear primary time column. Do NOT set `agg_time_dimension` on
-  individual measures — let the model-level default apply.
-- Do NOT use `ratio` metric type in the metrics YAML to reference other metrics
-  by name — use `simple` metrics only during bootstrap. Ratio metrics that
-  reference other metrics by name require those metrics to already be defined,
-  and filter-based ratios are error-prone. Use a `filter:` on a `simple` metric
-  instead to count a filtered subset.
-
-For each meaningful entity with a time dimension write
-`models/semantic_models/<entity>.yml` following the MetricFlow spec:
-
-```yaml
-semantic_models:
-  - name: orders
-    description: "..."
-    model: ref('stg_orders')
-    defaults:
-      agg_time_dimension: created_at
-    entities:
-      - name: order
-        type: primary
-        expr: id
-      - name: customer
-        type: foreign
-        expr: customer_id
-    dimensions:
-      - name: created_at
-        type: time
-        type_params:
-          time_granularity: day
-      - name: financial_status
-        type: categorical
-    measures:
-      - name: order_count
-        agg: count
-        expr: id
-      - name: revenue
-        agg: sum
-        expr: total_price
-```
-
-Adapt columns and measures to what is actually available in the schema.
-Print `  ✓ semantic model: <name>` for each file written.
-
-**2f. Generate metrics**
-
-Create `models/metrics/` if it does not exist.
-
-For each semantic model, define 2–4 business metrics in
-`models/metrics/<entity>_metrics.yml`. Use only `simple` type during bootstrap.
-Apply `filter:` at the metric level (not inside `type_params`) to scope metrics
-to a subset of rows:
-
-```yaml
-metrics:
-  - name: total_revenue
-    description: "Total order revenue"
-    type: simple
-    type_params:
-      measure: revenue
-    label: "Total Revenue"
-
-  - name: refunded_order_count
-    description: "Number of refunded orders"
-    type: simple
-    type_params:
-      measure: order_count
-    filter: "{{ Dimension('order__financial_status') }} = 'refunded'"
-    label: "Refunded Orders"
-```
-
-Print `  ✓ metrics: <name>, <name>, ...` for each file written.
-
-**2g. Materialize models and validate**
-
-Run `dbt parse` first. If it fails, read the error and fix the YAML before
-proceeding. Common errors and fixes:
-
-- "depends on a node named 'stg_X' which was not found" → create the missing
-  `models/staging/stg_X.sql` passthrough view (step 2c above).
-- "requires a time spine model" → create `metricflow_time_spine.sql` (step 2d).
-- "Aggregation time dimension for measure X is not set" → add
-  `defaults.agg_time_dimension` to the semantic model.
-- "Additional properties are not allowed ('metric-paths', 'semantic-model-paths'
-  were unexpected)" → remove those keys from `dbt_project.yml` (step 2b).
-
-After `dbt parse` succeeds, run:
-```
-dbt run --select stg_orders stg_customers stg_products metricflow_time_spine
-```
-(adjust model names to match what was actually created)
-
-Then run:
-```
+dbt run --select <all staging models and time spine>
 mf validate-configs
 ```
-The correct MetricFlow validation command is `mf validate-configs`, NOT
-`mf validate`. If validation fails at the data warehouse level (tables not
-found), it means dbt models haven't been materialized yet — run `dbt run` first.
-
 Print `  ✓ mf validate-configs passed`.
 
-**2h. Generate bootstrap test questions**
+**2e. Build the test set**
 
-For each metric defined, write 1–2 natural-language questions a business user
-would ask. For each question:
+For each confirmed question:
+1. Construct and run the `mf query` command.
+2. Verify it returns results.
+3. Append to `.databao/test_questions.csv`: `question`, `mf_query`, `metric`, `formula`
 
-1. Construct the `mf query` command that answers it, e.g.:
-   `mf query --metrics total_revenue --group-by metric_time__month`
-2. Run the command and verify it returns results.
-3. Derive a human-readable formula for the metric — either the aggregation
-   expression (e.g. `SUM(total_price)`) or the equivalent SQL fragment
-   (e.g. `COUNT(*) WHERE financial_status = 'refunded'`). Keep it concise.
-4. Append a row to `.databao/test_questions.csv`:
-   `question`, `mf_query`, `metric`, `formula`
-
-Aim for ~10 questions total.
-
-**2i. Print bootstrap summary**
-
-Print a markdown table:
+**2f. Print bootstrap summary**
 
 | # | Question | Metric | Formula |
 |---|----------|--------|---------|
-| 1 | What is total revenue this month? | total_revenue | SUM(total_price) |
+| 1 | What is total revenue by month? | total_revenue | SUM(total_price) |
 | … | … | … | … |
-
-Then print counts:
 
 ```
 Bootstrap complete
