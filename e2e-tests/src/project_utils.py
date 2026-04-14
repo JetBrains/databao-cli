@@ -73,6 +73,7 @@ def run_common_interactive_flow(
     child_answer(child, r"What type of datasource do you want to add\?", database.datasource_type)
     child_answer(child, r"Datasource name\?:", database.datasource_name)
 
+    child_answer(child, r"profiling\.enabled\?", "")
     if isinstance(database, SnowflakeDB):
         (child_answer_safe(child, r"connection\.account\?:", database.account),)
         child_answer(child, r"connection\.warehouse\? \(Optional\):", database.warehouse)
