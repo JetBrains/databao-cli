@@ -61,6 +61,10 @@ packages = ["src/databao_cli"]
 
 [tool.uv]
 cache-keys = [{ file = "pyproject.toml" }, { git = { commit = true, tags = true }}]
+# Overrides the pandas version declared by the streamlit dependency:
+# pandas 2.3.1 has issues when being built on Python 3.14 because of meson 1.11.0
+# (see https://github.com/pandas-dev/pandas/issues/65213)
+override-dependencies = ["pandas==2.3.3"]
 
 [tool.uv.workspace]
 members = []
