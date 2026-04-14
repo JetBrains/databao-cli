@@ -1,0 +1,30 @@
+Project initialized successfully at /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmptfvdgqxptest_databao_build_bigquery_datasource_from_init_config_from_json_file_path
+
+Do you want to configure a domain now? [y/N]: Y
+Y
+We will guide you to add a new datasource into root domain, at /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmptfvdgqxptest_databao_build_bigquery_datasource_from_init_config_from_json_file_path/databao/domains/root
+What type of datasource do you want to add? (bigquery, dbt, duckdb, mysql, parquet, postgres, snowflake, sqlite): bigquery
+bigquery
+Selected type: bigquery
+Datasource name?: my_test_bigquery
+my_test_bigquery
+profiling.enabled? (Optional) [False]: 
+
+connection.project?: {{ env_var("BQ_PROJECT") }}
+connection.dataset? (Optional): {{ env_var("BQ_DATASET") }}
+connection.location? (Optional): 
+connection.auth.type? (BigQueryDefaultAuth, BigQueryServiceAccountJsonAuth, BigQueryServiceAccountKeyFileAuth) [BigQueryDefaultAuth]: BigQueryServiceAccountKeyFileAuth
+BigQueryServiceAccountKeyFileAuth
+connection.auth.credentials_file?: /tmp/pytest-of-runner/pytest-0/test_databao_build_bigquery_da1/service_account.json
+
+We've created a new config file for your datasource at: /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmptfvdgqxptest_databao_build_bigquery_datasource_from_init_config_from_json_file_path/databao/domains/root/src/my_test_bigquery.yaml
+
+Do you want to check the connection to this new datasource? [y/N]: y
+y
+[34mINFO    [0m Validating [1;35mdatasource[0m[1m([0ms[1m)[0m:                                              
+         [1m[[0m[1;35mDatasourceId[0m[1m([0m[33mdatasource_path[0m=[32m'my_test_bigquery'[0m,                      
+         [33mconfig_file_suffix[0m=[32m'.yaml'[0m[1m)[0m[1m][0m                                           
+root:my_test_bigquery.yaml: Valid
+
+Do you want to add more datasources? [y/N]:N
+ N
