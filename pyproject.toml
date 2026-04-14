@@ -8,7 +8,7 @@ dependencies = [
     "click>=8.2.1,<9.0.0",
     "databao-context-engine[snowflake]~=0.7.2",
     "prettytable>=3.10.0",
-    "databao-agent~=0.2.1",
+    "databao-agent~=0.2.2",
     "streamlit[snowflake]>=1.53.0",
     "uuid6>=2024.7.10",
     "pyyaml>=6.0",
@@ -61,6 +61,10 @@ packages = ["src/databao_cli"]
 
 [tool.uv]
 cache-keys = [{ file = "pyproject.toml" }, { git = { commit = true, tags = true }}]
+# Overrides the pandas version declared by the streamlit dependency:
+# pandas 2.3.1 has issues when being built on Python 3.14 because of meson 1.11.0
+# (see https://github.com/pandas-dev/pandas/issues/65213)
+override-dependencies = ["pandas==2.3.3"]
 
 [tool.uv.workspace]
 members = []
