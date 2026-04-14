@@ -1,0 +1,11 @@
+Project initialized successfully at /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmpo8i6g_tbtest_databao_build_sqlite
+
+Do you want to configure a domain now? [y/N]: Y
+Y
+We will guide you to add a new datasource into root domain, at /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmpo8i6g_tbtest_databao_build_sqlite/databao/domains/root
+What type of datasource do you want to add? (bigquery, dbt, duckdb, mysql, parquet, postgres, snowflake, sqlite): sqlite
+sqlite
+Selected type: sqlite
+Datasource name?: test_sqlite_conn
+test_sqlite_conn
+profiling.enabled? (Optional) [False]: 
