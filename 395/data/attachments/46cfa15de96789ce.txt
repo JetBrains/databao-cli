@@ -1,0 +1,11 @@
+Project initialized successfully at /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmpa370m2m1test_databao_build_snowflake_datasource_from_init_config
+
+Do you want to configure a domain now? [y/N]: Y
+Y
+We will guide you to add a new datasource into root domain, at /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmpa370m2m1test_databao_build_snowflake_datasource_from_init_config/databao/domains/root
+What type of datasource do you want to add? (bigquery, dbt, duckdb, mysql, parquet, postgres, snowflake, sqlite): snowflake
+snowflake
+Selected type: snowflake
+Datasource name?: my_test_snowflake
+my_test_snowflake
+profiling.enabled? (Optional) [False]: 
