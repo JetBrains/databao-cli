@@ -18,6 +18,12 @@ setup:
 	uv run pytest tests/ --co -q > /dev/null
 	@echo "Environment ready."
 
+install:
+	uv tool install --force .
+
+uninstall:
+	uv tool uninstall databao
+
 check:
 	uv run pre-commit run --all-files
 
