@@ -1,9 +1,0 @@
-INFO     Ollama server not running. Starting Ollama server...                   
-INFO     Started Ollama server                                                  
-INFO     Found datasource of type "mysql" with name test_mysql_conn             
-INFO     Exported result to                                                     
-         /home/runner/work/databao-cli/databao-cli/e2e-tests/artifacts/tmp0v2gmu
-         yqtest_databao_build_mysql/databao/domains/root/output/test_mysql_conn.
-         yaml                                                                   
-
-Build complete. Processed 1 datasources.
