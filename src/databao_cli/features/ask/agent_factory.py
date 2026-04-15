@@ -7,6 +7,7 @@ from databao.agent.configs.llm import LLMConfig, LLMConfigDirectory
 
 from databao_cli.features.ui.project_utils import DatabaoProjectStatus, databao_project_status
 from databao_cli.shared.errors import FeatureError
+from databao_cli.shared.executor_utils import DEFAULT_EXECUTOR
 from databao_cli.shared.project.layout import ProjectLayout
 
 
@@ -36,6 +37,6 @@ def initialize_agent_from_dce(project_path: Path, model: str | None, temperature
         else:
             llm_config = LLMConfigDirectory.DEFAULT
 
-    agent = create_agent(domain=_domain, llm_config=llm_config)
+    agent = create_agent(domain=_domain, llm_config=llm_config, executor_type=DEFAULT_EXECUTOR)
 
     return agent
