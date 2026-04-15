@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 from uuid6 import uuid6
 
 from databao_cli.features.mcp.tools.databao_ask.agent_factory import create_agent_for_tool
+from databao_cli.shared.executor_utils import DEFAULT_EXECUTOR, EXECUTOR_TYPES
 
 if TYPE_CHECKING:
     from fastmcp import FastMCP
@@ -20,6 +21,9 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 DEFAULT_MAX_DATA_ROWS = 50
+
+_executor_names = [f"'{k}' (default)" if k == DEFAULT_EXECUTOR else f"'{k}'" for k in EXECUTOR_TYPES]
+_EXECUTOR_DESCRIPTION = f"Execution engine: {', '.join(_executor_names)}."
 
 
 class Message(BaseModel):
@@ -62,8 +66,8 @@ def register(mcp: "FastMCP", context: "McpContext") -> None:
         ] = 0.0,
         executor: Annotated[
             str,
-            Field(description="Execution engine: 'claude_code' (default), 'lighthouse', 'dbt',  or 'react_duckdb'."),
-        ] = "claude_code",
+            Field(description=_EXECUTOR_DESCRIPTION),
+        ] = DEFAULT_EXECUTOR,
         max_data_rows: Annotated[
             int,
             Field(description="Maximum number of data rows to return in the response."),
