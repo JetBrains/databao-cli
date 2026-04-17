@@ -1,0 +1,13 @@
+dbt:
+  project: shopify_analytics
+  path: /Users/Artem.Trofimov/Work/databao-cli/mock-cli/test-shopify
+databao:
+  path: /Users/Artem.Trofimov/Work/databao-cli/mock-cli/test-shopify/.databao
+connection:
+  type: duckdb
+  path: shopify.duckdb
+  schema: main
+  threads: 4
+user:
+  email: artem@databao.app
+  token: mock_oauth_token_a1b2c3d4

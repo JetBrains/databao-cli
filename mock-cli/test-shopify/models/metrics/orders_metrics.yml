@@ -1,0 +1,23 @@
+metrics:
+  - name: order_count
+    description: "Total number of orders"
+    type: simple
+    type_params:
+      measure: order_count
+    label: "Order Count"
+
+  - name: refunded_order_count
+    description: "Number of orders that were refunded"
+    type: simple
+    type_params:
+      measure: refunded_order_count
+    filter: "{{ Dimension('order__financial_status') }} = 'refunded'"
+    label: "Refunded Orders"
+
+  - name: refund_rate
+    description: "Share of orders that were refunded"
+    type: ratio
+    type_params:
+      numerator: refunded_order_count
+      denominator: order_count
+    label: "Refund Rate"
